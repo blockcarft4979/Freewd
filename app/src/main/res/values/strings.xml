@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Freewd KT</string>
+
+    <!-- 登录界面 -->
+    <string name="login_welcome_title">Welcome to the Freewd community</string>
+    <string name="login_account_hint">Please enter your account</string>
+    <string name="login_password_hint">Please enter your password</string>
+    <string name="login_login_btn">LOGIN</string>
+    <string name="login_register_btn">REGISTER</string>
+    <string name="login_hint">Log in to enjoy premium service~</string>
+    <string name="login_success">Welcome back</string>
+    <!-- 无障碍描述 -->
+    <string name="content_desc_app_icon">App icon</string>
+    <!-- 网络部分-->
+    <string name="no_internet_hint">Currently unable to connect to the network. Please check if your network connection is normal</string>
+    <string name="data_error_hint">An error occurred while parsing the data</string>
+    <!-- 首页部分-->
+    <string name="home_hint">Home</string>
+    <string name="uid_hint">UID:%s</string>
+    <!--帖子部分-->
+    <string name="post_hint">Post</string>
+
+    <string name="browser_hint">Browser</string>
+    <string name="feed_detail_hint">Post details</string>
+</resources>

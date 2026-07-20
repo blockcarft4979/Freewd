@@ -1,0 +1,26 @@
+package com.freewdcmkt.bck.data
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class HomeData(
+    val notification: Notification,
+    val zone: List<Zone>
+)
+
+@Serializable
+data class Notification(
+    val title: String,
+    val msg: String,
+    val imageUrl: String?=null,
+)
+
+@Serializable
+data class Zone(
+    val icon: String,
+    val name: String,
+    val zone: Int? = null,
+    val description: String? = null,
+    val msg: String? = null,
+    val link: String? = null
+)
