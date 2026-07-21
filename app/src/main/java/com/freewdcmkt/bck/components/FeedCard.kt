@@ -2,7 +2,6 @@ package com.freewdcmkt.bck.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -86,13 +84,13 @@ fun FeedCard(feed: Feed, onClick: () -> Unit) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    // 日期 + 额外小标记（比如“· 刚刚”），增强信息密度
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         //horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Box(
                             modifier = Modifier
+                                .padding(end = 8.dp)
                                 .size(3.dp)
                                 .clip(CircleShape)
                                 .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
@@ -109,7 +107,8 @@ fun FeedCard(feed: Feed, onClick: () -> Unit) {
                 }
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(feed.msg)
+            TitleText(feed.title)
+            ContentText(feed.msg)
         }
     }
 }
@@ -117,6 +116,13 @@ fun FeedCard(feed: Feed, onClick: () -> Unit) {
 @Composable
 @Preview
 fun ShowCard() {
-    val feed = Feed("WO SHI TITLE", "我是内容，你好世界\nI'm content hello world", "", "IM USERNAME WELCOME TO MY WORLD NICE TO MEET YOU :)", "", "2025-08-13")
+    val feed = Feed(
+        "WO SHI TITLE",
+        "我是内容，你好世界\nI'm content hello world",
+        "",
+        "IM USERNAME WELCOME TO MY WORLD NICE TO MEET YOU :)",
+        "",
+        "2025-08-13"
+    )
     FeedCard(feed) { }
 }

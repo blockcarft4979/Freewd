@@ -1,6 +1,5 @@
 package com.freewdcmkt.bck.layout
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -18,12 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.HomeTopZone
 import com.freewdcmkt.bck.components.HomeZoneItemCard
+import com.freewdcmkt.bck.data.HomeData
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
 
@@ -35,11 +34,11 @@ fun HomeLayout(
     onToBrowser: (link: String) -> Unit
 ) {
     val username by viewmodel.username.collectAsState()
-    val userAccount by viewmodel.userAccount.collectAsState()
+    val qq by viewmodel.userAccount.collectAsState()
     val uid by viewmodel.uid.collectAsState()
     val homeData by viewmodel.homeData.collectAsState()
     val homeUiState by viewmodel.homeUiState.collectAsState()
-    val context = LocalContext.current
+
     LaunchedEffect(Unit) { viewmodel.fetchData() }
 
     Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.home_hint)) }) }) { innerPadding ->
@@ -52,42 +51,50 @@ fun HomeLayout(
                 isRefreshing = homeUiState is HomeUiState.Loading,
                 onRefresh = { viewmodel.fetchData() },
             ) {
-                LazyColumn {
-                    item {
-                        HomeTopZone(
-                            qq = userAccount,
-                            username = username,
-                            uid = uid,
-                            homeData.notification.imageUrl
-                        )
-                    }
-                    items(
-                        items = homeData.zone,
-                        key = { "${it.description}_${it.name}_${it.icon}" }) { zone ->
-
-                        HomeZoneItemCard(zone, onClick = {
-                            if (zone.msg != null) Toast.makeText(
-                                context,
-                                zone.msg,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                            if (zone.zone != null) onToFeed(zone.zone)
-                            if (zone.link != null) onToBrowser(zone.link)
-                        })
-                    }
-
-                }
+                UiLayout(
+                    qq, username, uid, homeData,
+                    onToFeed = onToFeed,
+                    onToBrowser = onToBrowser
+                )
             }
-
-            Log.d("HOME VIEWMODEL", userAccount)
         }
     }
 }
 
-
-@Preview
 @Composable
-fun ShowLayout() {
+private fun UiLayout(
+    qq: String,
+    username: String,
+    uid: String,
+    homeData: HomeData,
+    onToFeed: (Int) -> Unit,
+    onToBrowser: (String) -> Unit
+) {
+    val context = LocalContext.current
+    LazyColumn {
+        item {
+            HomeTopZone(
+                qq = qq,
+                username = username,
+                uid = uid,
+                homeData.notification.imageUrl
+            )
+        }
+        items(
+            items = homeData.zone,
+            key = { "${it.description}_${it.name}_${it.icon}" }) { zone ->
 
+            HomeZoneItemCard(zone, onClick = {
+                if (zone.msg != null) Toast.makeText(
+                    context,
+                    zone.msg,
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                if (zone.zone != null) onToFeed(zone.zone)
+                if (zone.link != null) onToBrowser(zone.link)
+            })
+        }
+
+    }
 }

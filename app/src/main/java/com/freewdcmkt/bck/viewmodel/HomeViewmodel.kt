@@ -42,11 +42,12 @@ class HomeViewmodel : ViewModel() {
     private val _homeData = MutableStateFlow(HomeData(Notification("", "", ""), emptyList()))
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val homeUiState : StateFlow<HomeUiState> = _homeUiState.asStateFlow()
+    val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
     fun fetchData() {
-        _homeUiState.value = HomeUiState.Loading
+
         viewModelScope.launch {
             try {
+                _homeUiState.value = HomeUiState.Loading
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
                         Request.Builder().url(RequestApi.Other.HOME_DATA).build()

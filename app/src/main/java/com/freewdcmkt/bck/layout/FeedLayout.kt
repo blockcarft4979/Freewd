@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,7 +40,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun FeedLayout(
     viewmodel: FeedViewmodel = viewModel(),
     zone: Int,
-    onToFeedDetail: (id: String) -> Unit
+    onToFeedDetail: (id: String) -> Unit,
+    onToPostFeed: (zone: Int) -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
@@ -50,42 +54,53 @@ fun FeedLayout(
         }
             .distinctUntilChanged()
             .collect { isAtEnd ->
-
-                if (isAtEnd) {Log.d("FEED LAYOUT","AT END")
+                if (isAtEnd) {
+                    Log.d("FEED LAYOUT", "AT END")
                     viewmodel.loadMore()
                 }
             }
     }
-    // Log.d("FEED LAYOUT", RequestApi.Community.feed(zone))
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.post_hint)) }) }) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 15.dp)
-        ) {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.post_hint)) }) },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onToPostFeed(zone) },
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_add_24),
+                    contentDescription = stringResource(R.string.add_post_hint)
+                )
+            }
+        }) { innerPadding ->
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .padding(horizontal = 15.dp)) {
             when (uiState) {
                 is FeedUiState.Loading -> LoadingCard()
-                is FeedUiState.Error -> {}
+                is FeedUiState.Error -> LoadingCard()
                 is FeedUiState.Success -> {
                     FeedUiLayout(
                         feed = (uiState as FeedUiState.Success).feedData.feed,
                         onClick = { onToFeedDetail(it) },
                         listState = listState,
-                        isLoadingMore =(uiState as FeedUiState.Success).isLoadingMore,
+                        isLoadingMore = (uiState as FeedUiState.Success).isLoadingMore,
                         hasMore = (uiState as FeedUiState.Success).hasMore
                     )
                 }
             }
         }
+
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedUiLayout(
     feed: List<Feed>, listState: LazyListState, isLoadingMore: Boolean,
     hasMore: Boolean, onClick: (id: String) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(state = listState) {
         items(
             items = feed,
             key = { it.id }
@@ -96,14 +111,20 @@ fun FeedUiLayout(
             )
         }
         if (isLoadingMore) {
-            item { Box(modifier = Modifier
-                .padding(16.dp)
-                .height(64.dp)) { LoadingCard() } }
+            item {
+                Box(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .height(64.dp)
+                ) { LoadingCard() }
+            }
         } else if (!hasMore && feed.isNotEmpty()) {
             item {
-                Box(Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp), Alignment.Center) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp), Alignment.Center
+                ) {
                     Text("—— . ——", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }

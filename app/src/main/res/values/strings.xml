@@ -19,7 +19,8 @@
     <string name="uid_hint">UID:%s</string>
     <!--帖子部分-->
     <string name="post_hint">Post</string>
-
+    <string name="add_post_hint">Add new post</string>
     <string name="browser_hint">Browser</string>
     <string name="feed_detail_hint">Post details</string>
+    <string name="load_error_hint">Load Error\nDo you want retry?</string>
 </resources>

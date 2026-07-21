@@ -21,6 +21,7 @@ import com.freewdcmkt.bck.data.screen.BrowserScreenData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.FeedScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
+import com.freewdcmkt.bck.data.screen.PostFeedScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -72,6 +73,9 @@ fun FreewdAppNavLayout() {
                 zone = args.zone,
                 onToFeedDetail = { id ->
                     navController.navigate(FeedDetailScreenData(id))
+                },
+                onToPostFeed = {zone ->
+                    navController.navigate(PostFeedScreen(zone))
                 })
         }
         composable<FeedDetailScreenData> { backStack ->
@@ -82,6 +86,9 @@ fun FreewdAppNavLayout() {
             val args = backSTack.toRoute<BrowserScreenData>()
             BrowserLayout(args.url)
         }
+composable<PostFeedScreen> {backStack->
+    val args = backStack.toRoute<PostFeedScreen>()
 
+}
     }
 }

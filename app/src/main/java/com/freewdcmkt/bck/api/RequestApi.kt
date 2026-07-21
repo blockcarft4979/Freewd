@@ -14,7 +14,9 @@ object RequestApi {
 
     object Community {
         private const val FEED_PATH = "$COMMUNITY_BASE/get_feed.php"
+        private const val FEED_DETAIL = "$COMMUNITY_BASE/get_feed_detail.php"
         fun feed(zone: Int, page: Int = 1) = "$FEED_PATH?page=$page&zone=$zone"
+        fun feedDetail(id: String) = "$FEED_DETAIL?id=$id"
     }
 
     object Other {
