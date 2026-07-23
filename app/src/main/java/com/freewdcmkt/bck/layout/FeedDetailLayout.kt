@@ -1,15 +1,17 @@
 package com.freewdcmkt.bck.layout
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -17,22 +19,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.ContentText
+import com.freewdcmkt.bck.components.DateText
+import com.freewdcmkt.bck.components.IconTextButton
 import com.freewdcmkt.bck.components.LoadErrorUiLayout
 import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.components.ReplyCard
 import com.freewdcmkt.bck.components.TitleText
+import com.freewdcmkt.bck.components.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.viewmodel.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.FeedDetailViewmodel
@@ -46,7 +51,6 @@ fun FeedDetailLayout(id: String, viewmodel: FeedDetailViewmodel = viewModel()) {
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 15.dp)
         ) {
             when (uiState) {
                 is FeedDetailUiState.Loading -> LoadingCard()
@@ -59,41 +63,52 @@ fun FeedDetailLayout(id: String, viewmodel: FeedDetailViewmodel = viewModel()) {
 
 @Composable
 private fun UiLayout(feedDetailData: FeedDetailData) {
-    Column {
-        Row {
-            Image(
-                painter = rememberAsyncImagePainter(userAvatarUrl(feedDetailData.qq)),
-                contentDescription = null, modifier = Modifier
-                    .size(48.dp)
-                    .padding(5.dp)
-                    .clip(CircleShape)
-            )
-            Column(modifier = Modifier.padding(start = 8.dp)) {
-                Text(
-                    text = feedDetailData.username,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.surface
-                )
-                Text(
-                    text = feedDetailData.date,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+    LazyColumn {
+        item {
+            Column(modifier = Modifier.padding(horizontal = 15.dp)) {
+                Row(
+
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(userAvatarUrl(feedDetailData.qq)),
+                        contentDescription = null, modifier = Modifier
+                            .size(48.dp)
+                            .padding(5.dp)
+                            .clip(CircleShape)
+                    )
+                    Column(
+                        modifier = Modifier.padding(start = 8.dp),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        UsernameText(feedDetailData.username)
+                        DateText(feedDetailData.date)
+                    }
+                }
+                if (feedDetailData.title != null) TitleText(feedDetailData.title)
+                if (feedDetailData.msg != null) ContentText(feedDetailData.msg)
+                Row(
+                    horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()
+                ) {
+                    IconTextButton(
+                        R.drawable.baseline_favorite_border_24,
+                        description = stringResource(R.string.favorite_hint),
+                        text = feedDetailData.likeCount.toString()
+                    )
+                }
             }
         }
-        TitleText(feedDetailData.title)
-        ContentText(feedDetailData.msg)
-        LazyColumn() {
-            items(items = feedDetailData.reply, key = { "${it.qq}_{${it.date}}" }) { replyData ->
-                ReplyCard(replyData)
-            }
+        items(items = feedDetailData.reply, key = { "${it.qq}_{${it.date}}" }) { replyData ->
+            ReplyCard(replyData)
+            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
         }
     }
 }
 
+
 @Composable
-@Preview
+@Preview(showBackground = true)
 private fun Show() {
     val mockData: FeedDetailData = FeedDetailData(
         "NIHAO HELLO",

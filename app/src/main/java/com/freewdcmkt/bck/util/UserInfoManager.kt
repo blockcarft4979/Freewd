@@ -16,7 +16,7 @@ val USERNAME = stringPreferencesKey("username")
 val UID = stringPreferencesKey("uid")
 val IS_LOGIN = booleanPreferencesKey("is_login")
 val USER_ACCOUNT = stringPreferencesKey("user_account")
-
+val HOME_IMAGE_URL = stringPreferencesKey("home_image_url")
 object UserInfoManager {
     private lateinit var dataStore: DataStore<Preferences>
     fun init(context: Context) {
@@ -62,5 +62,9 @@ object UserInfoManager {
 
     fun getUserAccountFlow() = dataStore.data.catch { emit(emptyPreferences()) }
         .map { preferences -> preferences[USER_ACCOUNT] ?: "" }
-
+    suspend fun saveHomeImageUrl(url: String){
+        dataStore.edit { preferences ->preferences[HOME_IMAGE_URL] = url }
+    }
+    fun getHomeImageUrlFlow() = dataStore.data.catch { emit(emptyPreferences()) }
+        .map { preferences -> preferences[HOME_IMAGE_URL] ?: "" }
 }

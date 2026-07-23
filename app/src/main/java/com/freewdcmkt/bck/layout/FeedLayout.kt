@@ -1,6 +1,7 @@
 package com.freewdcmkt.bck.layout
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.LoadingCard
-import com.freewdcmkt.bck.data.Feed
+import com.freewdcmkt.bck.data.screen.Feed
 import com.freewdcmkt.bck.viewmodel.FeedUiState
 import com.freewdcmkt.bck.viewmodel.FeedViewmodel
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -38,14 +39,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedLayout(
-    viewmodel: FeedViewmodel = viewModel(),
+    viewmodel: FeedViewmodel,
     zone: Int,
     onToFeedDetail: (id: String) -> Unit,
     onToPostFeed: (zone: Int) -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
-    LaunchedEffect(Unit) { viewmodel.fetchData(zone) }
+    LaunchedEffect(zone) { viewmodel.fetchData(zone) }
     LaunchedEffect(listState) {
         snapshotFlow {
             val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()
@@ -74,7 +75,7 @@ fun FeedLayout(
         }) { innerPadding ->
         Column(modifier = Modifier
             .padding(innerPadding)
-            .padding(horizontal = 15.dp)) {
+            .padding(horizontal = 15.dp).background(MaterialTheme.colorScheme.surface)) {
             when (uiState) {
                 is FeedUiState.Loading -> LoadingCard()
                 is FeedUiState.Error -> LoadingCard()
@@ -89,7 +90,6 @@ fun FeedLayout(
                 }
             }
         }
-
     }
 }
 

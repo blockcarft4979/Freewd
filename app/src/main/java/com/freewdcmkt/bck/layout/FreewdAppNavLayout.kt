@@ -4,15 +4,13 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,11 +20,15 @@ import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.FeedScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
+import com.freewdcmkt.bck.viewmodel.FeedViewmodel
+import com.freewdcmkt.bck.viewmodel.HomeViewmodel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FreewdAppNavLayout() {
     val navController = rememberNavController()
+    val feedViewModel: FeedViewmodel = viewModel()
+    val homeViewmodel: HomeViewmodel = viewModel()
     NavHost(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
         navController = navController,
@@ -54,13 +56,14 @@ fun FreewdAppNavLayout() {
         // 正向导航的退出动画（旧页面滑出到左侧）
         exitTransition = {
             slideOutHorizontally(
-                targetOffsetX = { -it / 2 },
+                targetOffsetX = { -it },
                 animationSpec = tween(350, easing = FastOutSlowInEasing)
             )
         }
     ) {
         composable<HomeScreenData> {
             HomeLayout(
+                viewmodel = homeViewmodel,
                 onToFeed = { zone ->
                     navController.navigate(FeedScreenData(zone))
                 },
@@ -70,11 +73,12 @@ fun FreewdAppNavLayout() {
         composable<FeedScreenData> { backStack ->
             val args = backStack.toRoute<FeedScreenData>()
             FeedLayout(
+                viewmodel = feedViewModel,
                 zone = args.zone,
                 onToFeedDetail = { id ->
                     navController.navigate(FeedDetailScreenData(id))
                 },
-                onToPostFeed = {zone ->
+                onToPostFeed = { zone ->
                     navController.navigate(PostFeedScreen(zone))
                 })
         }
@@ -86,9 +90,9 @@ fun FreewdAppNavLayout() {
             val args = backSTack.toRoute<BrowserScreenData>()
             BrowserLayout(args.url)
         }
-composable<PostFeedScreen> {backStack->
-    val args = backStack.toRoute<PostFeedScreen>()
+        composable<PostFeedScreen> { backStack ->
+            val args = backStack.toRoute<PostFeedScreen>()
 
-}
+        }
     }
 }

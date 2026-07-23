@@ -12,11 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,18 +31,11 @@ fun HomeTopZone(qq: String, username: String, uid: String, imageUrl: String?) {
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth())
     {
         Column(modifier = Modifier.padding(all = 10.dp)) {
-            Row {
-                Image(
-                    // painter = painterResource(R.drawable.ic_launcher_background),
-                    painter = rememberAsyncImagePainter(userAvatarUrl(qq = qq)),
-                    null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(55.dp)
-                        .clip(CircleShape)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                UserIcon(userAvatarUrl(qq))
 
-                )
-                //Spacer(modifier = Modifier.height(4.dp))
                 Column(modifier = Modifier.padding(start = 8.dp)) {
                     Text(username, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(stringResource(R.string.uid_hint, uid), fontSize = 12.sp)
@@ -61,7 +56,7 @@ fun HomeTopZone(qq: String, username: String, uid: String, imageUrl: String?) {
 }
 
 @Composable
-@Preview(name = "Dark Mode")
+@Preview(name = "Dark Mode", device = Devices.PIXEL_5)
 fun UserProfile() {
     HomeTopZone("1000021", "BCK_", "10000", "null")
 }

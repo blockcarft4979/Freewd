@@ -19,3 +19,12 @@ fun UserIcon(url: String) {
             .clip(CircleShape)
     )
 }
+@Composable
+fun SmallUserIcon(url: String){
+    Image(
+        painter = rememberAsyncImagePainter(url), null, modifier = Modifier
+            .size(40.dp)
+            .padding(5.dp)
+            .clip(CircleShape)
+    )
+}

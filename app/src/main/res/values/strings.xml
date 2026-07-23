@@ -23,4 +23,6 @@
     <string name="browser_hint">Browser</string>
     <string name="feed_detail_hint">Post details</string>
     <string name="load_error_hint">Load Error\nDo you want retry?</string>
+    <string name="favorite_hint">Favorite</string>
+    <string name="me_hint">Me</string>
 </resources>
