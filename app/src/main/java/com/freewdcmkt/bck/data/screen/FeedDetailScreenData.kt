@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FeedDetailScreenData(
-    val id: String
+    val id: Int, val zone: Int
 ) {
 }
 
@@ -16,7 +16,9 @@ data class FeedDetailData(
     val username: String,
     val date: String,
     val likeCount: Int,
-    val reply: List<FeedReplyData>
+    val isLiked: Boolean,
+    val isMarkdown: Boolean,
+    val reply: List<FeedReplyData>? = null
 )
 
 @Serializable

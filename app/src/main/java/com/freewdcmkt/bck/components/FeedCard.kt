@@ -27,13 +27,13 @@ import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.data.screen.Feed
 
 @Composable
-fun FeedCard(feed: Feed, onClick: () -> Unit) {
+fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = { onClick() })
+            .clickable(onClick = { onClick(feed.id) })
     ) {
         Column(
             modifier = Modifier
@@ -86,7 +86,7 @@ fun ShowCard() {
     val feed = Feed(
         "WO SHI TITLE",
         "我是内容，你好世界\nI'm content hello world",
-        "",
+        100,
         "IM USERNAME WELCOME TO MY WORLD NICE TO MEET YOU :)",
         "",
         "2025-08-13"

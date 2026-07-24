@@ -10,8 +10,8 @@ data class HomeData(
 
 @Serializable
 data class Notification(
-    val title: String,
-    val msg: String,
+    val title: String?=null,
+    val msg: String?=null,
     val imageUrl: String?=null,
 )
 

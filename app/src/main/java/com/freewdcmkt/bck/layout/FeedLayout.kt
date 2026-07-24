@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
+import com.freewdcmkt.bck.components.LoadErrorUiLayout
 import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.data.screen.Feed
 import com.freewdcmkt.bck.viewmodel.FeedUiState
@@ -39,9 +40,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedLayout(
-    viewmodel: FeedViewmodel,
+    viewmodel: FeedViewmodel=viewModel(),
     zone: Int,
-    onToFeedDetail: (id: String) -> Unit,
+    onToFeedDetail: (id: Int,zone: Int) -> Unit,
     onToPostFeed: (zone: Int) -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
@@ -78,11 +79,13 @@ fun FeedLayout(
             .padding(horizontal = 15.dp).background(MaterialTheme.colorScheme.surface)) {
             when (uiState) {
                 is FeedUiState.Loading -> LoadingCard()
-                is FeedUiState.Error -> LoadingCard()
+                is FeedUiState.Error -> LoadErrorUiLayout(
+                    onClick = { viewmodel.fetchData(zone) }
+                )
                 is FeedUiState.Success -> {
                     FeedUiLayout(
                         feed = (uiState as FeedUiState.Success).feedData.feed,
-                        onClick = { onToFeedDetail(it) },
+                        onClick = { onToFeedDetail(it,zone) },
                         listState = listState,
                         isLoadingMore = (uiState as FeedUiState.Success).isLoadingMore,
                         hasMore = (uiState as FeedUiState.Success).hasMore
@@ -98,7 +101,7 @@ fun FeedLayout(
 @Composable
 fun FeedUiLayout(
     feed: List<Feed>, listState: LazyListState, isLoadingMore: Boolean,
-    hasMore: Boolean, onClick: (id: String) -> Unit
+    hasMore: Boolean, onClick: (id: Int) -> Unit
 ) {
     LazyColumn(state = listState) {
         items(

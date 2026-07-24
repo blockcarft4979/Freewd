@@ -19,7 +19,7 @@ data class FeedData(
 data class Feed(
     val title: String? = null,
     val msg: String? = null,
-    val id: String,
+    val id: Int,
     val username: String,
     val qq: String,
     val date: String

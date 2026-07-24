@@ -27,8 +27,6 @@ import com.freewdcmkt.bck.viewmodel.HomeViewmodel
 @Composable
 fun FreewdAppNavLayout() {
     val navController = rememberNavController()
-    val feedViewModel: FeedViewmodel = viewModel()
-    val homeViewmodel: HomeViewmodel = viewModel()
     NavHost(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
         navController = navController,
@@ -39,21 +37,18 @@ fun FreewdAppNavLayout() {
                 animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
             ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
         },
-        // 返回时的退出动画（当前页滑出到右侧）
         popExitTransition = {
             slideOutHorizontally(
                 targetOffsetX = { it },
                 animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
             )
         },
-        // 正向导航的进入动画（新页面从右侧滑入）
         enterTransition = {
             slideInHorizontally(
                 initialOffsetX = { it },
                 animationSpec = tween(350, easing = FastOutSlowInEasing)
             ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
         },
-        // 正向导航的退出动画（旧页面滑出到左侧）
         exitTransition = {
             slideOutHorizontally(
                 targetOffsetX = { -it },
@@ -63,7 +58,6 @@ fun FreewdAppNavLayout() {
     ) {
         composable<HomeScreenData> {
             HomeLayout(
-                viewmodel = homeViewmodel,
                 onToFeed = { zone ->
                     navController.navigate(FeedScreenData(zone))
                 },
@@ -73,10 +67,9 @@ fun FreewdAppNavLayout() {
         composable<FeedScreenData> { backStack ->
             val args = backStack.toRoute<FeedScreenData>()
             FeedLayout(
-                viewmodel = feedViewModel,
                 zone = args.zone,
-                onToFeedDetail = { id ->
-                    navController.navigate(FeedDetailScreenData(id))
+                onToFeedDetail = { id,zone ->
+                    navController.navigate(FeedDetailScreenData(id,zone))
                 },
                 onToPostFeed = { zone ->
                     navController.navigate(PostFeedScreen(zone))
@@ -84,7 +77,7 @@ fun FreewdAppNavLayout() {
         }
         composable<FeedDetailScreenData> { backStack ->
             val args = backStack.toRoute<FeedDetailScreenData>()
-            FeedDetailLayout(args.id)
+            FeedDetailLayout(args.id,args.zone)
         }
         composable<BrowserScreenData> { backSTack ->
             val args = backSTack.toRoute<BrowserScreenData>()

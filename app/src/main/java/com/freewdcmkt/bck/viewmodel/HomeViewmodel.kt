@@ -45,13 +45,13 @@ class HomeViewmodel : ViewModel() {
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
-    private val _homeData = MutableStateFlow(HomeData(Notification("", "", ""), emptyList()))
+    private val _homeData = MutableStateFlow(HomeData(Notification(null, null, null), emptyList()))
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
-    private var isDataLoaded = false
+    
     fun fetchData(forceRefresh: Boolean = false) {
-        if (isDataLoaded && !forceRefresh) {
+        if (!forceRefresh) {
             Log.d("HOME VM", "数据已存在，跳过重复请求")
             return
         }
@@ -72,7 +72,6 @@ class HomeViewmodel : ViewModel() {
                     val data = JsonParser.json.decodeFromString<BaseData<HomeData>>(body)
                     Log.d("HOME VIEWMODEL", data.data.toString())
                     if (data.data != null) {
-                        isDataLoaded = true
                         _homeData.value = data.data
                         if (data.data.notification.imageUrl != null) UserInfoManager.saveHomeImageUrl(data.data.notification.imageUrl)
                         Log.d("HOME VIEWMODEL", _homeData.value.zone.toString())

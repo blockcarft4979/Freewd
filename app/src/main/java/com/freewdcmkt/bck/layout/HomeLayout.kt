@@ -58,7 +58,7 @@ fun HomeLayout(
 
     val navController = rememberNavController()
 
-    LaunchedEffect(Unit) { viewmodel.fetchData() }
+    LaunchedEffect(Unit) { viewmodel.fetchData(true) }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.home_hint)) }) },
@@ -140,7 +140,7 @@ private fun UiLayout(
 }
 
 @Composable
-fun NavBar(navController: NavController) {
+private fun NavBar(navController: NavController) {
     val items = listOf(NavData.Home, NavData.Me)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -167,7 +167,7 @@ fun NavBar(navController: NavController) {
                     )
                 },
                 label = { Text(stringResource(data.label)) },
-                alwaysShowLabel = true
+                alwaysShowLabel = false
             )
         }
     }

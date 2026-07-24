@@ -25,4 +25,5 @@
     <string name="load_error_hint">Load Error\nDo you want retry?</string>
     <string name="favorite_hint">Favorite</string>
     <string name="me_hint">Me</string>
+    <string name="retry_hint">Retry</string>
 </resources>

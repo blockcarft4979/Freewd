@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.layout
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,14 +41,15 @@ import com.freewdcmkt.bck.components.ReplyCard
 import com.freewdcmkt.bck.components.TitleText
 import com.freewdcmkt.bck.components.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedDetailData
+import com.freewdcmkt.bck.data.screen.FeedReplyData
 import com.freewdcmkt.bck.viewmodel.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.FeedDetailViewmodel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedDetailLayout(id: String, viewmodel: FeedDetailViewmodel = viewModel()) {
+fun FeedDetailLayout(id: Int, zone: Int, viewmodel: FeedDetailViewmodel = viewModel()) {
     val uiState by viewmodel.feedDetailUiState.collectAsState()
-    LaunchedEffect(Unit) { viewmodel.fetchData(id) }
+    LaunchedEffect(Unit) { viewmodel.fetchData(id, zone) }
     Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.feed_detail_hint)) }) }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -54,15 +57,32 @@ fun FeedDetailLayout(id: String, viewmodel: FeedDetailViewmodel = viewModel()) {
         ) {
             when (uiState) {
                 is FeedDetailUiState.Loading -> LoadingCard()
-                is FeedDetailUiState.Error -> LoadErrorUiLayout(onClick = { viewmodel.fetchData(id) })
-                is FeedDetailUiState.Success -> UiLayout((uiState as FeedDetailUiState.Success).feedDetailData)
+                is FeedDetailUiState.Error -> {
+                    LoadErrorUiLayout(
+                        onClick = { viewmodel.fetchData(id, zone) },
+                        msg = (uiState as FeedDetailUiState.Error).msg,
+                        buttonMsg = stringResource(R.string.retry_hint),
+                        icon = painterResource(R.drawable.baseline_refresh_24)
+                    )
+                }
+
+                is FeedDetailUiState.Success -> UiLayout(
+                    (uiState as FeedDetailUiState.Success).feedDetailData,
+                    onClickLike = {
+                        viewmodel.seedLike(
+                            id,
+                            zone,
+                            (uiState as FeedDetailUiState.Success).feedDetailData.isLiked
+                        )
+                        Log.d("FEED DETAIL LAYOUT", "ONCLICKLIKEBUTTON")
+                    })
             }
         }
     }
 }
 
 @Composable
-private fun UiLayout(feedDetailData: FeedDetailData) {
+private fun UiLayout(feedDetailData: FeedDetailData, onClickLike: () -> Unit) {
     LazyColumn {
         item {
             Column(modifier = Modifier.padding(horizontal = 15.dp)) {
@@ -92,14 +112,17 @@ private fun UiLayout(feedDetailData: FeedDetailData) {
                     horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()
                 ) {
                     IconTextButton(
-                        R.drawable.baseline_favorite_border_24,
+                        if (feedDetailData.isLiked) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_border_24,
                         description = stringResource(R.string.favorite_hint),
-                        text = feedDetailData.likeCount.toString()
+                        text = feedDetailData.likeCount.toString(),
+                        onClick = onClickLike
                     )
                 }
             }
         }
-        items(items = feedDetailData.reply, key = { "${it.qq}_{${it.date}}" }) { replyData ->
+        items(
+            items = feedDetailData.reply ?: emptyList(),
+            key = { "${feedDetailData.reply}" }) { replyData ->
             ReplyCard(replyData)
             HorizontalDivider(thickness = 1.dp, color = Color.Gray)
         }
@@ -110,16 +133,23 @@ private fun UiLayout(feedDetailData: FeedDetailData) {
 @Composable
 @Preview(showBackground = true)
 private fun Show() {
-    val mockData: FeedDetailData = FeedDetailData(
+    val mockData = FeedDetailData(
         "NIHAO HELLO",
         "This is a test content",
         "0",
         "BCK",
         "2024-02-14",
         100,
-        emptyList()
+        false,
+        isMarkdown = false,
+        reply = listOf(
+            FeedReplyData(
+                "2025-07-24", "hahaha", "000",
+                username = "Unk"
+            )
+        ),
     )
-    UiLayout(mockData)
+    UiLayout(mockData, {})
 }
 
 
