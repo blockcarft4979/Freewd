@@ -49,7 +49,7 @@ class HomeViewmodel : ViewModel() {
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
-    
+
     fun fetchData(forceRefresh: Boolean = false) {
         if (!forceRefresh) {
             Log.d("HOME VM", "数据已存在，跳过重复请求")

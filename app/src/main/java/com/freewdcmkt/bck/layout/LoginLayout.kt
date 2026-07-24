@@ -69,7 +69,16 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
 
                 is LoginUiState.NoAction -> {
                     LoginLayout(onRegister = {}, onLogin = { account, password ->
-                        run { viewModel.fetchData(password, account) }
+                        if (account.isEmpty() && password.isEmpty()) run {
+                            viewModel.fetchData(
+                                password,
+                                account
+                            )
+                        }
+                        else Toast.makeText(
+                            context, context.getString(R.string.login_password_or_account_needed),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     })
                 }
 

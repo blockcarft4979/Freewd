@@ -5,9 +5,10 @@
     <string name="login_welcome_title">Welcome to the Freewd community</string>
     <string name="login_account_hint">Please enter your account</string>
     <string name="login_password_hint">Please enter your password</string>
-    <string name="login_login_btn">LOGIN</string>
+    <string name="login_login_btn">Login</string>
     <string name="login_register_btn">REGISTER</string>
     <string name="login_hint">Log in to enjoy premium service~</string>
+    <string name="login_password_or_account_needed">Please ensure that both the password and the account information are not empty.</string>
     <string name="login_success">Welcome back</string>
     <!-- 无障碍描述 -->
     <string name="content_desc_app_icon">App icon</string>
