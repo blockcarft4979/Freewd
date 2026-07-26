@@ -27,4 +27,7 @@
     <string name="favorite_hint">Favorite</string>
     <string name="me_hint">Me</string>
     <string name="retry_hint">Retry</string>
+    <string name="title_hint">Title</string>
+    <string name="content_hint">Content</string>
+    <string name="on_the_bottom_hint">You have reached the bottom of the world :)</string>
 </resources>

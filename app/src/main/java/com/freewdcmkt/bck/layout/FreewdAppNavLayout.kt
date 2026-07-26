@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,8 +19,6 @@ import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.FeedScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
-import com.freewdcmkt.bck.viewmodel.FeedViewmodel
-import com.freewdcmkt.bck.viewmodel.HomeViewmodel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -68,16 +65,16 @@ fun FreewdAppNavLayout() {
             val args = backStack.toRoute<FeedScreenData>()
             FeedLayout(
                 zone = args.zone,
-                onToFeedDetail = { id,zone ->
-                    navController.navigate(FeedDetailScreenData(id,zone))
+                onToFeedDetail = { id, zone ->
+                    navController.navigate(FeedDetailScreenData(id, zone))
                 },
-                onToPostFeed = { zone ->
-                    navController.navigate(PostFeedScreen(zone))
+                onToPostFeed = { id, zone ->
+                    navController.navigate(PostFeedScreen(id, zone))
                 })
         }
         composable<FeedDetailScreenData> { backStack ->
             val args = backStack.toRoute<FeedDetailScreenData>()
-            FeedDetailLayout(args.id,args.zone)
+            FeedDetailLayout(args.id, args.zone)
         }
         composable<BrowserScreenData> { backSTack ->
             val args = backSTack.toRoute<BrowserScreenData>()
@@ -85,7 +82,7 @@ fun FreewdAppNavLayout() {
         }
         composable<PostFeedScreen> { backStack ->
             val args = backStack.toRoute<PostFeedScreen>()
-
+            PostFeedLayout(args.zone, onUploaded = {navController.popBackStack()})
         }
     }
 }

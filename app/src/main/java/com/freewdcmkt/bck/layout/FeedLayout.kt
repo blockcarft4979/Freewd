@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
+import com.freewdcmkt.bck.components.FreewdFooter
 import com.freewdcmkt.bck.components.LoadErrorUiLayout
 import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.data.screen.Feed
@@ -40,10 +41,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedLayout(
-    viewmodel: FeedViewmodel=viewModel(),
+    viewmodel: FeedViewmodel = viewModel(),
     zone: Int,
-    onToFeedDetail: (id: Int,zone: Int) -> Unit,
-    onToPostFeed: (zone: Int) -> Unit
+    onToFeedDetail: (id: Int, zone: Int) -> Unit,
+    onToPostFeed: (id: Int?, zone: Int) -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
@@ -66,7 +67,7 @@ fun FeedLayout(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.post_hint)) }) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onToPostFeed(zone) },
+                onClick = { onToPostFeed(null, zone) },
             ) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_add_24),
@@ -74,18 +75,22 @@ fun FeedLayout(
                 )
             }
         }) { innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .padding(horizontal = 15.dp).background(MaterialTheme.colorScheme.surface)) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 15.dp)
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
             when (uiState) {
                 is FeedUiState.Loading -> LoadingCard()
                 is FeedUiState.Error -> LoadErrorUiLayout(
                     onClick = { viewmodel.fetchData(zone) }
                 )
+
                 is FeedUiState.Success -> {
                     FeedUiLayout(
                         feed = (uiState as FeedUiState.Success).feedData.feed,
-                        onClick = { onToFeedDetail(it,zone) },
+                        onClick = { onToFeedDetail(it, zone) },
                         listState = listState,
                         isLoadingMore = (uiState as FeedUiState.Success).isLoadingMore,
                         hasMore = (uiState as FeedUiState.Success).hasMore
@@ -128,7 +133,7 @@ fun FeedUiLayout(
                         .fillMaxWidth()
                         .padding(16.dp), Alignment.Center
                 ) {
-                    Text("—— . ——", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    FreewdFooter()
                 }
             }
         }

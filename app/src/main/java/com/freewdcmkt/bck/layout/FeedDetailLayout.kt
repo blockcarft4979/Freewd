@@ -130,27 +130,6 @@ private fun UiLayout(feedDetailData: FeedDetailData, onClickLike: () -> Unit) {
 }
 
 
-@Composable
-@Preview(showBackground = true)
-private fun Show() {
-    val mockData = FeedDetailData(
-        "NIHAO HELLO",
-        "This is a test content",
-        "0",
-        "BCK",
-        "2024-02-14",
-        100,
-        false,
-        isMarkdown = false,
-        reply = listOf(
-            FeedReplyData(
-                "2025-07-24", "hahaha", "000",
-                username = "Unk"
-            )
-        ),
-    )
-    UiLayout(mockData, {})
-}
 
 
 

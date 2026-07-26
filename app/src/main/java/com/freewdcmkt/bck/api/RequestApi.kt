@@ -16,6 +16,8 @@ object RequestApi {
         private const val FEED_PATH = "$COMMUNITY_BASE/get_feed.php"
         private const val FEED_DETAIL = "$COMMUNITY_BASE/get_feed_detail.php"
         private const val LIKE_FEED_URL  = "$COMMUNITY_BASE/like_feed.php"
+         const val POST_FEED_URL = "$COMMUNITY_BASE/upload.php"
+
         fun feed(zone: Int, page: Int = 1) = "$FEED_PATH?page=$page&zone=$zone"
         fun feedDetail(id: Int,zone: Int) = "$FEED_DETAIL?id=$id&zone=$zone"
         fun likeFeed(id: Int,zone: Int) = "$LIKE_FEED_URL?id=$id&zone=$zone"
