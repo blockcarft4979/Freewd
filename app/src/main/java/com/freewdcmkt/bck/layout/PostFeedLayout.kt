@@ -1,8 +1,12 @@
 package com.freewdcmkt.bck.layout
 
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -64,21 +68,22 @@ fun PostFeedLayout(zone: Int, onUploaded: () -> Unit, viewmodel: PostFeedViewmod
 fun PostFeedUiLayout(onPostFeed: (title: String?, message: String) -> Unit) {
     var title by rememberSaveable() { mutableStateOf("") }
     var message by rememberSaveable() { mutableStateOf("") }
-    TextField(
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) { TextField(
         modifier = Modifier.fillMaxWidth(),
         value = title,
         onValueChange = { newTitle -> title = newTitle },
         label = { Text(stringResource(R.string.title_hint)) },
         maxLines = 1
     )
-    TextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = message,
-        onValueChange = { newMessage -> message = newMessage },
-        label = { Text(stringResource(R.string.content_hint)) })
-    Button(modifier = Modifier.fillMaxWidth(), onClick = { onPostFeed(title, message) }) {
-        Text(
-            stringResource(R.string.post_hint)
-        )
-    }
+        TextField(
+            modifier = Modifier.fillMaxWidth().imePadding(),
+            value = message,
+            onValueChange = { newMessage -> message = newMessage },
+            label = { Text(stringResource(R.string.content_hint)) })
+        Button(modifier = Modifier.fillMaxWidth(), onClick = { onPostFeed(title, message) }) {
+            Text(
+                stringResource(R.string.post_hint)
+            )
+        } }
+
 }

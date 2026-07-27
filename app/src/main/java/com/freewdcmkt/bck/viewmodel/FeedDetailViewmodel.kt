@@ -5,20 +5,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
+import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
+import com.freewdcmkt.bck.util.FeedEvent
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
+import com.freewdcmkt.bck.util.UserInfoManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
 import okhttp3.Request
 
 class FeedDetailViewmodel : ViewModel() {
     private val _feedDetailUiState = MutableStateFlow<FeedDetailUiState>(FeedDetailUiState.Loading)
     val feedDetailUiState: StateFlow<FeedDetailUiState> = _feedDetailUiState.asStateFlow()
+    private val _isAuthor = MutableStateFlow(false)
+    val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
     fun fetchData(id: Int, zone: Int) {
         _feedDetailUiState.value = FeedDetailUiState.Loading
         viewModelScope.launch {
@@ -29,14 +36,20 @@ class FeedDetailViewmodel : ViewModel() {
                     ).execute()
                 }
                 val body = response.body.string()
-                if (response.isSuccessful) {
-                    val date = JsonParser.json.decodeFromString<BaseData<FeedDetailData>>(body)
-                    if (date.data != null) {
-                        _feedDetailUiState.value = FeedDetailUiState.Success(date.data)
-                    }
+                Log.d("FEED DETAIL VIEWMODEL", body)
+                Log.d("FEED VIEW MODEL", response.code.toString())
+                val date = JsonParser.json.decodeFromString<BaseData<FeedDetailData>>(body)
+
+                if (response.isSuccessful && date.data != null) {
+                    val currentAccount = UserInfoManager.getUserAccountFlow().first()
+                    _isAuthor.value = (currentAccount == date.data.qq)
+                    _feedDetailUiState.value = FeedDetailUiState.Success(date.data)
+                } else {
+                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                    _feedDetailUiState.value = FeedDetailUiState.Error(errorData.msg)
                 }
             } catch (e: Exception) {
-                Log.d("FEED DETAIL VIEWMODEL", e.message.toString())
+                Log.e("FEED DETAIL VIEWMODEL", e.message.toString())
                 _feedDetailUiState.value = FeedDetailUiState.Error(e.message.toString())
             }
         }
@@ -65,10 +78,7 @@ class FeedDetailViewmodel : ViewModel() {
                         Request.Builder().url(RequestApi.Community.likeFeed(id, zone)).build()
                     ).execute()
                 }
-                Log.d("FEED DETAIL VIEWMODEL", RequestApi.Community.likeFeed(id, zone))
-                Log.d("FeedDetailviewmodel", "code: ${response.code}, message: ${response.message}")
-                val body = response.body?.string() ?: "null body"
-                Log.d("FeedDetailviewmodel", "body: $body")
+                val body = response.body.string()
 
                 if (!response.isSuccessful) {
                     // 请求失败，回滚数据
@@ -84,11 +94,38 @@ class FeedDetailViewmodel : ViewModel() {
             }
         }
     }
+
+    fun deleteFeed(id: Int) {
+        _feedDetailUiState.value = FeedDetailUiState.Loading
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    NetworkClient.client.newCall(
+                        Request.Builder().url(RequestApi.Community.deleteFeed(id)).delete().build()
+                    ).execute()
+                }
+                val body = response.body.string()
+                if (response.isSuccessful) {
+                    _feedDetailUiState.value = FeedDetailUiState.DeleteSuccess
+                    //FeedEvent.emitRefresh()
+                    Log.d("FeedDetail", "准备发送刷新事件")
+                    FeedEvent.emitRefresh()
+                    Log.d("FeedDetail", "刷新事件已发送")
+                } else {
+                    val msg = JsonParser.json.decodeFromString<ErrorData>(body)
+                    _feedDetailUiState.value = FeedDetailUiState.Error(msg.msg)
+                }
+            } catch (e: Exception) {
+                _feedDetailUiState.value = FeedDetailUiState.Error(e.message.toString())
+            }
+        }
+
+    }
 }
 
 sealed class FeedDetailUiState {
     object Loading : FeedDetailUiState()
+    object DeleteSuccess : FeedDetailUiState()
     class Success(val feedDetailData: FeedDetailData) : FeedDetailUiState()
     class Error(val msg: String) : FeedDetailUiState()
-    //object Liked: FeedDetailUiState()
 }

@@ -1,8 +1,6 @@
 package com.freewdcmkt.bck.layout
 
 import android.widget.Toast
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
@@ -38,7 +36,8 @@ import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.HomeTopZone
 import com.freewdcmkt.bck.components.HomeZoneItemCard
-import com.freewdcmkt.bck.data.HomeData
+import com.freewdcmkt.bck.data.screen.HomeData
+import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
 import kotlinx.serialization.Serializable
@@ -50,6 +49,7 @@ fun HomeLayout(
     onToFeed: (zone: Int) -> Unit,
     onToBrowser: (link: String) -> Unit
 ) {
+    val context = LocalContext.current
     val username by viewmodel.username.collectAsState()
     val qq by viewmodel.userAccount.collectAsState()
     val uid by viewmodel.uid.collectAsState()
@@ -59,7 +59,15 @@ fun HomeLayout(
     val navController = rememberNavController()
 
     LaunchedEffect(Unit) { viewmodel.fetchData(true) }
+    LaunchedEffect(TokenManager.getToken()) { viewmodel.verifyToken() }
+    when (homeUiState) {
+        is HomeUiState.Error -> {
+            Toast.makeText(context, (homeUiState as HomeUiState.Error).msg, Toast.LENGTH_SHORT)
+                .show()
+        }
 
+        else -> {}
+    }
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.home_hint)) }) },
         bottomBar = { NavigationBar() { NavBar(navController) } }) { innerPadding ->
@@ -174,7 +182,7 @@ private fun NavBar(navController: NavController) {
 }
 
 @Serializable
-sealed class NavData(val route: String, @StringRes val label: Int, @DrawableRes val icon: Int) {
+sealed class NavData(val route: String, val label: Int, val icon: Int) {
     object Home : NavData("Home", R.string.home_hint, R.drawable.home)
     object Me : NavData("Me", R.string.me_hint, R.drawable.personal_center)
 }

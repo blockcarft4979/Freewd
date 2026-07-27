@@ -74,7 +74,7 @@ fun FreewdAppNavLayout() {
         }
         composable<FeedDetailScreenData> { backStack ->
             val args = backStack.toRoute<FeedDetailScreenData>()
-            FeedDetailLayout(args.id, args.zone)
+            FeedDetailLayout(args.id, args.zone, onDeleteFeed = {navController.popBackStack()})
         }
         composable<BrowserScreenData> { backSTack ->
             val args = backSTack.toRoute<BrowserScreenData>()

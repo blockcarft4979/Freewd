@@ -37,4 +37,7 @@ object TokenManager {
     fun getToken(): String? {
         return sharedPreferences.getString("token",null)
     }
+    fun clearToken(){
+        sharedPreferences.edit().clear().apply()
+    }
 }

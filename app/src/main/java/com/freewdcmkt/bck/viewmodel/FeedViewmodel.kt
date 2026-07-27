@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
+import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.FeedData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
@@ -30,8 +31,9 @@ class FeedViewmodel : ViewModel() {
     val listState = LazyListState()
 
     // 首次加载或下拉刷新
-    fun fetchData(zone: Int) {
-        if (currentZone == zone && _feedUiState.value is FeedUiState.Success) {
+    fun fetchData(zone: Int,forceRefresh: Boolean = false) {
+        Log.d("FeedVM", "fetchData called, forceRefresh=$forceRefresh")
+        if (!forceRefresh && currentZone == zone && _feedUiState.value is FeedUiState.Success) {
             Log.d("FEED VM", "fetchData: 数据已存在，不再重复请求")
             return
         }
@@ -119,8 +121,8 @@ class FeedViewmodel : ViewModel() {
                     ) ?: FeedUiState.Error("数据为空")
                 }
             } else {
-                val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
-                _feedUiState.value = FeedUiState.Error(errorData.msg ?: "加载失败")
+                val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                _feedUiState.value = FeedUiState.Error(errorData.msg)
             }
         } catch (e: Exception) {
             e.printStackTrace()

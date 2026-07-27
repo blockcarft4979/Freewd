@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Freewd 社区</string>
     <string name="login_welcome_title">欢迎使用 Freewd 社区</string>
-    <string name="login_account_hint">请输入您的账号</string>
+    <string name="login_account_hint">请输入您的QQ账号</string>
     <string name="login_password_hint">请输入您的密码</string>
     <string name="login_login_btn">登录</string>
     <string name="login_register_btn">注册</string>

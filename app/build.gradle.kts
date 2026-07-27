@@ -5,20 +5,17 @@ plugins {
     id("kotlin-parcelize")
 }
 
+
 android {
     namespace = "com.freewdcmkt.bck"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 120
-        versionName = "Test 1.2.0"
+        versionCode = 130
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,9 +39,12 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 dependencies {
+    implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.32.0")
     implementation("androidx.navigation3:navigation3-runtime:1.1.0")
     implementation("androidx.navigation3:navigation3-ui:1.1.0")
     implementation("androidx.navigation:navigation-compose:2.8.0")

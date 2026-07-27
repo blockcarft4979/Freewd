@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
+import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.PostFeedData
+import com.freewdcmkt.bck.util.FeedEvent
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
 import kotlinx.coroutines.Dispatchers
@@ -41,10 +43,14 @@ class PostFeedViewmodel : ViewModel() {
                 }
                 val body = response.body.string()
                 if (response.isSuccessful) {
+                    Log.d("PostFeed", "准备发送刷新事件")
+                    FeedEvent.emitRefresh()
+                    Log.d("PostFeed", "刷新事件已发送")
                     _postFeedUiState.value = PostFeedUiState.Success
+                    //FeedEvent.emitRefresh()
                 }else{
                     Log.d("POST FEED VIEWMODEL",body+response.code)
-                    _postFeedUiState.value = PostFeedUiState.Error(JsonParser.json.decodeFromString<BaseData<PostFeedData>>(body).msg)
+                    _postFeedUiState.value = PostFeedUiState.Error(JsonParser.json.decodeFromString<ErrorData>(body).msg)
                 }
             } catch (e: Exception) {
                 _postFeedUiState.value = PostFeedUiState.Error(e.message.toString())

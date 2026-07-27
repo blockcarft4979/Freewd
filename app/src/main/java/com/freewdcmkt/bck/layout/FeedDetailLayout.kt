@@ -26,13 +26,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.ContentText
 import com.freewdcmkt.bck.components.DateText
 import com.freewdcmkt.bck.components.IconTextButton
 import com.freewdcmkt.bck.components.LoadErrorUiLayout
@@ -41,14 +39,20 @@ import com.freewdcmkt.bck.components.ReplyCard
 import com.freewdcmkt.bck.components.TitleText
 import com.freewdcmkt.bck.components.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedDetailData
-import com.freewdcmkt.bck.data.screen.FeedReplyData
 import com.freewdcmkt.bck.viewmodel.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.FeedDetailViewmodel
+import com.mikepenz.markdown.m3.Markdown
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedDetailLayout(id: Int, zone: Int, viewmodel: FeedDetailViewmodel = viewModel()) {
+fun FeedDetailLayout(
+    id: Int,
+    zone: Int,
+    viewmodel: FeedDetailViewmodel = viewModel(),
+    onDeleteFeed: () -> Unit
+) {
     val uiState by viewmodel.feedDetailUiState.collectAsState()
+    val isAuthor by viewmodel.isAuthor.collectAsState()
     LaunchedEffect(Unit) { viewmodel.fetchData(id, zone) }
     Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.feed_detail_hint)) }) }) { innerPadding ->
         Column(
@@ -66,23 +70,37 @@ fun FeedDetailLayout(id: Int, zone: Int, viewmodel: FeedDetailViewmodel = viewMo
                     )
                 }
 
-                is FeedDetailUiState.Success -> UiLayout(
-                    (uiState as FeedDetailUiState.Success).feedDetailData,
-                    onClickLike = {
-                        viewmodel.seedLike(
-                            id,
-                            zone,
-                            (uiState as FeedDetailUiState.Success).feedDetailData.isLiked
-                        )
-                        Log.d("FEED DETAIL LAYOUT", "ONCLICKLIKEBUTTON")
-                    })
+                is FeedDetailUiState.DeleteSuccess -> {
+                    onDeleteFeed()
+                }
+
+                is FeedDetailUiState.Success -> {
+                    FeedUiLayout(
+                        (uiState as FeedDetailUiState.Success).feedDetailData,
+                        onClickLike = {
+                            viewmodel.seedLike(
+                                id,
+                                zone,
+                                (uiState as FeedDetailUiState.Success).feedDetailData.isLiked
+                            )
+                            Log.d("FEED DETAIL LAYOUT", "ONCLICKLIKEBUTTON")
+                        },
+                        isAuthor = isAuthor,
+                        onDeleteFeed = { viewmodel.deleteFeed(id) })
+                }
             }
         }
     }
 }
 
 @Composable
-private fun UiLayout(feedDetailData: FeedDetailData, onClickLike: () -> Unit) {
+private fun FeedUiLayout(
+    feedDetailData: FeedDetailData,
+    onClickLike: () -> Unit,
+    isAuthor: Boolean,
+    onDeleteFeed: () -> Unit
+) {
+
     LazyColumn {
         item {
             Column(modifier = Modifier.padding(horizontal = 15.dp)) {
@@ -107,7 +125,12 @@ private fun UiLayout(feedDetailData: FeedDetailData, onClickLike: () -> Unit) {
                     }
                 }
                 if (feedDetailData.title != null) TitleText(feedDetailData.title)
-                if (feedDetailData.msg != null) ContentText(feedDetailData.msg)
+                //if (feedDetailData.msg!=null)ContentText(feedDetailData.msg)
+                if (feedDetailData.isMarkdown && feedDetailData.msg != null) {
+                    Markdown(feedDetailData.msg)
+                } else if (feedDetailData.msg != null) {
+                    Text(feedDetailData.msg)
+                }
                 Row(
                     horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()
                 ) {
@@ -117,12 +140,18 @@ private fun UiLayout(feedDetailData: FeedDetailData, onClickLike: () -> Unit) {
                         text = feedDetailData.likeCount.toString(),
                         onClick = onClickLike
                     )
+                    if (isAuthor) IconTextButton(
+                        onClick = onDeleteFeed,
+                        icon = R.drawable.baseline_delete_24,
+                        description = stringResource(R.string.delete_hint),
+                        text = stringResource(R.string.delete_hint)
+                    )
                 }
             }
         }
         items(
             items = feedDetailData.reply ?: emptyList(),
-            key = { "${feedDetailData.reply}" }) { replyData ->
+            key = { "${it.qq}_${it.date}" }) { replyData ->
             ReplyCard(replyData)
             HorizontalDivider(thickness = 1.dp, color = Color.Gray)
         }

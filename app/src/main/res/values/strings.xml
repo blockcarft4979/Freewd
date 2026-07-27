@@ -3,7 +3,7 @@
 
     <!-- 登录界面 -->
     <string name="login_welcome_title">Welcome to the Freewd community</string>
-    <string name="login_account_hint">Please enter your account</string>
+    <string name="login_account_hint">Please enter your QQ account</string>
     <string name="login_password_hint">Please enter your password</string>
     <string name="login_login_btn">Login</string>
     <string name="login_register_btn">REGISTER</string>
@@ -29,5 +29,10 @@
     <string name="retry_hint">Retry</string>
     <string name="title_hint">Title</string>
     <string name="content_hint">Content</string>
-    <string name="on_the_bottom_hint">You have reached the bottom of the world :)</string>
+    <string name="delete_hint">Delete</string>
+    <string name="confirm_password_hint">Confirm password</string>
+    <string name="wait_send_auth_code">Please wait %s seconds and try again</string>
+    <string name="register_hint">Register</string>
+    <string name="auth_code">Verification code</string>
+    <string name="send_auth_code">Send verification code</string>
 </resources>

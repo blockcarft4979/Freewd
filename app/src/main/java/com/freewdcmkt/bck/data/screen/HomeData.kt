@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.data
+package com.freewdcmkt.bck.data.screen
 
 import kotlinx.serialization.Serializable
 
@@ -24,3 +24,5 @@ data class Zone(
     val msg: String? = null,
     val link: String? = null
 )
+@Serializable
+data class VerifyTokenData(val username: String)

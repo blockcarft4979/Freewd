@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.LoginData
+import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.screen.LoginData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
 import com.freewdcmkt.bck.util.TokenManager
@@ -54,11 +55,9 @@ class LogInViewModel() : ViewModel() {
                     }
                 } else {
                     Log.d("VIEW MODEL", "ERROR")
-                    val data = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
-                    if (data.msg != null) {
-                        _loginUiState.value = LoginUiState.Error(data.msg)
-                        Log.d("LOGIN VIEWMODEL", data.msg)
-                    }
+                    val data = JsonParser.json.decodeFromString<ErrorData>(body)
+                    _loginUiState.value = LoginUiState.Error(data.msg)
+                    Log.d("LOGIN VIEWMODEL", data.msg)
                 }
             } catch (e: Exception) {
                 _loginUiState.value = LoginUiState.Error(e.message.toString())

@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.HomeData
-import com.freewdcmkt.bck.data.Notification
+import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.screen.HomeData
+import com.freewdcmkt.bck.data.screen.Notification
+import com.freewdcmkt.bck.data.screen.VerifyTokenData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
+import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,13 +76,35 @@ class HomeViewmodel : ViewModel() {
                     Log.d("HOME VIEWMODEL", data.data.toString())
                     if (data.data != null) {
                         _homeData.value = data.data
-                        if (data.data.notification.imageUrl != null) UserInfoManager.saveHomeImageUrl(data.data.notification.imageUrl)
+                        if (data.data.notification.imageUrl != null) UserInfoManager.saveHomeImageUrl(
+                            data.data.notification.imageUrl
+                        )
                         Log.d("HOME VIEWMODEL", _homeData.value.zone.toString())
                     }
                 }
             } catch (e: Exception) {
                 _homeUiState.value = HomeUiState.Error(e.message.toString())
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun verifyToken() {
+        viewModelScope.launch {
+            val response = withContext(Dispatchers.IO) {
+                NetworkClient.client.newCall(
+                    Request.Builder().url(RequestApi.Auth.VERIFY_TOKEN_URL).build()
+                ).execute()
+            }
+            val body = response.body.string()
+            val data = JsonParser.json.decodeFromString<BaseData<VerifyTokenData>>(body)
+            if (response.isSuccessful && data.data?.username != null) {
+                UserInfoManager.saveUsername(data.data.username)
+            }else{
+                val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                UserInfoManager.saveLogin(false)
+                TokenManager.clearToken()
+                _homeUiState.value = HomeUiState.Error(errorData.msg)
             }
         }
     }
