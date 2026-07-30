@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Freewd 社区</string>
-    <string name="login_welcome_title">欢迎使用 Freewd 社区</string>
-    <string name="login_account_hint">请输入您的QQ账号</string>
+    <string name="app_name">Freewd KT</string>
+
+    <!-- 登录界面 -->
+    <string name="login_welcome_title">欢迎来到 Freewd 社区</string>
+    <string name="login_account_hint">请输入您的 QQ 账号</string>
     <string name="login_password_hint">请输入您的密码</string>
     <string name="login_login_btn">登录</string>
     <string name="login_register_btn">注册</string>
-    <string name="login_hint">登录帐号享受优质服务~</string>
+    <string name="login_hint">登录即可享受优质服务~</string>
+    <string name="login_password_or_account_needed">请确保账号和密码均不为空</string>
+    <string name="login_success">欢迎回来</string>
+
+    <!-- 无障碍描述 -->
     <string name="content_desc_app_icon">应用图标</string>
-    <string name="no_internet_hint">当前无法连接网络，请检查网络连接是否正常</string>
-    <string name="data_error_hint">解析数据出错</string>
+
+    <!-- 网络部分 -->
+    <string name="no_internet_hint">当前网络不可用，请检查网络连接是否正常</string>
+    <string name="data_error_hint">数据解析出错，请重试</string>
+
+    <!-- 首页部分 -->
+    <string name="home_hint">首页</string>
+    <string name="uid_hint">UID：%s</string>
+
+    <!-- 帖子部分 -->
+    <string name="post_hint">帖子</string>
+    <string name="add_post_hint">发布新帖</string>
+    <string name="browser_hint">浏览</string>
+    <string name="feed_detail_hint">帖子详情</string>
+    <string name="load_error_hint">加载失败\n要重试吗？</string>
+    <string name="favorite_hint">收藏</string>
+    <string name="me_hint">我的</string>
+    <string name="retry_hint">重试</string>
+    <string name="title_hint">标题</string>
+    <string name="content_hint">内容</string>
+    <string name="delete_hint">删除</string>
+    <string name="confirm_password_hint">确认密码</string>
+    <string name="wait_send_auth_code">请等待 %s 秒后再试</string>
+    <string name="register_hint">注册</string>
+    <string name="auth_code">验证码</string>
+    <string name="send_auth_code">发送验证码</string>
 </resources>

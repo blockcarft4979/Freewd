@@ -2,6 +2,7 @@ package com.freewdcmkt.bck.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -14,10 +15,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun IconTextButton(icon: Int, description: String? = null, text: String, onClick: () -> Unit) {
+fun IconTextButton(
+    modifier: Modifier = Modifier,
+    icon: Int,
+    description: String? = null,
+    text: String,
+    onClick: () -> Unit,
+
+) {
     Row(
+        modifier = modifier.clickable(true, onClick = onClick).padding(5.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable(true, onClick = onClick)
     ) {
         Icon(
             painter = painterResource(icon),

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Freewd KT</string>
 
@@ -5,25 +6,29 @@
     <string name="login_welcome_title">Welcome to the Freewd community</string>
     <string name="login_account_hint">Please enter your QQ account</string>
     <string name="login_password_hint">Please enter your password</string>
-    <string name="login_login_btn">Login</string>
-    <string name="login_register_btn">REGISTER</string>
-    <string name="login_hint">Log in to enjoy premium service~</string>
-    <string name="login_password_or_account_needed">Please ensure that both the password and the account information are not empty.</string>
+    <string name="login_login_btn">Log in</string>
+    <string name="login_register_btn">Register</string>
+    <string name="login_hint">Log in to enjoy premium services~</string>
+    <string name="login_password_or_account_needed">Please make sure both account and password are filled in</string>
     <string name="login_success">Welcome back</string>
+
     <!-- 无障碍描述 -->
     <string name="content_desc_app_icon">App icon</string>
-    <!-- 网络部分-->
-    <string name="no_internet_hint">Currently unable to connect to the network. Please check if your network connection is normal</string>
-    <string name="data_error_hint">An error occurred while parsing the data</string>
-    <!-- 首页部分-->
+
+    <!-- 网络部分 -->
+    <string name="no_internet_hint">No internet connection. Please check your network settings.</string>
+    <string name="data_error_hint">Failed to parse data. Please try again.</string>
+
+    <!-- 首页部分 -->
     <string name="home_hint">Home</string>
-    <string name="uid_hint">UID:%s</string>
-    <!--帖子部分-->
+    <string name="uid_hint">UID: %s</string>
+
+    <!-- 帖子部分 -->
     <string name="post_hint">Post</string>
-    <string name="add_post_hint">Add new post</string>
-    <string name="browser_hint">Browser</string>
+    <string name="add_post_hint">New post</string>
+    <string name="browser_hint">Browse</string>
     <string name="feed_detail_hint">Post details</string>
-    <string name="load_error_hint">Load Error\nDo you want retry?</string>
+    <string name="load_error_hint">Load failed\nRetry?</string>
     <string name="favorite_hint">Favorite</string>
     <string name="me_hint">Me</string>
     <string name="retry_hint">Retry</string>
@@ -34,5 +39,8 @@
     <string name="wait_send_auth_code">Please wait %s seconds and try again</string>
     <string name="register_hint">Register</string>
     <string name="auth_code">Verification code</string>
-    <string name="send_auth_code">Send verification code</string>
+    <string name="send_auth_code">Send code</string>
+    <string name="reply_hint">Reply</string>
+    <string name="more_hint">More</string>
+    <string name="back_hint">Back</string>
 </resources>
