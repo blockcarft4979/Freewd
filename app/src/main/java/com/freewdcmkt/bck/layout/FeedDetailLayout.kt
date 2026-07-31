@@ -1,7 +1,6 @@
 package com.freewdcmkt.bck.layout
 
 import android.util.Log
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.DateText
+import com.freewdcmkt.bck.components.FreewdDialog
 import com.freewdcmkt.bck.components.IconTextButton
 import com.freewdcmkt.bck.components.LoadErrorUiLayout
 import com.freewdcmkt.bck.components.LoadingCard
@@ -69,8 +71,22 @@ fun FeedDetailLayout(
 ) {
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
-    val isExpanded = rememberSaveable() { mutableStateOf(false) }
+    val isExpanded = remember { mutableStateOf(false) }
+    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
     LaunchedEffect(Unit) { viewmodel.fetchData(id, zone) }
+    if (isShowDialog.value) {
+        FreewdDialog(
+            onDismiss = { isShowDialog.value = false },
+            onConfirm = {
+                viewmodel.deleteFeed(id)
+                isShowDialog.value = false
+            },
+            title = stringResource(R.string.delete_post_title_hint),
+            msg = stringResource(R.string.delete_post_message_hint),
+            hintMsg1 = stringResource(R.string.no_hint),
+            hintMsg2 = stringResource(R.string.yes_hint)
+        )
+    }
     Scaffold(
 
         topBar = {
@@ -97,11 +113,17 @@ fun FeedDetailLayout(
                         expanded = isExpanded.value,
                         onDismissRequest = { isExpanded.value = false },
                     ) {
-                        if (isAuthor) IconTextButton(
-                            icon = R.drawable.baseline_delete_24,
-                            description = stringResource(R.string.delete_hint),
-                            text = stringResource(R.string.delete_hint),
-                            onClick = { viewmodel.deleteFeed(id) },
+                        if (isAuthor) DropdownMenuItem(
+                            text = {
+                                Text(
+                                    stringResource(R.string.delete_hint),
+                                    color = Color.Red
+                                )
+                            },
+                            onClick = {
+                                isShowDialog.value = true
+                                isExpanded.value = false
+                            },
                         )
                     }
                 })
@@ -161,7 +183,6 @@ private fun FeedUiLayout(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // 1. 增加极浅的灰底，让卡片更立体
     ) {
         item {
             Card(
@@ -235,9 +256,8 @@ private fun FeedUiLayout(
                         horizontalArrangement = Arrangement.End,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 4.dp) // 与内容拉开距离
+                            .padding(top = 4.dp)
                     ) {
-                        // 5. 优化点赞按钮：增加内边距、点击反馈（水波纹）、动画缩放
                         IconTextButton(
                             icon = if (feedDetailData.isLiked)
                                 R.drawable.baseline_favorite_24
@@ -246,8 +266,6 @@ private fun FeedUiLayout(
                             description = stringResource(R.string.favorite_hint),
                             text = feedDetailData.likeCount.toString(),
                             onClick = onClickLike,
-                            modifier = Modifier
-                                .animateContentSize(),
                         )
                     }
                 }

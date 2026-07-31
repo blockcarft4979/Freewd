@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,7 @@ fun IconTextButton(
             painter = painterResource(icon),
             tint = MaterialTheme.colorScheme.primary,
             contentDescription = description,
-            modifier = Modifier.size(22.dp)
+            modifier = Modifier.size(22.dp).animateContentSize()
         )
         Text(text = text, fontSize = 14.sp)
     }
