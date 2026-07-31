@@ -15,7 +15,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/release/app-release.apk
 /app/release
-/app/release
-app/release/app-release.apk

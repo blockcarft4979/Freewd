@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,7 +46,8 @@ fun FeedLayout(
     viewmodel: FeedViewmodel = viewModel(),
     zone: Int,
     onToFeedDetail: (id: Int, zone: Int) -> Unit,
-    onToPostFeed: (id: Int?, zone: Int) -> Unit
+    onToPostFeed: (id: Int?, zone: Int) -> Unit,
+    onBack:()->Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
@@ -77,7 +79,9 @@ fun FeedLayout(
             }
     }
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.post_hint)) }) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.post_hint))
+        }, navigationIcon = { IconButton(onClick = onBack){painterResource(R.drawable.baseline_arrow_back_24)} })
+                 },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onToPostFeed(null, zone) },

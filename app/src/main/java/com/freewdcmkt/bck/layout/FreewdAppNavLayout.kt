@@ -70,11 +70,16 @@ fun FreewdAppNavLayout() {
                 },
                 onToPostFeed = { id, zone ->
                     navController.navigate(PostFeedScreen(id, zone))
-                })
+                },
+                onBack = { navController.popBackStack() })
         }
         composable<FeedDetailScreenData> { backStack ->
             val args = backStack.toRoute<FeedDetailScreenData>()
-            FeedDetailLayout(args.id, args.zone, onDeleteFeed = {navController.popBackStack()}, onBack = {navController.popBackStack()})
+            FeedDetailLayout(
+                args.id,
+                args.zone,
+                onDeleteFeed = { navController.popBackStack() },
+                onBack = { navController.popBackStack() })
         }
         composable<BrowserScreenData> { backSTack ->
             val args = backSTack.toRoute<BrowserScreenData>()
@@ -82,7 +87,10 @@ fun FreewdAppNavLayout() {
         }
         composable<PostFeedScreen> { backStack ->
             val args = backStack.toRoute<PostFeedScreen>()
-            PostFeedLayout(args.zone, onUploaded = {navController.popBackStack()}, onBack = {navController.popBackStack()})
+            PostFeedLayout(
+                args.zone,
+                onUploaded = { navController.popBackStack() },
+                onBack = { navController.popBackStack() })
         }
     }
 }
