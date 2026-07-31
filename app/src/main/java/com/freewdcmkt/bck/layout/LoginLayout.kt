@@ -124,6 +124,7 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
                 value = account,
                 onValueChange = { account = it },
                 label = { Text(stringResource(R.string.login_account_hint)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(

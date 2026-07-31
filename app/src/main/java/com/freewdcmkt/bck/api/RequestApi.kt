@@ -21,9 +21,10 @@ object RequestApi {
         private const val LIKE_FEED_URL = "$COMMUNITY_BASE/like_feed"
         const val POST_FEED_URL = "$COMMUNITY_BASE/upload"
         private const val DELETE_FEED_URL = "$COMMUNITY_BASE/delete_feed"
+        const val REPLY_FEED_URL  = "$COMMUNITY_BASE/reply_feed"
 
         fun feed(zone: Int, page: Int = 1) = "$FEED_PATH?page=$page&zone=$zone"
-        fun feedDetail(id: Int, zone: Int) = "$FEED_DETAIL?id=$id&zone=$zone"
+        fun feedDetail(id: Int) = "$FEED_DETAIL?id=$id"
         fun likeFeed(id: Int, zone: Int) = "$LIKE_FEED_URL?id=$id&zone=$zone"
         fun deleteFeed(id: Int) = "$DELETE_FEED_URL?id=$id"
     }

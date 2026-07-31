@@ -29,13 +29,13 @@ class FeedDetailViewmodel : ViewModel() {
     val feedDetailUiState: StateFlow<FeedDetailUiState> = _feedDetailUiState.asStateFlow()
     private val _isAuthor = MutableStateFlow(false)
     val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
-    fun fetchData(id: Int, zone: Int) {
+    fun fetchData(id: Int) {
         _feedDetailUiState.value = FeedDetailUiState.Loading
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Community.feedDetail(id, zone)).build()
+                        Request.Builder().url(RequestApi.Community.feedDetail(id)).build()
                     ).execute()
                 }
                 val body = response.body.string()
@@ -94,6 +94,30 @@ class FeedDetailViewmodel : ViewModel() {
             } catch (e: Exception) {
                 _feedDetailUiState.value = FeedDetailUiState.Success(oldData)
                 Log.e("FEED DETAIL VIEWMODEL", "Exception: ${e.message}", e)
+            }
+        }
+    }
+
+    fun replyFeed(id: Int, content: String, reply: String? = null) {
+        _feedDetailUiState.value = FeedDetailUiState.Loading
+        val requestBody = buildJsonObject {
+            put("id", id)
+            put("content", content)
+            if (reply != null) put("reply", reply)
+        }.toString().toRequestBody("application/json".toMediaType())
+        viewModelScope.launch {
+            val response = withContext(Dispatchers.IO) {
+                NetworkClient.client.newCall(
+                    Request.Builder().url(RequestApi.Community.REPLY_FEED_URL).post(requestBody)
+                        .build()
+                ).execute()
+            }
+            val body = response.body.string()
+            if (response.isSuccessful) {
+                fetchData(id)
+            }else{
+                val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                _feedDetailUiState.value = FeedDetailUiState.Error(errorData.msg)
             }
         }
     }

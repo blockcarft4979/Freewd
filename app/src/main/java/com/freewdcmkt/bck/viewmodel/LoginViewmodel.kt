@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -31,8 +33,9 @@ class LogInViewModel() : ViewModel() {
         viewModelScope.launch {
             _loginUiState.value = LoginUiState.Loading
             try {
-                val json = """{"password":"$password","qq":"$qq"}"""
-                val requestBody = json.toRequestBody("application/json".toMediaType())
+                val requestBody = buildJsonObject { put("password",password)
+                put("qq",qq)
+                }.toString().toRequestBody("application/json".toMediaType())
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
                         Request.Builder().url(RequestApi.Auth.LOGIN_URL).post(requestBody).build()
