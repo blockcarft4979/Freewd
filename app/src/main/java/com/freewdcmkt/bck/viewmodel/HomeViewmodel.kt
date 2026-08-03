@@ -54,8 +54,8 @@ class HomeViewmodel : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
 
     fun fetchData(forceRefresh: Boolean = false) {
+        Log.d("HOME VM", "是否刷新$forceRefresh")
         if (!forceRefresh) {
-            Log.d("HOME VM", "数据已存在，跳过重复请求")
             return
         }
 
@@ -91,20 +91,24 @@ class HomeViewmodel : ViewModel() {
 
     fun verifyToken() {
         viewModelScope.launch {
-            val response = withContext(Dispatchers.IO) {
-                NetworkClient.client.newCall(
-                    Request.Builder().url(RequestApi.Auth.VERIFY_TOKEN_URL).build()
-                ).execute()
-            }
-            val body = response.body.string()
-            val data = JsonParser.json.decodeFromString<BaseData<VerifyTokenData>>(body)
-            if (response.isSuccessful && data.data?.username != null) {
-                UserInfoManager.saveUsername(data.data.username)
-            }else{
-                val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                UserInfoManager.saveLogin(false)
-                TokenManager.clearToken()
-                _homeUiState.value = HomeUiState.Error(errorData.msg)
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    NetworkClient.client.newCall(
+                        Request.Builder().url(RequestApi.Auth.VERIFY_TOKEN_URL).build()
+                    ).execute()
+                }
+                val body = response.body.string()
+                val data = JsonParser.json.decodeFromString<BaseData<VerifyTokenData>>(body)
+                if (response.isSuccessful && data.data?.username != null) {
+                    UserInfoManager.saveUsername(data.data.username)
+                } else {
+                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                    UserInfoManager.saveLogin(false)
+                    TokenManager.clearToken()
+                    _homeUiState.value = HomeUiState.Error(errorData.msg)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

@@ -24,6 +24,7 @@
     <string name="uid_hint">UID: %s</string>
 
     <string name="post_hint">Post</string>
+    <string name="post_new_feed_hint">Post new feed</string>
     <string name="add_post_hint">New post</string>
     <string name="browser_hint">Browse</string>
     <string name="feed_detail_hint">Post details</string>
@@ -47,4 +48,5 @@
     <string name="yes_hint">Yes</string>
     <string name="no_hint">No</string>
     <string name="send_hint">Send</string>
+    <string name="notification_hint">Notification</string>
 </resources>

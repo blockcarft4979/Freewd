@@ -22,7 +22,7 @@ import com.freewdcmkt.bck.data.screen.PostFeedScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun FreewdAppNavLayout() {
+fun FreewdAppNavHost() {
     val navController = rememberNavController()
     NavHost(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
@@ -58,7 +58,8 @@ fun FreewdAppNavLayout() {
                 onToFeed = { zone ->
                     navController.navigate(FeedScreenData(zone))
                 },
-                onToBrowser = { url -> navController.navigate(BrowserScreenData(url)) }
+                onToBrowser = { url -> navController.navigate(BrowserScreenData(url)) },
+                onToNotification = {}
             )
         }
         composable<FeedScreenData> { backStack ->

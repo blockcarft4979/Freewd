@@ -48,7 +48,6 @@ fun PostFeedLayout(
     Scaffold(topBar = {
         TopAppBar(
             title = { Text(stringResource(R.string.add_post_hint)) },
-            //actions = { Button(onClick = {}) { Text(stringResource(R.string.post_hint)) } },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(

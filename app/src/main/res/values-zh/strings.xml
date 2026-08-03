@@ -24,6 +24,7 @@
     <string name="home_hint">首页</string>
     <string name="uid_hint">UID：%s</string>
     <string name="post_hint">帖子</string>
+    <string name="post_new_feed_hint">发布新的内容</string>
     <string name="add_post_hint">发新帖</string>
     <string name="browser_hint">浏览</string>
     <string name="feed_detail_hint">帖子详情</string>
@@ -48,4 +49,6 @@
     <string name="delete_post_message_hint">确定要删除此帖吗？</string>
     <string name="yes_hint">确定</string>
     <string name="no_hint">取消</string>
+    <string name="send_hint">发送</string>
+    <string name="notification_hint">通知</string>
 </resources>

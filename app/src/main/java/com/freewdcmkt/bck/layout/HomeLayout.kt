@@ -15,6 +15,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -22,6 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,10 +42,12 @@ import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.HomeTopZone
 import com.freewdcmkt.bck.components.HomeZoneItemCard
+import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +55,8 @@ import kotlinx.serialization.Serializable
 fun HomeLayout(
     viewmodel: HomeViewmodel = viewModel(),
     onToFeed: (zone: Int) -> Unit,
-    onToBrowser: (link: String) -> Unit
+    onToBrowser: (link: String) -> Unit,
+    onToNotification: () -> Unit
 ) {
     val context = LocalContext.current
     val username by viewmodel.username.collectAsState()
@@ -56,20 +65,39 @@ fun HomeLayout(
     val homeData by viewmodel.homeData.collectAsState()
     val homeUiState by viewmodel.homeUiState.collectAsState()
 
+    val retryHint = stringResource(R.string.retry_hint)
     val navController = rememberNavController()
+    val snackBarHostState = remember() { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) { viewmodel.fetchData(true) }
+    LaunchedEffect(Unit) { if (homeData.zone.isEmpty())viewmodel.fetchData(true) }
     LaunchedEffect(TokenManager.getToken()) { viewmodel.verifyToken() }
-    when (homeUiState) {
-        is HomeUiState.Error -> {
-            Toast.makeText(context, (homeUiState as HomeUiState.Error).msg, Toast.LENGTH_SHORT)
-                .show()
-        }
 
-        else -> {}
+    LaunchedEffect(homeUiState) {
+        if (homeUiState is HomeUiState.Error) {
+            scope.launch {
+                val result = snackBarHostState.showSnackbar(
+                    message = (homeUiState as HomeUiState.Error).msg,
+                    actionLabel = retryHint,
+                    duration = SnackbarDuration.Indefinite
+                )
+                when (result) {
+                    SnackbarResult.ActionPerformed -> {
+                        viewmodel.fetchData(true)
+                    }
+
+                    else -> {}
+                }
+            }
+        }
     }
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.home_hint)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.home_hint)) },
+                actions = { NotificationIcon(10) })
+        },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = { NavigationBar() { NavBar(navController) } }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -93,7 +121,8 @@ fun HomeLayout(
                         homeData,
                         onToFeed = onToFeed,
                         onToBrowser = onToBrowser,
-                        uiState = homeUiState
+                        uiState = homeUiState,
+                        onRefresh = {viewmodel.fetchData(true)}
                     )
                 }
                 composable(NavData.Me.route) { Text("TODO :)") }
@@ -102,6 +131,7 @@ fun HomeLayout(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UiLayout(
     qq: String,
@@ -111,12 +141,12 @@ private fun UiLayout(
     uiState: HomeUiState,
     onToFeed: (Int) -> Unit,
     onToBrowser: (String) -> Unit,
-    viewmodel: HomeViewmodel = viewModel()
+    onRefresh:()-> Unit
 ) {
     val context = LocalContext.current
     PullToRefreshBox(
         isRefreshing = uiState is HomeUiState.Loading,
-        onRefresh = { viewmodel.fetchData(forceRefresh = true) },
+        onRefresh = onRefresh,
     ) {
         LazyColumn {
             item {

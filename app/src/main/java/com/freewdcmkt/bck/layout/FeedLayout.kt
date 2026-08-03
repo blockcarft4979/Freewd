@@ -47,7 +47,7 @@ fun FeedLayout(
     zone: Int,
     onToFeedDetail: (id: Int, zone: Int) -> Unit,
     onToPostFeed: (id: Int?, zone: Int) -> Unit,
-    onBack:()->Unit
+    onBack: () -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
@@ -79,9 +79,20 @@ fun FeedLayout(
             }
     }
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.post_hint))
-        }, navigationIcon = { IconButton(onClick = onBack){painterResource(R.drawable.baseline_arrow_back_24)} })
-                 },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(R.string.post_hint))
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painterResource(R.drawable.baseline_arrow_back_24),
+                            contentDescription = stringResource(R.string.back_hint)
+                        )
+                    }
+                })
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onToPostFeed(null, zone) },
