@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.freewdcmkt.bck.util.formatTime
 
 @Composable
 fun TitleText(text: String) {
@@ -57,7 +59,7 @@ fun DateText(text: String) {
                 .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
         )
         Text(
-            text = text,
+            text = formatTime(text),
             fontSize = 10.sp,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium,
@@ -65,4 +67,9 @@ fun DateText(text: String) {
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+@Composable
+@Preview
+private fun Show(){
+    DateText("2026-08-01 00:27:00")
 }

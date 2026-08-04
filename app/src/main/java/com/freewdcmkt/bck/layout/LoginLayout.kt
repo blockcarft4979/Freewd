@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -116,6 +117,7 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
         Column(
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp)
+                .imePadding()
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {

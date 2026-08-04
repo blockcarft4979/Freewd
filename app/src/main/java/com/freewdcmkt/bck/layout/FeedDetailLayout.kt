@@ -1,5 +1,8 @@
 package com.freewdcmkt.bck.layout
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -74,6 +78,11 @@ fun FeedDetailLayout(
     val isAuthor by viewmodel.isAuthor.collectAsState()
     val isExpanded = remember { mutableStateOf(false) }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
+    val context = LocalContext.current
+    val clipboardManager = remember {
+        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    }
+
     LaunchedEffect(Unit) { viewmodel.fetchData(id) }
     if (isShowDialog.value) {
         FreewdDialog(
@@ -114,6 +123,15 @@ fun FeedDetailLayout(
                         expanded = isExpanded.value,
                         onDismissRequest = { isExpanded.value = false },
                     ) {
+                        DropdownMenuItem(
+                            { Text(stringResource(R.string.copy_feed_link_hint)) },
+                            onClick = {
+                                val link = "https://community.freewd.top/u/page?id=$id&zone=$zone"
+                                val clip = ClipData.newPlainText("Feed link", link)
+                                clipboardManager.setPrimaryClip(clip)
+                                isExpanded.value = false
+                            },
+                            )
                         if (isAuthor) DropdownMenuItem(
                             text = {
                                 Text(
@@ -126,12 +144,13 @@ fun FeedDetailLayout(
                                 isExpanded.value = false
                             },
                         )
+
                     }
                 })
         },
         bottomBar = {
-            if (uiState is FeedDetailUiState.Success)ReplyInputBar(
-                onSend = { viewmodel.replyFeed(id, it)},
+            if (uiState is FeedDetailUiState.Success) ReplyInputBar(
+                onSend = { viewmodel.replyFeed(id, it) },
                 modifier = Modifier.imePadding()
             )
         }

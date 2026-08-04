@@ -49,4 +49,5 @@
     <string name="no_hint">No</string>
     <string name="send_hint">Send</string>
     <string name="notification_hint">Notification</string>
+    <string name="copy_feed_link_hint">Copy feed link</string>
 </resources>
