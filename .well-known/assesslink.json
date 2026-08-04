@@ -1,8 +1,0 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.freewdcmkt.bck",
-    "sha256_cert_fingerprints": ["7E:C2:7E:93:CF:D7:3D:96:9B:CF:AB:8D:68:7B:60:37:6C:47:43:B6:E3:77:9A:83:9A:26:DC:4A:92:01:7D:D9"]
-  }
-}]
