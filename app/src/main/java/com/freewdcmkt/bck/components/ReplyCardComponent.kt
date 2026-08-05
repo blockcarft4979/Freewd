@@ -20,7 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,7 +29,9 @@ import com.freewdcmkt.bck.R
 
 @Composable
 fun ReplyInputBar(
+    username: String,
     onSend: (String) -> Unit,
+    focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     var text by remember { mutableStateOf("") }
@@ -45,12 +48,13 @@ fun ReplyInputBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
+
                 value = text,
                 onValueChange = { text = it },
-                modifier = Modifier
+                modifier = Modifier.focusRequester(focusRequester)
                     .weight(1f),
                 maxLines = 5,
-                placeholder = { Text(stringResource(R.string.reply_hint)) },
+                placeholder = { Text(stringResource(R.string.reply_to_user_hint, username)) },
                 //shape = RoundedCornerShape(16.dp) // 圆角输入框
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -58,7 +62,7 @@ fun ReplyInputBar(
                 onClick = {
                     if (isSendEnabled) {
                         onSend(text)
-                        text = "" // 清空输入框
+                        text = ""
                     }
                 },
                 enabled = isSendEnabled,
@@ -68,7 +72,7 @@ fun ReplyInputBar(
                 Icon(
                     painterResource(R.drawable.baseline_send_24),
                     stringResource(R.string.send_hint),
-                    modifier= Modifier.size(28.dp)
+                    modifier = Modifier.size(28.dp)
                 )
                 Text(stringResource(R.string.send_hint))
             }

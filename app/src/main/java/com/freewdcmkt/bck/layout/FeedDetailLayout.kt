@@ -41,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -76,9 +77,15 @@ fun FeedDetailLayout(
 ) {
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
+
     val isExpanded = remember { mutableStateOf(false) }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val replyQq = rememberSaveable() { mutableStateOf("") }
+    val replyUsername = rememberSaveable() { mutableStateOf("") }
+
     val context = LocalContext.current
+
     val clipboardManager = remember {
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
@@ -131,7 +138,7 @@ fun FeedDetailLayout(
                                 clipboardManager.setPrimaryClip(clip)
                                 isExpanded.value = false
                             },
-                            )
+                        )
                         if (isAuthor) DropdownMenuItem(
                             text = {
                                 Text(
@@ -150,8 +157,15 @@ fun FeedDetailLayout(
         },
         bottomBar = {
             if (uiState is FeedDetailUiState.Success) ReplyInputBar(
-                onSend = { viewmodel.replyFeed(id, it) },
-                modifier = Modifier.imePadding()
+                username = replyUsername.value,
+                onSend = {
+                    val targetQq = replyQq.value
+                    viewmodel.replyFeed(id, it, targetQq.ifEmpty { null })
+                    focusRequester.requestFocus()
+                    replyQq.value = ""
+                },
+                modifier = Modifier.imePadding(),
+                focusRequester = focusRequester
             )
         }
     ) { innerPadding ->
@@ -175,6 +189,8 @@ fun FeedDetailLayout(
                 }
 
                 is FeedDetailUiState.Success -> {
+                    replyUsername.value =
+                        (uiState as FeedDetailUiState.Success).feedDetailData.username
                     FeedUiLayout(
                         (uiState as FeedDetailUiState.Success).feedDetailData,
                         onClickLike = {
@@ -184,6 +200,10 @@ fun FeedDetailLayout(
                                 (uiState as FeedDetailUiState.Success).feedDetailData.isLiked
                             )
                             Log.d("FEED DETAIL LAYOUT", "ONCLICKLIKEBUTTON")
+                        }, onReplyUser = { qq, username ->
+                            focusRequester.requestFocus()
+                            replyQq.value = qq
+                            replyUsername.value = username
                         })
                 }
             }
@@ -195,6 +215,7 @@ fun FeedDetailLayout(
 private fun FeedUiLayout(
     feedDetailData: FeedDetailData,
     onClickLike: () -> Unit,
+    onReplyUser: (String, String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -289,10 +310,11 @@ private fun FeedUiLayout(
         }
         items(
             items = feedDetailData.reply ?: emptyList(),
-            key = { "${it.qq}_${it.date}" }
+            key = { " ${it.commentId}_${it.date}" }
         ) { replyData ->
             ReplyCard(
                 replyData,
+                onReplyUser = onReplyUser
             )
         }
     }

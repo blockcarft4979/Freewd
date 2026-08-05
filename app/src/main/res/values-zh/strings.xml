@@ -51,4 +51,6 @@
     <string name="no_hint">取消</string>
     <string name="send_hint">发送</string>
     <string name="notification_hint">通知</string>
+    <string name="copy_feed_link_hint">复制链接</string>
+    <string name="reply_to_user_hint">回复 %s</string>
 </resources>

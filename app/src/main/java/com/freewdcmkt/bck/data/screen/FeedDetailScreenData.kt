@@ -23,6 +23,7 @@ data class FeedDetailData(
 
 @Serializable
 data class FeedReplyData(
+    val commentId: String,
     val date: String,
     val msg: String,
     val qq: String,

@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,12 +16,12 @@ import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.data.screen.FeedReplyData
 
 @Composable
-fun ReplyCard(replyData: FeedReplyData) {
+fun ReplyCard(replyData: FeedReplyData,onReplyUser:(String,String)-> Unit) {
 
         Card(
             modifier = Modifier
                 .padding(horizontal = 12.dp, vertical = 4.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth().clickable(onClick = { onReplyUser(replyData.qq,replyData.username) }),
             shape = RoundedCornerShape(10.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         ) {
