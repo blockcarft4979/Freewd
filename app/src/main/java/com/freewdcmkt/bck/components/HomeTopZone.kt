@@ -37,8 +37,8 @@ fun HomeTopZone(qq: String, username: String, uid: String, imageUrl: String?) {
                 UserIcon(userAvatarUrl(qq))
 
                 Column(modifier = Modifier.padding(start = 8.dp)) {
-                    Text(username, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Text(stringResource(R.string.uid_hint, uid), fontSize = 12.sp)
+                    UsernameText(username)
+                    DateText(stringResource(R.string.uid_hint, uid))
                 }
             }
         }

@@ -20,6 +20,7 @@ import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.layout.FreewdAppNavHost
 import com.freewdcmkt.bck.layout.LoginLayout
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
+import com.freewdcmkt.bck.viewmodel.LoginState
 import com.freewdcmkt.bck.viewmodel.MainViewmodel
 
 class MainActivity : ComponentActivity() {
@@ -31,9 +32,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             FreewdTheme {
                 MainLayout(
-                    intent = currentIntent?: Intent()
+                    intent = currentIntent ?: Intent()
                 )
-                Log.d("MAIN LAYOUT", currentIntent?.data.toString())
+                //Log.d("MAIN LAYOUT", currentIntent?.data.toString())
             }
         }
     }
@@ -47,10 +48,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainLayout(viewmodel: MainViewmodel = viewModel(), intent: Intent) {
-    val isLogin by viewmodel.isLogin.collectAsState()
+    val loginState by viewmodel.loginState.collectAsState()
     val navController = rememberNavController()
 
-    // 1. 解析 intent，保存参数
+    // 解析 intent，保存参数
     val pendingDeepLink = remember { mutableStateOf<Pair<Int, Int>?>(null) }
     LaunchedEffect(intent) {
         val uri = intent.data
@@ -63,17 +64,18 @@ fun MainLayout(viewmodel: MainViewmodel = viewModel(), intent: Intent) {
         }
     }
 
-    when (isLogin) {
-        true -> FreewdAppNavHost(navController)
-        false -> LoginLayout()
-    }
-
-    LaunchedEffect(isLogin) {
-        if (isLogin) {
-            pendingDeepLink.value?.let { (id, zone) ->
-                navController.navigate(FeedDetailScreenData(id, zone))
-                pendingDeepLink.value = null
+    when (loginState) {
+        is LoginState.Loading -> {}
+        is LoginState.LoggedIn -> {
+            FreewdAppNavHost(navController)
+            LaunchedEffect(Unit) {
+                pendingDeepLink.value?.let { (id, zone) ->
+                    navController.navigate(FeedDetailScreenData(id, zone))
+                    pendingDeepLink.value = null
+                }
             }
         }
+        is LoginState.LoggedOut -> LoginLayout()
     }
+
 }
