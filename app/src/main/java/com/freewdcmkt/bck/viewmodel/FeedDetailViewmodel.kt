@@ -58,7 +58,7 @@ class FeedDetailViewmodel : ViewModel() {
         }
     }
 
-    fun seedLike(id: Int, zone: Int, isLiked: Boolean) {
+    fun seedLike(id: Int, isLiked: Boolean) {
         viewModelScope.launch {
             val currentState = _feedDetailUiState.value
             if (currentState !is FeedDetailUiState.Success) return@launch
@@ -76,12 +76,11 @@ class FeedDetailViewmodel : ViewModel() {
             val requestBody =
                 buildJsonObject {
                     put("id", id)
-                    put("zone", zone)
                 }.toString().toRequestBody("application/json".toMediaType())
             try {
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Community.likeFeed(id, zone))
+                        Request.Builder().url(RequestApi.Community.LIKE_FEED_URL)
                             .post(requestBody).build()
                     ).execute()
                 }

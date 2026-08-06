@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout
+package com.freewdcmkt.bck.layout.nav
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -10,21 +10,27 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.freewdcmkt.bck.data.screen.BrowserScreenData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.FeedScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
+import com.freewdcmkt.bck.data.screen.NotificationData
+import com.freewdcmkt.bck.data.screen.NotificationScreen
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
+import com.freewdcmkt.bck.layout.BrowserLayout
+import com.freewdcmkt.bck.layout.FeedDetailLayout
+import com.freewdcmkt.bck.layout.FeedLayout
+import com.freewdcmkt.bck.layout.HomeLayout
+import com.freewdcmkt.bck.layout.PostFeedLayout
+import com.freewdcmkt.bck.layout.ui.Notification
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun FreewdAppNavHost( navController: NavHostController) {
+fun FreewdAppNavHost(navController: NavHostController) {
 
     NavHost(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
@@ -61,7 +67,7 @@ fun FreewdAppNavHost( navController: NavHostController) {
                     navController.navigate(FeedScreenData(zone))
                 },
                 onToBrowser = { url -> navController.navigate(BrowserScreenData(url)) },
-                onToNotification = {}
+                onToNotification = {navController.navigate(NotificationScreen)}
             )
         }
         composable<FeedScreenData> { backStack ->
@@ -80,7 +86,6 @@ fun FreewdAppNavHost( navController: NavHostController) {
             val args = backStack.toRoute<FeedDetailScreenData>()
             FeedDetailLayout(
                 args.id,
-                args.zone,
                 onDeleteFeed = { navController.popBackStack() },
                 onBack = { navController.popBackStack() })
         }
@@ -94,6 +99,17 @@ fun FreewdAppNavHost( navController: NavHostController) {
                 args.zone,
                 onUploaded = { navController.popBackStack() },
                 onBack = { navController.popBackStack() })
+        }
+        composable<NotificationScreen> {
+            Notification(
+                onToFeedDetail = { id ->
+                    navController.navigate(
+                        FeedDetailScreenData(
+                            id = id
+                        )
+                    )
+                }
+            )
         }
     }
 }

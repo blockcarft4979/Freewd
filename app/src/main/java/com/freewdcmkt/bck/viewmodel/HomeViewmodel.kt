@@ -52,7 +52,8 @@ class HomeViewmodel : ViewModel() {
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
-
+    private val _verifyTokenData = MutableStateFlow(VerifyTokenData("",0))
+    val verifyTokenData: StateFlow<VerifyTokenData> = _verifyTokenData.asStateFlow()
     fun fetchData(forceRefresh: Boolean = false) {
         Log.d("HOME VM", "是否刷新$forceRefresh")
         if (!forceRefresh) {
@@ -101,6 +102,8 @@ class HomeViewmodel : ViewModel() {
                 val data = JsonParser.json.decodeFromString<BaseData<VerifyTokenData>>(body)
                 if (response.isSuccessful && data.data?.username != null) {
                     UserInfoManager.saveUsername(data.data.username)
+                    _verifyTokenData.value = data.data
+                    Log.d("VERIFY TOKEN DATA" ,_verifyTokenData.value.toString())
                 } else {
                     val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
                     UserInfoManager.saveLogin(false)

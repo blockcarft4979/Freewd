@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -58,11 +59,11 @@ fun HomeLayout(
     onToBrowser: (link: String) -> Unit,
     onToNotification: () -> Unit
 ) {
-    val context = LocalContext.current
     val username by viewmodel.username.collectAsState()
     val qq by viewmodel.userAccount.collectAsState()
     val uid by viewmodel.uid.collectAsState()
     val homeData by viewmodel.homeData.collectAsState()
+    val userData by viewmodel.verifyTokenData.collectAsState()
     val homeUiState by viewmodel.homeUiState.collectAsState()
 
     val retryHint = stringResource(R.string.retry_hint)
@@ -70,7 +71,7 @@ fun HomeLayout(
     val snackBarHostState = remember() { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) { if (homeData.zone.isEmpty())viewmodel.fetchData(true) }
+    LaunchedEffect(Unit) { if (homeData.zone.isEmpty()) viewmodel.fetchData(true) }
     LaunchedEffect(TokenManager.getToken()) { viewmodel.verifyToken() }
 
     LaunchedEffect(homeUiState) {
@@ -95,7 +96,7 @@ fun HomeLayout(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.home_hint)) },
-                actions = { NotificationIcon(10) })
+                actions = { IconButton(onClick = onToNotification) { NotificationIcon(userData.unreadCount) } })
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = { NavigationBar() { NavBar(navController) } }) { innerPadding ->
@@ -122,7 +123,7 @@ fun HomeLayout(
                         onToFeed = onToFeed,
                         onToBrowser = onToBrowser,
                         uiState = homeUiState,
-                        onRefresh = {viewmodel.fetchData(true)}
+                        onRefresh = { viewmodel.fetchData(true) }
                     )
                 }
                 composable(NavData.Me.route) { Text("TODO :)") }
@@ -141,7 +142,7 @@ private fun UiLayout(
     uiState: HomeUiState,
     onToFeed: (Int) -> Unit,
     onToBrowser: (String) -> Unit,
-    onRefresh:()-> Unit
+    onRefresh: () -> Unit
 ) {
     val context = LocalContext.current
     PullToRefreshBox(

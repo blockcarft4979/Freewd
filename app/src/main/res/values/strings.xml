@@ -51,4 +51,7 @@
     <string name="notification_hint">Notification</string>
     <string name="copy_feed_link_hint">Copy feed link</string>
     <string name="reply_to_user_hint">Reply %s</string>
+    <string name="like_feed_hint">Liked your feed</string>
+    <string name="reply_feed_hint">Replied your feed: %s</string>
+    <string name="unsupported_notification_hint">Unsupported type,please update your app</string>
 </resources>

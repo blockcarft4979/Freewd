@@ -70,7 +70,7 @@ import com.mikepenz.markdown.m3.Markdown
 @Composable
 fun FeedDetailLayout(
     id: Int,
-    zone: Int,
+    //zone: Int,
     viewmodel: FeedDetailViewmodel = viewModel(),
     onDeleteFeed: () -> Unit,
     onBack: () -> Unit
@@ -133,7 +133,7 @@ fun FeedDetailLayout(
                         DropdownMenuItem(
                             { Text(stringResource(R.string.copy_feed_link_hint)) },
                             onClick = {
-                                val link = "https://community.freewd.top/u/page?id=$id&zone=$zone"
+                                val link = "https://community.freewd.top/u/page?id=$id"
                                 val clip = ClipData.newPlainText("Feed link", link)
                                 clipboardManager.setPrimaryClip(clip)
                                 isExpanded.value = false
@@ -196,7 +196,6 @@ fun FeedDetailLayout(
                         onClickLike = {
                             viewmodel.seedLike(
                                 id,
-                                zone,
                                 (uiState as FeedDetailUiState.Success).feedDetailData.isLiked
                             )
                             Log.d("FEED DETAIL LAYOUT", "ONCLICKLIKEBUTTON")

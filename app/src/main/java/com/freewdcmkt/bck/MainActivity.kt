@@ -3,7 +3,6 @@ package com.freewdcmkt.bck
 import android.app.ComponentCaller
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
-import com.freewdcmkt.bck.layout.FreewdAppNavHost
+import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
 import com.freewdcmkt.bck.layout.LoginLayout
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.viewmodel.LoginState

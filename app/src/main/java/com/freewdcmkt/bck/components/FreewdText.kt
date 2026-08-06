@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +71,7 @@ fun DateText(text: String) {
                 .padding(end = 8.dp)
                 .size(3.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
         )
         Text(
             text = formatTime(text),
@@ -79,7 +80,7 @@ fun DateText(text: String) {
                 lineHeight = 16.sp,
                 platformStyle = PlatformTextStyle(includeFontPadding = false)
             ),
-            color = MaterialTheme.colorScheme.primary,
+            color = Color.Gray,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

@@ -10,9 +10,9 @@ data class HomeData(
 
 @Serializable
 data class Notification(
-    val title: String?=null,
-    val msg: String?=null,
-    val imageUrl: String?=null,
+    val title: String? = null,
+    val msg: String? = null,
+    val imageUrl: String? = null,
 )
 
 @Serializable
@@ -24,5 +24,6 @@ data class Zone(
     val msg: String? = null,
     val link: String? = null
 )
+
 @Serializable
-data class VerifyTokenData(val username: String)
+data class VerifyTokenData(val username: String, val unreadCount: Int)
