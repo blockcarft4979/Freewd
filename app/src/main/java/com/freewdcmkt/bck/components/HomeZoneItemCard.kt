@@ -74,6 +74,7 @@ fun HomeZoneItemCard(
             }
 
             // 文字区域
+
             Column(
                 modifier = Modifier.weight(1f),      // 占据剩余宽度
                 verticalArrangement = Arrangement.Center

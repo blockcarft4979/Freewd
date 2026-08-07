@@ -17,6 +17,7 @@
     <string name="content_desc_app_icon">应用图标</string>
 
     <!-- ========== 网络与数据错误 ========== -->
+    <string name="logout_account_hint">你要退出当前账号吗？</string>
     <string name="no_internet_hint">网络连接不可用，请检查网络设置。</string>
     <string name="data_error_hint">数据解析失败，请重试。</string>
 
@@ -53,4 +54,15 @@
     <string name="notification_hint">通知</string>
     <string name="copy_feed_link_hint">复制链接</string>
     <string name="reply_to_user_hint">回复 %s</string>
+    <string name="freewd_feed_hint">Freewd 帖子</string>
+    <string name="copied_link_hint">链接已复制</string>
+    <string name="like_feed_hint">点赞了你的帖子</string>
+    <string name="reply_feed_hint">回复了你的帖子：%s</string>
+    <string name="unsupported_notification_hint">不支持的类型，请升级应用</string>
+    <string name="post_count_hint">帖子：%s</string>
+    <string name="likes_count_hint">收到的赞：%s</string>
+    <string name="change_username_hint">修改用户名</string>
+    <string name="change_username_description_hint">点击这里更改你的用户名</string>
+    <string name="logout_hint">退出登录</string>
+    <string name="logout_description_hint">退出当前账号</string>
 </resources>

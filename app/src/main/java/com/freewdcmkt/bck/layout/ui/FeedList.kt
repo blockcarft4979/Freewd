@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout
+package com.freewdcmkt.bck.layout.ui
 
 import android.util.Log
 import androidx.compose.foundation.background

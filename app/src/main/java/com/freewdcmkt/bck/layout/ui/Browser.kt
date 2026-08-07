@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout
+package com.freewdcmkt.bck.layout.ui
 
 import android.webkit.WebView
 import android.webkit.WebViewClient

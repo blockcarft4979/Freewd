@@ -33,8 +33,9 @@ class LogInViewModel() : ViewModel() {
         viewModelScope.launch {
             _loginUiState.value = LoginUiState.Loading
             try {
-                val requestBody = buildJsonObject { put("password",password)
-                put("qq",qq)
+                val requestBody = buildJsonObject {
+                    put("password", password)
+                    put("qq", qq)
                 }.toString().toRequestBody("application/json".toMediaType())
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
@@ -43,19 +44,16 @@ class LogInViewModel() : ViewModel() {
                         .execute()
                 }
                 val body = response.body.string()
-                Log.d("LOGIN VIEWMODEL", body)
-                if (response.isSuccessful) {
-                    Log.d("VIEW MODEL", "OK")
-                    val data = JsonParser.json.decodeFromString<BaseData<LoginData>>(body)
-                    if (data.data != null) {
-                        val loginData = data.data
-                        TokenManager.saveToken(loginData.token)
-                        UserInfoManager.saveUsername(loginData.username)
-                        UserInfoManager.saveUid(loginData.uid.toString())
-                        UserInfoManager.saveLogin(isLogin = true)
-                        UserInfoManager.saveUserAccount(qq = qq)
-                        _loginUiState.value = LoginUiState.Success()
-                    }
+                val data = JsonParser.json.decodeFromString<BaseData<LoginData>>(body)
+
+                if (response.isSuccessful && data.data != null) {
+                    val loginData = data.data
+                    TokenManager.saveToken(loginData.token)
+                    UserInfoManager.saveUsername(loginData.username)
+                    UserInfoManager.saveUid(loginData.uid.toString())
+                    UserInfoManager.saveLogin(isLogin = true)
+                    UserInfoManager.saveUserAccount(qq = qq)
+                    _loginUiState.value = LoginUiState.Success
                 } else {
                     Log.d("VIEW MODEL", "ERROR")
                     val data = JsonParser.json.decodeFromString<ErrorData>(body)
@@ -63,9 +61,13 @@ class LogInViewModel() : ViewModel() {
                     Log.d("LOGIN VIEWMODEL", data.msg)
                 }
             } catch (e: Exception) {
-                _loginUiState.value = LoginUiState.Error(e.message.toString())
+                _loginUiState.value = LoginUiState.Error(isNoNetWork = true)
             }
         }
+    }
+
+    fun backToNoAction() {
+        _loginUiState.value = LoginUiState.NoAction
     }
 }
 
@@ -73,7 +75,7 @@ class LogInViewModel() : ViewModel() {
 sealed class LoginUiState {
     object NoAction : LoginUiState()
     object Loading : LoginUiState()
-    class Success : LoginUiState()
-    class Error(val msg: String) : LoginUiState()
+    object Success : LoginUiState()
+    class Error(val msg: String?=null, val isNoNetWork: Boolean = false) : LoginUiState()
 
 }

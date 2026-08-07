@@ -14,6 +14,9 @@
 
     <!-- 无障碍描述 -->
     <string name="content_desc_app_icon">App icon</string>
+    <string name="logout_hint">Logout</string>
+    <string name="logout_description_hint">Log out of the current account.</string>
+    <string name="logout_account_hint">Do you want to logout the current account?</string>
 
     <!-- 网络部分 -->
     <string name="no_internet_hint">No internet connection. Please check your network settings.</string>
@@ -51,6 +54,8 @@
     <string name="notification_hint">Notification</string>
     <string name="copy_feed_link_hint">Copy feed link</string>
     <string name="reply_to_user_hint">Reply %s</string>
+    <string name="freewd_feed_hint">Freewd Feed</string>
+    <string name="copied_link_hint">Link copied</string>
     <string name="like_feed_hint">Liked your feed</string>
     <string name="reply_feed_hint">Replied your feed: %s</string>
     <string name="unsupported_notification_hint">Unsupported type,please update your app</string>

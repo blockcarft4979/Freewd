@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck
+package com.freewdcmkt.bck.layout.main
 
 import android.app.ComponentCaller
 import android.content.Intent
@@ -12,35 +12,33 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
-import com.freewdcmkt.bck.layout.LoginLayout
+import com.freewdcmkt.bck.layout.ui.LoginLayout
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.viewmodel.LoginState
 import com.freewdcmkt.bck.viewmodel.MainViewmodel
 
 class MainActivity : ComponentActivity() {
-    private var currentIntent by mutableStateOf<Intent?>(null)
+    private val intentState = mutableStateOf<Intent?>(null)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        currentIntent = intent
+        intentState.value  = intent
         setContent {
             FreewdTheme {
                 MainLayout(
-                    intent = currentIntent ?: Intent()
+                    intent = intentState.value ?: Intent()
                 )
-                //Log.d("MAIN LAYOUT", currentIntent?.data.toString())
             }
         }
     }
 
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
         super.onNewIntent(intent, caller)
-        currentIntent = intent
+        intentState.value  = intent
     }
 
 }
@@ -67,7 +65,7 @@ fun MainLayout(viewmodel: MainViewmodel = viewModel(), intent: Intent) {
         is LoginState.Loading -> {}
         is LoginState.LoggedIn -> {
             FreewdAppNavHost(navController)
-            LaunchedEffect(Unit) {
+            LaunchedEffect(pendingDeepLink.value) {
                 pendingDeepLink.value?.let { (id, zone) ->
                     navController.navigate(FeedDetailScreenData(id, zone))
                     pendingDeepLink.value = null

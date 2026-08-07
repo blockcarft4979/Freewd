@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Freewd社区">
         <activity
-            android:name=".MainActivity"
+            android:name=".layout.main.MainActivity"
+            android:launchMode="singleTask"
             android:exported="true"
             android:theme="@style/Theme.Freewd社区"
             android:windowSoftInputMode="adjustResize">

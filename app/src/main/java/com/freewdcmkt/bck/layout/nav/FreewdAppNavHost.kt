@@ -18,14 +18,13 @@ import com.freewdcmkt.bck.data.screen.BrowserScreenData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.FeedScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
-import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.data.screen.NotificationScreen
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
-import com.freewdcmkt.bck.layout.BrowserLayout
-import com.freewdcmkt.bck.layout.FeedDetailLayout
-import com.freewdcmkt.bck.layout.FeedLayout
-import com.freewdcmkt.bck.layout.HomeLayout
-import com.freewdcmkt.bck.layout.PostFeedLayout
+import com.freewdcmkt.bck.layout.ui.BrowserLayout
+import com.freewdcmkt.bck.layout.ui.FeedDetailLayout
+import com.freewdcmkt.bck.layout.ui.FeedLayout
+import com.freewdcmkt.bck.layout.ui.HomeLayout
+import com.freewdcmkt.bck.layout.ui.PostFeedLayout
 import com.freewdcmkt.bck.layout.ui.Notification
 
 @OptIn(ExperimentalAnimationApi::class)

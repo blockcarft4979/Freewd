@@ -24,7 +24,7 @@ fun UserCard(imageUrl: String, username: String, uid: String) {
                 UserIcon(imageUrl)
                 Column() {
                     UsernameText(username)
-                    DateText(uid)
+                    UidText(uid)
                 }
             }
         }

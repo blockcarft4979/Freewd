@@ -20,6 +20,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.UidText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 
@@ -35,7 +36,7 @@ fun HomeTopZone(qq: String, username: String, uid: String, imageUrl: String?) {
 
                 Column(modifier = Modifier.padding(start = 8.dp)) {
                     UsernameText(username)
-                    DateText(stringResource(R.string.uid_hint, uid))
+                    UidText(stringResource(R.string.uid_hint, uid))
                 }
             }
         }

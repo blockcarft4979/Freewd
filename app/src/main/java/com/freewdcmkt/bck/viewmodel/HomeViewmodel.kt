@@ -55,9 +55,9 @@ class HomeViewmodel : ViewModel() {
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
 
     private val _uiState = MutableStateFlow<MeUiState>(MeUiState.Loading)
-    val uiState : StateFlow<MeUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<MeUiState> = _uiState.asStateFlow()
 
-    private val _verifyTokenData = MutableStateFlow(VerifyTokenData("",0))
+    private val _verifyTokenData = MutableStateFlow(VerifyTokenData("", 0))
     val verifyTokenData: StateFlow<VerifyTokenData> = _verifyTokenData.asStateFlow()
     private var isLoadedMeData: Boolean = false
     fun fetchData(forceRefresh: Boolean = false) {
@@ -88,15 +88,20 @@ class HomeViewmodel : ViewModel() {
                         )
                         Log.d("HOME VIEWMODEL", _homeData.value.zone.toString())
                     }
+                } else {
+                    _homeUiState.value = HomeUiState.Error(null,true)
                 }
             } catch (e: Exception) {
-                _homeUiState.value = HomeUiState.Error(e.message.toString())
+                _homeUiState.value = HomeUiState.Error(e.message.toString(),true)
                 e.printStackTrace()
             }
         }
     }
+
     fun getUserInfo() {
-        if (isLoadedMeData){return}
+        if (isLoadedMeData) {
+            return
+        }
         _uiState.value = MeUiState.Loading
         viewModelScope.launch {
             try {
@@ -107,18 +112,19 @@ class HomeViewmodel : ViewModel() {
                 }
                 val body = response.body.string()
                 val data = JsonParser.json.decodeFromString<BaseData<MeData>>(body)
-                if (response.isSuccessful && data.data!=null){
+                if (response.isSuccessful && data.data != null) {
                     _uiState.value = MeUiState.Finish(data.data)
                     isLoadedMeData = true
-                }else{
+                } else {
                     val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                    _uiState.value  = MeUiState.LoadError(errorData.msg)
+                    _uiState.value = MeUiState.LoadError(errorData.msg)
                 }
             } catch (e: Exception) {
                 _uiState.value = MeUiState.LoadError(e.message.toString())
             }
         }
     }
+
     fun verifyToken() {
         viewModelScope.launch {
             try {
@@ -132,7 +138,7 @@ class HomeViewmodel : ViewModel() {
                 if (response.isSuccessful && data.data?.username != null) {
                     UserInfoManager.saveUsername(data.data.username)
                     _verifyTokenData.value = data.data
-                    Log.d("VERIFY TOKEN DATA" ,_verifyTokenData.value.toString())
+                    Log.d("VERIFY TOKEN DATA", _verifyTokenData.value.toString())
                 } else {
                     val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
                     UserInfoManager.saveLogin(false)
@@ -149,11 +155,12 @@ class HomeViewmodel : ViewModel() {
 sealed class HomeUiState {
     object Loading : HomeUiState()
     object Finish : HomeUiState()
-    class Error(val msg: String) : HomeUiState()
+    class Error(val msg: String? = null, val isNoNetWork: Boolean = false) : HomeUiState()
 
 }
-sealed class MeUiState(){
-    object Loading: MeUiState()
-    class Finish(val meData: MeData): MeUiState()
-    class LoadError(val msg: String?): MeUiState()
+
+sealed class MeUiState() {
+    object Loading : MeUiState()
+    class Finish(val meData: MeData) : MeUiState()
+    class LoadError(val msg: String?) : MeUiState()
 }

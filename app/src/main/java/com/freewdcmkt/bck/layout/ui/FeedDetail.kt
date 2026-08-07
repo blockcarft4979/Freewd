@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout
+package com.freewdcmkt.bck.layout.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -29,6 +30,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -37,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,24 +52,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.Link.feedLink
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.freewd.DateText
-import com.freewdcmkt.bck.components.freewd.FreewdDialog
-import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.LoadErrorUiLayout
 import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.components.ReplyCard
 import com.freewdcmkt.bck.components.ReplyInputBar
+import com.freewdcmkt.bck.components.freewd.ContentMarkdown
+import com.freewdcmkt.bck.components.freewd.ContentText
+import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.FreewdDialog
+import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.viewmodel.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.FeedDetailViewmodel
-import com.mikepenz.markdown.m3.Markdown
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +84,9 @@ fun FeedDetailLayout(
 ) {
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
-
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val copiedHint = stringResource(R.string.copy_feed_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -133,10 +142,17 @@ fun FeedDetailLayout(
                         DropdownMenuItem(
                             { Text(stringResource(R.string.copy_feed_link_hint)) },
                             onClick = {
-                                val link = "https://community.freewd.top/u/page?id=$id"
+                                val link = feedLink(id)
                                 val clip = ClipData.newPlainText("Feed link", link)
+
                                 clipboardManager.setPrimaryClip(clip)
                                 isExpanded.value = false
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(
+                                        message = copiedHint,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
                             },
                         )
                         if (isAuthor) DropdownMenuItem(
@@ -155,6 +171,7 @@ fun FeedDetailLayout(
                     }
                 })
         },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = {
             if (uiState is FeedDetailUiState.Success) ReplyInputBar(
                 username = replyUsername.value,
@@ -179,8 +196,6 @@ fun FeedDetailLayout(
                     LoadErrorUiLayout(
                         onClick = { viewmodel.fetchData(id) },
                         msg = (uiState as FeedDetailUiState.Error).msg,
-                        buttonMsg = stringResource(R.string.retry_hint),
-                        icon = painterResource(R.drawable.baseline_refresh_24)
                     )
                 }
 
@@ -256,37 +271,29 @@ private fun FeedUiLayout(
                             )
                             DateText(
                                 feedDetailData.date,
-                                //style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
                             )
                         }
                     }
 
                     // ===== 内容区域 (增加间距) =====
                     Spacer(modifier = Modifier.height(10.dp))
-
-                    if (feedDetailData.title != null) {
-                        TitleText(
-                            feedDetailData.title,
-                            //style = MaterialTheme.typography.titleLarge,
-                            // modifier = Modifier.padding(bottom = 6.dp)
-                        )
+                    SelectionContainer {
+                        if (feedDetailData.title != null) {
+                            TitleText(
+                                feedDetailData.title,
+                            )
+                        }
+                        if (feedDetailData.isMarkdown && feedDetailData.msg != null) {
+                            ContentMarkdown(
+                                feedDetailData.msg,
+                            )
+                        } else if (feedDetailData.msg != null) {
+                            ContentText(
+                                text = feedDetailData.msg
+                            )
+                        }
                     }
 
-                    if (feedDetailData.isMarkdown && feedDetailData.msg != null) {
-                        Markdown(
-                            feedDetailData.msg,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
-                    } else if (feedDetailData.msg != null) {
-                        Text(
-                            text = feedDetailData.msg,
-                            style = MaterialTheme.typography.bodyMedium,
-                            lineHeight = 22.sp, // 4. 增加行高，阅读更舒适
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
-                    }
-
-                    // ===== 底部操作栏 (增加点击区域和动效) =====
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         horizontalArrangement = Arrangement.End,

@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout
+package com.freewdcmkt.bck.layout.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -75,9 +75,7 @@ fun PostFeedLayout(
                 is PostFeedUiState.Upload -> LoadingCard()
                 is PostFeedUiState.Error -> LoadErrorUiLayout(
                     onClick = { viewmodel.postFeedUiState },
-                    msg = (uiState as PostFeedUiState.Error).msg,
-                    buttonMsg = stringResource(R.string.retry_hint),
-                    icon = painterResource(R.drawable.baseline_refresh_24)
+                    msg = (uiState as PostFeedUiState.Error).msg
                 )
 
                 is PostFeedUiState.Success -> onUploaded()
@@ -93,13 +91,11 @@ fun PostFeedUiLayout(onPostFeed: (title: String?, message: String) -> Unit) {
     var message by rememberSaveable() { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
-    // 外层 Column 填满剩余高度，并添加 imePadding 响应键盘
     Column(
         modifier = Modifier
             .fillMaxSize()
             .imePadding()
     ) {
-        // 输入区域：权重 1，占据所有剩余空间，内部可滚动
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -128,7 +124,7 @@ fun PostFeedUiLayout(onPostFeed: (title: String?, message: String) -> Unit) {
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp), // 与上方内容隔开
+                .padding(top = 8.dp),
             onClick = { onPostFeed(title, message) },
             enabled = message.isNotEmpty()
         ) {

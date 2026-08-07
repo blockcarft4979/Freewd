@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.components.freewd.ContentText
 
 @Composable
 fun ReplyInputBar(
@@ -47,15 +48,14 @@ fun ReplyInputBar(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedTextField(
-
+            TextField(
                 value = text,
                 onValueChange = { text = it },
-                modifier = Modifier.focusRequester(focusRequester)
+                modifier = Modifier
+                    .focusRequester(focusRequester)
                     .weight(1f),
                 maxLines = 5,
-                placeholder = { Text(stringResource(R.string.reply_to_user_hint, username)) },
-                //shape = RoundedCornerShape(16.dp) // 圆角输入框
+                label =  { Text(stringResource(R.string.reply_to_user_hint, username), maxLines = 1) },
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
@@ -66,15 +66,13 @@ fun ReplyInputBar(
                     }
                 },
                 enabled = isSendEnabled,
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.height(48.dp)
+                shape = CircleShape,
             ) {
                 Icon(
                     painterResource(R.drawable.baseline_send_24),
                     stringResource(R.string.send_hint),
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(26.dp)
                 )
-                Text(stringResource(R.string.send_hint))
             }
         }
     }

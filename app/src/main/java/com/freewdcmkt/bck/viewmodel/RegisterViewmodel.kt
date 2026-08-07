@@ -7,7 +7,6 @@ import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.LoginData
-import com.freewdcmkt.bck.layout.RegisterLayout
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
 import com.freewdcmkt.bck.util.TokenManager
@@ -42,10 +41,12 @@ class RegisterViewmodel : ViewModel() {
             }
         }
     }
+
     fun resetCountdown() {
         countdownJob?.cancel()
         _countdown.value = 0
     }
+
     private val _registerUiState = MutableStateFlow<RegisterUiState>(RegisterUiState.NoAction)
     val registerUiState: StateFlow<RegisterUiState> = _registerUiState.asStateFlow()
 
@@ -62,7 +63,7 @@ class RegisterViewmodel : ViewModel() {
                     ).execute()
                 }
                 val body = response.body.string()
-                Log.d("REGISTER VIEWMODEL",body+response.code)
+                Log.d("REGISTER VIEWMODEL", body + response.code)
                 if (response.isSuccessful) {
                     startCountdown()
                     _registerUiState.value = RegisterUiState.SendAuthCodeSuccess
@@ -90,31 +91,37 @@ class RegisterViewmodel : ViewModel() {
                     }.toString().toRequestBody("application/json".toMediaType())
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Auth.REGISTER_URL).post(requestBody).build()
+                        Request.Builder().url(RequestApi.Auth.REGISTER_URL).post(requestBody)
+                            .build()
                     ).execute()
                 }
                 val body = response.body.string()
-                if (response.isSuccessful){
-                    val data = JsonParser.json.decodeFromString<BaseData<LoginData>>(body)
-                    if (data.data != null) {
-                        val loginData = data.data
-                        TokenManager.saveToken(loginData.token)
-                        UserInfoManager.saveUsername(loginData.username)
-                        UserInfoManager.saveUid(loginData.uid.toString())
-                        UserInfoManager.saveLogin(isLogin = true)
-                        UserInfoManager.saveUserAccount(qq = qq)
-                        _registerUiState.value = RegisterUiState.RegisterSuccess
-                    }
+                val data = JsonParser.json.decodeFromString<BaseData<LoginData>>(body)
+                if (response.isSuccessful && data.data != null) {
+
+                    val loginData = data.data
+                    TokenManager.saveToken(loginData.token)
+                    UserInfoManager.saveUsername(loginData.username)
+                    UserInfoManager.saveUid(loginData.uid.toString())
+                    UserInfoManager.saveLogin(isLogin = true)
+                    UserInfoManager.saveUserAccount(qq = qq)
+                    _registerUiState.value = RegisterUiState.RegisterSuccess
+
+                } else {
+                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                    _registerUiState.value = RegisterUiState.Error(errorData.msg)
                 }
             } catch (e: Exception) {
-                _registerUiState.value = RegisterUiState.Error(e.message.toString())
+                _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
             }
         }
     }
+
     fun resetState() {
         resetCountdown()
         _registerUiState.value = RegisterUiState.NoAction
     }
+
     override fun onCleared() {
         super.onCleared()
         countdownJob?.cancel()
@@ -124,7 +131,7 @@ class RegisterViewmodel : ViewModel() {
 sealed class RegisterUiState() {
     object NoAction : RegisterUiState()
     object SendAuthCodeSuccess : RegisterUiState()
-    object RegisterSuccess: RegisterUiState()
+    object RegisterSuccess : RegisterUiState()
     object Loading : RegisterUiState()
-    class Error(val msg: String) : RegisterUiState()
+    class Error(val msg: String? = null, val isNoNetWork: Boolean = false) : RegisterUiState()
 }

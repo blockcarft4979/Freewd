@@ -1,6 +1,5 @@
-package com.freewdcmkt.bck.layout
+package com.freewdcmkt.bck.layout.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,13 +12,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -33,12 +37,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.components.LoadingCard
+import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.data.screen.LoginScreenData
 import com.freewdcmkt.bck.data.screen.RegisterScreenData
 import com.freewdcmkt.bck.viewmodel.LogInViewModel
 import com.freewdcmkt.bck.viewmodel.LoginUiState
+import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,33 +51,38 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
     val context = LocalContext.current
     val uiState by viewModel.loginUiState.collectAsState()
     val navCollection = rememberNavController()
+    val noAccountOrPasswordHint = stringResource(R.string.login_password_or_account_needed)
+    val noNetworkHint = stringResource(R.string.no_internet_hint)
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(uiState) {
+        if (uiState is LoginUiState.Error) {
+            if ((uiState as LoginUiState.Error).isNoNetWork) {
+                scope.launch { snackBarHostState.showSnackbar(noNetworkHint) }
+            } else (uiState as LoginUiState.Error).msg?.let { snackBarHostState.showSnackbar(it) }
+
+        }
+    }
     NavHost(navCollection, startDestination = LoginScreenData) {
         composable<LoginScreenData> {
             Scaffold(
+                modifier = Modifier.imePadding(),
                 topBar = {
                     TopAppBar(title = { Text(stringResource(R.string.app_name)) })
                 },
+                snackbarHost = { SnackbarHost(snackBarHostState) }
             ) { innerPadding ->
                 Column(modifier = Modifier.padding(innerPadding)) {
                     when (uiState) {
                         is LoginUiState.Success -> {
-                            Toast.makeText(
-                                context,
-                                stringResource(R.string.login_success),
-                                Toast.LENGTH_SHORT
-                            )
+                            viewModel.backToNoAction()
                         }
 
                         is LoginUiState.Error -> {
                             LoginLayout(onRegister = {}, onLogin = { account, password ->
                                 run { viewModel.fetchData(password, account) }
                             })
-                            Toast.makeText(
-                                context,
-                                (uiState as LoginUiState.Error).msg,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+
                         }
 
                         is LoginUiState.NoAction -> {
@@ -86,12 +96,11 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
                                         )
                                     }
                                     else {
-                                        // val message = stringResource(R.string.login_password_or_account_needed)
-                                        Toast.makeText(
-                                            context,
-                                            (R.string.login_password_or_account_needed),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        scope.launch {
+                                            snackBarHostState.showSnackbar(
+                                                noAccountOrPasswordHint
+                                            )
+                                        }
                                     }
                                 })
                         }
@@ -151,9 +160,7 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
                 Text(stringResource(R.string.login_login_btn))
             }
             Button(
-                onClick = {
-                    onRegister()
-                },
+                onClick = onRegister,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)
@@ -162,4 +169,5 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
             }
         }
     }
+
 }

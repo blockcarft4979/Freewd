@@ -46,6 +46,7 @@ android {
 dependencies {
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.32.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.32.0")
     implementation("androidx.navigation3:navigation3-runtime:1.1.0")
     implementation("androidx.navigation3:navigation3-ui:1.1.0")
     implementation("androidx.navigation:navigation-compose:2.8.0")

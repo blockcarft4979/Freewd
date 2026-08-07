@@ -58,12 +58,13 @@ fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+                UsernameText(feed.username)
+                DateText(feed.date)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    UsernameText(feed.username)
-                    DateText(feed.date)
+
                 }
 
                 if (feed.title != null) TitleText(feed.title)

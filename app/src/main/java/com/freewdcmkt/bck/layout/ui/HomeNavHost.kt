@@ -1,15 +1,9 @@
-package com.freewdcmkt.bck.layout
+package com.freewdcmkt.bck.layout.ui
 
 import android.widget.Toast
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,7 +44,6 @@ import com.freewdcmkt.bck.components.HomeTopZone
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.data.screen.HomeData
-import com.freewdcmkt.bck.layout.ui.Me
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
@@ -76,24 +69,27 @@ fun HomeLayout(
     val navController = rememberNavController()
     val snackBarHostState = remember() { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val noNetWorkHint = stringResource(R.string.no_internet_hint)
 
     LaunchedEffect(Unit) { if (homeData.zone.isEmpty()) viewmodel.fetchData(true) }
     LaunchedEffect(TokenManager.getToken()) { viewmodel.verifyToken() }
 
     LaunchedEffect(homeUiState) {
         if (homeUiState is HomeUiState.Error) {
-            scope.launch {
-                val result = snackBarHostState.showSnackbar(
-                    message = (homeUiState as HomeUiState.Error).msg,
-                    actionLabel = retryHint,
-                    duration = SnackbarDuration.Indefinite
-                )
-                when (result) {
-                    SnackbarResult.ActionPerformed -> {
-                        viewmodel.fetchData(true)
-                    }
+            if ((homeUiState as HomeUiState.Error).isNoNetWork) {
+                scope.launch {
+                    val result = snackBarHostState.showSnackbar(
+                        message = noNetWorkHint,
+                        actionLabel = retryHint,
+                        duration = SnackbarDuration.Long
+                    )
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> {
+                            viewmodel.fetchData(true)
+                        }
 
-                    else -> {}
+                        else -> {}
+                    }
                 }
             }
         }
@@ -115,30 +111,6 @@ fun HomeLayout(
             NavHost(
                 navController = navController,
                 startDestination = NavData.Home.route,
-                popEnterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { -it },
-                        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
-                },
-                popExitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
-                    )
-                },
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { -it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
-                }
             ) {
                 composable(NavData.Home.route) {
                     UiLayout(
@@ -174,6 +146,7 @@ private fun UiLayout(
     PullToRefreshBox(
         isRefreshing = uiState is HomeUiState.Loading,
         onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn {
             item {
