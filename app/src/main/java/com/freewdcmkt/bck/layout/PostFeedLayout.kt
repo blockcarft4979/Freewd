@@ -132,7 +132,7 @@ fun PostFeedUiLayout(onPostFeed: (title: String?, message: String) -> Unit) {
             onClick = { onPostFeed(title, message) },
             enabled = message.isNotEmpty()
         ) {
-            Text(stringResource(R.string.post_hint))
+            Text(stringResource(R.string.post_new_feed_hint))
         }
     }
 }

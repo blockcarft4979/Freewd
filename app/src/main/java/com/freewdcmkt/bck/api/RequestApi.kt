@@ -7,6 +7,7 @@ object RequestApi {
     private const val BASE_URL = "https://app.freewd.top/app/api/v1"
     private const val COMMUNITY_BASE = "$BASE_URL/community"
     private const val NOTIFICATION_BASE = "$BASE_URL/notification"
+    private const val USER_BASE = "$BASE_URL/user"
     private const val OTHER_BASE = "https://community.freewd.top/app/api/v1"
 
     object Auth {
@@ -31,6 +32,10 @@ object RequestApi {
 
     object Notification {
         const val NOTIFICATION_URL = "$NOTIFICATION_BASE/get_notification"
+    }
+
+    object User {
+        const val GET_USER_INFO_URL = "$USER_BASE/get_user_info"
     }
 
     object Other {

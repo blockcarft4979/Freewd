@@ -23,6 +23,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.api.userAvatarUrl
+import com.freewdcmkt.bck.components.freewd.ContentText
+import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.TitleText
+import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.Feed
 
 @Composable

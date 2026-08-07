@@ -13,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.freewdcmkt.bck.api.userAvatarUrl
+import com.freewdcmkt.bck.components.freewd.ContentText
+import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.SmallUserIcon
+import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedReplyData
 
 @Composable

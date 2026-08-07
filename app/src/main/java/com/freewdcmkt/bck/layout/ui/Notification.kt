@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.LoadingCard
-import com.freewdcmkt.bck.components.NotificationCard
+import com.freewdcmkt.bck.components.freewd.NotificationCard
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.viewmodel.NotificationUiStates
 import com.freewdcmkt.bck.viewmodel.NotificationViewmodel

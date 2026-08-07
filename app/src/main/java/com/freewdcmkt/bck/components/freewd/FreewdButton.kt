@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.components
+package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable

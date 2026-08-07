@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.components
+package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

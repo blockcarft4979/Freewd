@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.components
+package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

@@ -33,7 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.FreewdTopComponent
+import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.data.screen.LoginScreenData
 import com.freewdcmkt.bck.data.screen.RegisterScreenData

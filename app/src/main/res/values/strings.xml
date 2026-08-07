@@ -54,4 +54,8 @@
     <string name="like_feed_hint">Liked your feed</string>
     <string name="reply_feed_hint">Replied your feed: %s</string>
     <string name="unsupported_notification_hint">Unsupported type,please update your app</string>
+    <string name="post_count_hint">Post: %s</string>
+    <string name="likes_count_hint">Likes: %s</string>
+    <string name="change_username_hint">Change username</string>
+    <string name="change_username_description_hint">Tap here to change your username</string>
 </resources>
