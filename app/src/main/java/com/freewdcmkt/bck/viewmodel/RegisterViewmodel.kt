@@ -105,8 +105,6 @@ class RegisterViewmodel : ViewModel() {
                     UserInfoManager.saveUid(loginData.uid.toString())
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
-                    _registerUiState.value = RegisterUiState.RegisterSuccess
-
                 } else {
                     val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
                     _registerUiState.value = RegisterUiState.Error(errorData.msg)
@@ -116,7 +114,9 @@ class RegisterViewmodel : ViewModel() {
             }
         }
     }
-
+    fun backToNoAction(){
+        _registerUiState.value = RegisterUiState.NoAction
+    }
     fun resetState() {
         resetCountdown()
         _registerUiState.value = RegisterUiState.NoAction
@@ -131,7 +131,6 @@ class RegisterViewmodel : ViewModel() {
 sealed class RegisterUiState() {
     object NoAction : RegisterUiState()
     object SendAuthCodeSuccess : RegisterUiState()
-    object RegisterSuccess : RegisterUiState()
     object Loading : RegisterUiState()
     class Error(val msg: String? = null, val isNoNetWork: Boolean = false) : RegisterUiState()
 }

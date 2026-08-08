@@ -27,7 +27,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -48,64 +47,62 @@ import kotlinx.coroutines.launch
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
-    val context = LocalContext.current
+
     val uiState by viewModel.loginUiState.collectAsState()
     val navCollection = rememberNavController()
+    val navToRegister = { navCollection.navigate(RegisterScreenData) }
     val noAccountOrPasswordHint = stringResource(R.string.login_password_or_account_needed)
     val noNetworkHint = stringResource(R.string.no_internet_hint)
     val scope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Error) {
-            if ((uiState as LoginUiState.Error).isNoNetWork) {
-                scope.launch { snackBarHostState.showSnackbar(noNetworkHint) }
-            } else (uiState as LoginUiState.Error).msg?.let { snackBarHostState.showSnackbar(it) }
-
+            scope.launch {
+                if ((uiState as LoginUiState.Error).isNoNetWork) {
+                    snackBarHostState.showSnackbar(noNetworkHint)
+                } else {
+                    (uiState as LoginUiState.Error).msg?.let {
+                        snackBarHostState.showSnackbar(it)
+                    }
+                }
+            }
         }
+
     }
+
     NavHost(navCollection, startDestination = LoginScreenData) {
         composable<LoginScreenData> {
             Scaffold(
                 modifier = Modifier.imePadding(),
                 topBar = {
-                    TopAppBar(title = { Text(stringResource(R.string.app_name)) })
+                    TopAppBar(title = { Text(stringResource(R.string.login_login_btn)) })
                 },
                 snackbarHost = { SnackbarHost(snackBarHostState) }
             ) { innerPadding ->
                 Column(modifier = Modifier.padding(innerPadding)) {
                     when (uiState) {
-                        is LoginUiState.Success -> {
-                            viewModel.backToNoAction()
-                        }
-
-                        is LoginUiState.Error -> {
-                            LoginLayout(onRegister = {}, onLogin = { account, password ->
-                                run { viewModel.fetchData(password, account) }
-                            })
-
-                        }
-
-                        is LoginUiState.NoAction -> {
-                            LoginLayout(
-                                onRegister = { navCollection.navigate(RegisterScreenData) },
-                                onLogin = { account, password ->
-                                    if (account.isNotEmpty() && password.isNotEmpty()) run {
-                                        viewModel.fetchData(
-                                            password,
-                                            account
-                                        )
-                                    }
-                                    else {
-                                        scope.launch {
-                                            snackBarHostState.showSnackbar(
-                                                noAccountOrPasswordHint
-                                            )
-                                        }
-                                    }
-                                })
-                        }
+                        is LoginUiState.Success -> viewModel.backToNoAction()
 
                         is LoginUiState.Loading -> LoadingCard()
+
+                        else -> LoginLayout(
+                            onRegister = navToRegister,
+                            onLogin = { account, password ->
+                                if (account.isNotEmpty() && password.isNotEmpty()) run {
+                                    viewModel.fetchData(
+                                        password,
+                                        account
+                                    )
+                                }
+                                else {
+                                    scope.launch {
+                                        snackBarHostState.showSnackbar(
+                                            noAccountOrPasswordHint
+                                        )
+                                    }
+                                }
+                            })
                     }
                 }
             }
@@ -119,6 +116,7 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
 fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: String) -> Unit) {
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
