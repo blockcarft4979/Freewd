@@ -23,9 +23,8 @@ import com.freewdcmkt.bck.data.screen.PostFeedScreen
 import com.freewdcmkt.bck.layout.ui.BrowserLayout
 import com.freewdcmkt.bck.layout.ui.FeedDetailLayout
 import com.freewdcmkt.bck.layout.ui.FeedLayout
-import com.freewdcmkt.bck.layout.ui.HomeLayout
-import com.freewdcmkt.bck.layout.ui.PostFeedLayout
 import com.freewdcmkt.bck.layout.ui.Notification
+import com.freewdcmkt.bck.layout.ui.PostFeedLayout
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -66,7 +65,7 @@ fun FreewdAppNavHost(navController: NavHostController) {
                     navController.navigate(FeedScreenData(zone))
                 },
                 onToBrowser = { url -> navController.navigate(BrowserScreenData(url)) },
-                onToNotification = {navController.navigate(NotificationScreen)}
+                onToNotification = { navController.navigate(NotificationScreen) }
             )
         }
         composable<FeedScreenData> { backStack ->
@@ -107,7 +106,7 @@ fun FreewdAppNavHost(navController: NavHostController) {
                             id = id
                         )
                     )
-                }
+                }, onBack = { navController.popBackStack() }
             )
         }
     }

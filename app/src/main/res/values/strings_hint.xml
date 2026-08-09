@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hint_logout_hint">Logout</string>
+    <string name="no_notifications_hint">No notifications</string>
+    <string name="clear_all_notifications_hint">Clear all</string>
+    <string name="clear_notifications_from_7_days_ago">Before 7 days</string>
+    <string name="loading_hint">Loading</string>
 </resources>

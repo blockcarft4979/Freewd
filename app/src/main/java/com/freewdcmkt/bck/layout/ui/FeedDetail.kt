@@ -278,20 +278,23 @@ private fun FeedUiLayout(
                     // ===== 内容区域 (增加间距) =====
                     Spacer(modifier = Modifier.height(10.dp))
                     SelectionContainer {
-                        if (feedDetailData.title != null) {
-                            TitleText(
-                                feedDetailData.title,
-                            )
+                        Column {
+                            if (feedDetailData.title != null) {
+                                TitleText(
+                                    feedDetailData.title,
+                                )
+                            }
+                            if (feedDetailData.isMarkdown && feedDetailData.msg != null) {
+                                ContentMarkdown(
+                                    feedDetailData.msg,
+                                )
+                            } else if (feedDetailData.msg != null) {
+                                ContentText(
+                                    text = feedDetailData.msg
+                                )
+                            }
                         }
-                        if (feedDetailData.isMarkdown && feedDetailData.msg != null) {
-                            ContentMarkdown(
-                                feedDetailData.msg,
-                            )
-                        } else if (feedDetailData.msg != null) {
-                            ContentText(
-                                text = feedDetailData.msg
-                            )
-                        }
+
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))

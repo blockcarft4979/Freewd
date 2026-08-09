@@ -63,9 +63,8 @@ fun NotificationCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Column(
+                    verticalArrangement = Arrangement.Center
                 ) {
                     UsernameText(username)
                     DateText(date)
@@ -75,6 +74,7 @@ fun NotificationCard(
                     1 -> {
                         ContentText(stringResource(R.string.like_feed_hint, username))
                     }
+
                     2 if msg != null -> {
                         ContentText(
                             stringResource(
@@ -83,6 +83,7 @@ fun NotificationCard(
                             )
                         )
                     }
+
                     else -> {
                         ContentText(stringResource(R.string.unsupported_notification_hint))
                     }
@@ -92,9 +93,10 @@ fun NotificationCard(
     }
 
 }
+
 @Composable
 @Preview
-private fun Show(){
+private fun Show() {
     NotificationCard(
         1, "", "HDUHDU", "2026-08-13 00:12:10",
         type = 1,

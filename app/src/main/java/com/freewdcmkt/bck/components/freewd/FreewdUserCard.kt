@@ -19,7 +19,7 @@ fun UserCard(imageUrl: String, username: String, uid: String) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 4.dp).padding(10.dp)) {
+        Column(modifier = Modifier.padding(10.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 UserIcon(imageUrl)
                 Column() {

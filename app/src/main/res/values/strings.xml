@@ -31,7 +31,7 @@
     <string name="add_post_hint">New post</string>
     <string name="browser_hint">Browse</string>
     <string name="feed_detail_hint">Post details</string>
-    <string name="load_error_hint">Load failed\nRetry?</string>
+    <string name="load_error_hint">Load failed</string>
     <string name="favorite_hint">Favorite</string>
     <string name="me_hint">Me</string>
     <string name="retry_hint">Retry</string>

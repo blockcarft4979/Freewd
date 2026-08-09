@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.nav
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -44,6 +44,7 @@ import com.freewdcmkt.bck.components.HomeTopZone
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.data.screen.HomeData
+import com.freewdcmkt.bck.layout.ui.Me
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
@@ -67,6 +68,7 @@ fun HomeLayout(
 
     val retryHint = stringResource(R.string.retry_hint)
     val navController = rememberNavController()
+
     val snackBarHostState = remember() { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val noNetWorkHint = stringResource(R.string.no_internet_hint)
@@ -87,6 +89,7 @@ fun HomeLayout(
                         SnackbarResult.ActionPerformed -> {
                             viewmodel.fetchData(true)
                         }
+
                         else -> {}
                     }
                 }
@@ -96,7 +99,9 @@ fun HomeLayout(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.home_hint)) },
+                title = {
+                    Text(stringResource(R.string.home_hint))
+                },
                 actions = { IconButton(onClick = onToNotification) { NotificationIcon(userData.unreadCount) } })
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
@@ -147,7 +152,7 @@ private fun UiLayout(
         onRefresh = onRefresh,
         modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
                 HomeTopZone(
                     qq = qq,

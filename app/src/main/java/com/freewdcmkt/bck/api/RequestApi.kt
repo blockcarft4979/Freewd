@@ -32,6 +32,7 @@ object RequestApi {
 
     object Notification {
         const val NOTIFICATION_URL = "$NOTIFICATION_BASE/get_notification"
+        const val CLEAR_ALL_NOTIFICATIONS = "$NOTIFICATION_BASE/clear_notification"
     }
 
     object User {

@@ -1,13 +1,18 @@
 package com.freewdcmkt.bck.layout.ui
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,12 +23,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.SettingCard
 import com.freewdcmkt.bck.components.freewd.UserCard
@@ -42,16 +48,16 @@ fun Me(viewmodel: HomeViewmodel = viewModel()) {
     val uid by viewmodel.uid.collectAsState()
 
     LaunchedEffect(Unit) { viewmodel.getUserInfo() }
+
     when (uiState) {
-        is MeUiState.Loading -> LoadingCard()
         is MeUiState.Finish -> MeUiLayout(qq, username, uid, (uiState as MeUiState.Finish).meData)
-        is MeUiState.LoadError -> {}
+        else -> MeUiLayout(qq, username, uid, null)
     }
 
 }
 
 @Composable
-private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData) {
+private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData? = null) {
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     if (isShowDialog.value) {
@@ -77,19 +83,39 @@ private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData
                         uid = stringResource(R.string.uid_hint, uid)
                     )
                     Row(
-                        modifier = Modifier.padding(10.dp),
+                        modifier = Modifier.padding(5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            stringResource(R.string.post_count_hint, meData.postCount.toString()),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            stringResource(
-                                R.string.likes_count_hint,
-                                meData.totalLikes.toString()
-                            ), modifier = Modifier.weight(1f)
-                        )
+                        if (meData != null) {
+                            IconText(
+                                modifier = Modifier.weight(1f),
+                                icon = R.drawable.post,
+                                description = stringResource(
+                                    R.string.post_count_hint,
+                                    meData.postCount.toString()
+                                ),
+                                text = stringResource(
+                                    R.string.post_count_hint,
+                                    meData.postCount.toString()
+                                ),
+                                onClick = {},
+                            )
+                            IconText(
+                                modifier = Modifier.weight(1f),
+                                icon = R.drawable.baseline_favorite_24,
+                                description = stringResource(
+                                    R.string.likes_count_hint,
+                                    meData.totalLikes.toString()
+                                ),
+                                text = stringResource(
+                                    R.string.likes_count_hint,
+                                    meData.totalLikes.toString()
+                                ),
+                                onClick = {},
+                            )
+                        } else {
+                            Text(stringResource(R.string.loading_hint))
+                        }
                     }
                 }
 
@@ -113,4 +139,31 @@ private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData
             )
         }
     }
+}
+
+@Composable
+private fun IconText(
+    modifier: Modifier = Modifier,
+    icon: Int,
+    description: String? = null,
+    text: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = description,
+            modifier = Modifier
+                .size(22.dp)
+                .animateContentSize()
+        )
+        Text(text = text, fontSize = 14.sp)
+    }
+
 }

@@ -18,12 +18,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 
+//你妈的傻逼 FEED LIST VIEWMODEL
+// 看我今天下午不把你给杀了
+// TODO()
+
 class FeedViewmodel : ViewModel() {
-    private var currentPage = 0          // 当前已加载的页码（0 表示未加载）
-    private var totalPages = 0           // 总页数
-    private var hasMore = true           // 是否还有更多
+    private var currentPage = 0
+    private var totalPages = 0
+    private var hasMore = true
     private var currentZone: Int? = null
-    private var isLoadingMore = false    // 防止重复加载
+    private var isLoadingMore = false
 
     private val _feedUiState = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val feedUiState: StateFlow<FeedUiState> = _feedUiState.asStateFlow()
@@ -31,7 +35,7 @@ class FeedViewmodel : ViewModel() {
     val listState = LazyListState()
 
     // 首次加载或下拉刷新
-    fun fetchData(zone: Int,forceRefresh: Boolean = false) {
+    fun fetchData(zone: Int, forceRefresh: Boolean = false) {
         Log.d("FeedVM", "fetchData called, forceRefresh=$forceRefresh")
         if (!forceRefresh && currentZone == zone && _feedUiState.value is FeedUiState.Success) {
             Log.d("FEED VM", "fetchData: 数据已存在，不再重复请求")
@@ -67,7 +71,8 @@ class FeedViewmodel : ViewModel() {
 
         isLoadingMore = true
         // 更新 UI 状态，显示底部加载指示器（保留原列表）
-        val currentData = (_feedUiState.value as? FeedUiState.Success)?.feedData ?: FeedData(0, 0,emptyList())
+        val currentData =
+            (_feedUiState.value as? FeedUiState.Success)?.feedData ?: FeedData(0, 0, emptyList())
         _feedUiState.value = FeedUiState.Success(
             feedData = currentData,
             isLoadingMore = true,
@@ -98,7 +103,6 @@ class FeedViewmodel : ViewModel() {
                     hasMore = currentPage < totalPages
 
                     val newFeed = if (isAppend) {
-                        // 合并旧数据 + 新数据，并去重（按 id）
                         val oldList = (_feedUiState.value as? FeedUiState.Success)?.feedData?.feed ?: emptyList()
                         val merged = (oldList + feedData.feed).distinctBy { it.id }
                         feedData.copy(feed = merged)
@@ -109,37 +113,62 @@ class FeedViewmodel : ViewModel() {
                     _feedUiState.value = FeedUiState.Success(
                         feedData = newFeed,
                         isLoadingMore = false,
-                        hasMore = hasMore
+                        hasMore = hasMore,
+                        error = null
                     )
                     Log.d("FEED VM", "加载成功，当前条目数: ${newFeed.feed.size}, hasMore=$hasMore")
                 } else {
-                    // 服务器返回 data 为空，视为没有更多
                     hasMore = false
-                    _feedUiState.value = (_feedUiState.value as? FeedUiState.Success)?.copy(
-                        isLoadingMore = false,
-                        hasMore = false
-                    ) ?: FeedUiState.Error("数据为空")
+                    val current = _feedUiState.value
+                    if (current is FeedUiState.Success) {
+                        _feedUiState.value = current.copy(
+                            isLoadingMore = false,
+                            hasMore = false,
+                            error = "数据为空"
+                        )
+                    } else {
+                        _feedUiState.value = FeedUiState.Error("数据为空")
+                    }
                 }
             } else {
+                // HTTP 非 2xx 响应
                 val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                _feedUiState.value = FeedUiState.Error(errorData.msg)
+                val errorMsg = errorData.msg ?: "请求失败"
+                val current = _feedUiState.value
+                if (current is FeedUiState.Success) {
+                    _feedUiState.value = current.copy(
+                        isLoadingMore = false,
+                        error = errorMsg
+                    )
+                } else {
+                    _feedUiState.value = FeedUiState.Error(errorMsg)
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            _feedUiState.value = FeedUiState.Error(e.message.toString())
+            val current = _feedUiState.value
+            if (current is FeedUiState.Success) {
+                _feedUiState.value = current.copy(
+                    isLoadingMore = false,
+                    error = ""
+                )
+            } else {
+                _feedUiState.value = FeedUiState.Error(isNoNetwork = true)
+            }
         } finally {
             isLoadingMore = false
         }
     }
 }
 
-// 修改 FeedUiState，携带加载更多状态
 sealed class FeedUiState {
     object Loading : FeedUiState()
     data class Success(
         val feedData: FeedData,
         val isLoadingMore: Boolean = false,
-        val hasMore: Boolean = true
+        val hasMore: Boolean = true,
+        val error: String? = null
     ) : FeedUiState()
-    class Error(val msg: String) : FeedUiState()
+
+    class Error(val msg: String? = null, val isNoNetwork: Boolean = false) : FeedUiState()
 }

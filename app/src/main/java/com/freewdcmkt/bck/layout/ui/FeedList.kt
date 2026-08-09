@@ -16,12 +16,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,14 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
-import com.freewdcmkt.bck.components.freewd.FreewdFooter
-import com.freewdcmkt.bck.components.LoadErrorUiLayout
 import com.freewdcmkt.bck.components.LoadingCard
+import com.freewdcmkt.bck.components.freewd.FreewdFooter
 import com.freewdcmkt.bck.data.screen.Feed
 import com.freewdcmkt.bck.util.FeedEvent
 import com.freewdcmkt.bck.viewmodel.FeedUiState
 import com.freewdcmkt.bck.viewmodel.FeedViewmodel
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +55,7 @@ fun FeedLayout(
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
+
     LaunchedEffect(zone) { viewmodel.fetchData(zone) }
     LaunchedEffect(Unit) {
         var lastVersion = 0
@@ -78,6 +83,7 @@ fun FeedLayout(
                 }
             }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -111,10 +117,6 @@ fun FeedLayout(
         ) {
             when (uiState) {
                 is FeedUiState.Loading -> LoadingCard()
-                is FeedUiState.Error -> LoadErrorUiLayout(
-                    onClick = { viewmodel.fetchData(zone) }
-                )
-
                 is FeedUiState.Success -> {
                     FeedUiLayout(
                         feed = (uiState as FeedUiState.Success).feedData.feed,
@@ -124,6 +126,8 @@ fun FeedLayout(
                         hasMore = (uiState as FeedUiState.Success).hasMore
                     )
                 }
+
+                is FeedUiState.Error -> {}
             }
         }
     }
@@ -132,7 +136,7 @@ fun FeedLayout(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedUiLayout(
+private fun FeedUiLayout(
     feed: List<Feed>, listState: LazyListState, isLoadingMore: Boolean,
     hasMore: Boolean, onClick: (id: Int) -> Unit
 ) {

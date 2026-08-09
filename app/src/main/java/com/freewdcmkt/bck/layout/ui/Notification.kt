@@ -2,29 +2,35 @@ package com.freewdcmkt.bck.layout.ui
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.components.freewd.NotificationCard
+import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.viewmodel.NotificationUiStates
 import com.freewdcmkt.bck.viewmodel.NotificationViewmodel
@@ -34,47 +40,82 @@ import kotlinx.coroutines.launch
 @Composable
 fun Notification(
     viewmodel: NotificationViewmodel = viewModel(),
-    onToFeedDetail: (Int) -> Unit
+    onToFeedDetail: (Int) -> Unit,
+    onBack: () -> Unit
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val uiStates by viewmodel.uiStates.collectAsState()
+    val expand = remember { mutableStateOf(false) }
+    val noNetworkHint = stringResource(R.string.no_internet_hint)
     val yesHint = stringResource(R.string.yes_hint)
     LaunchedEffect(Unit) { viewmodel.getNotification() }
     LaunchedEffect(uiStates) {
         if (uiStates is NotificationUiStates.LoadError) {
             scope.launch {
-                val result = snackBarHostState.showSnackbar(
-                    message = (uiStates as NotificationUiStates.LoadError).msg,
-                    actionLabel = yesHint,
-                    duration = SnackbarDuration.Short
-                )
-                when (result) {
-                    SnackbarResult.ActionPerformed -> {
-                        viewmodel.getNotification()
+                if ((uiStates as NotificationUiStates.LoadError).isNoNetwork) {
+                    snackBarHostState.showSnackbar(noNetworkHint, yesHint)
+                } else {
+                    (uiStates as NotificationUiStates.LoadError).msg?.let {
+                        snackBarHostState.showSnackbar(
+                            it
+                        )
                     }
-
-                    else -> {}
                 }
             }
         }
     }
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.notification_hint)) }) }) { innerPadding ->
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text(stringResource(R.string.notification_hint)) },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        painterResource(R.drawable.baseline_arrow_back_24),
+                        stringResource(R.string.back_hint)
+                    )
+                }
+            },
+            actions = {
+                if (uiStates is NotificationUiStates.Finish && (uiStates as NotificationUiStates.Finish).notificationData.isNotEmpty()) IconButton(
+                    onClick = { expand.value = true },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_more_vert_24),
+                        stringResource(R.string.more_hint)
+                    )
+                    DropdownMenu(
+                        expand.value,
+                        onDismissRequest = {
+                            expand.value = false
+                        }) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.clear_all_notifications_hint)) },
+                            onClick = {
+                                expand.value = false
+                                viewmodel.clearNotifications(true)
+                            })
+                    }
+                }
+            })
+    }) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             when (uiStates) {
                 is NotificationUiStates.Loading -> LoadingCard()
                 is NotificationUiStates.Finish -> {
-                    val data =  (uiStates as NotificationUiStates.Finish).notificationData
-                    Log.d("NOTIFICATION UI",data.toString())
+                    val data = (uiStates as NotificationUiStates.Finish).notificationData
                     NotificationUi(
-                       data,
+                        data,
                         onToFeedDetail = { type, feedId ->
                             if (type == 1 || type == 2) onToFeedDetail(feedId)
                         })
                 }
 
                 is NotificationUiStates.LoadError -> {
-
+                    FreewdHint(
+                        icon = R.drawable.baseline_error_24,
+                        hint = stringResource(R.string.load_error_hint)
+                    )
                 }
             }
         }
@@ -87,8 +128,12 @@ private fun NotificationUi(
     notificationData: List<NotificationData>,
     onToFeedDetail: (Int, Int) -> Unit
 ) {
-    LazyColumn(modifier = Modifier.padding(horizontal = 15.dp)) {
-        if (notificationData.isNotEmpty()) {
+    if (notificationData.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
+        ) {
+
             items(
                 items = notificationData,
                 key = { it.id }
@@ -103,9 +148,11 @@ private fun NotificationUi(
                     onClick = { onToFeedDetail(data.type, data.feedId) }
                 )
             }
-        } else {
-            item { Text("NO NOTIFICATION") }
-
         }
+    } else {
+        FreewdHint(
+            icon = R.drawable.baseline_notifications_none_24,
+            hint = stringResource(R.string.no_notifications_hint)
+        )
     }
 }
