@@ -27,6 +27,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.util.formatTime
 import com.mikepenz.markdown.coil2.Coil2ImageTransformerImpl
 import com.mikepenz.markdown.m3.Markdown
@@ -42,7 +43,7 @@ fun TitleText(text: String) {
             lineHeight = 20.sp,
             //platformStyle = PlatformTextStyle(includeFontPadding = false)
         ),
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface
     )
 }
@@ -51,14 +52,12 @@ fun TitleText(text: String) {
 @Composable
 fun UsernameText(text: String) {
     Text(
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         text = text,
+        color = FreewdTheme.usernameColor,
         style = TextStyle(
             fontSize = 14.sp,
-            //lineHeight = 20.sp,
-            // platformStyle = PlatformTextStyle(includeFontPadding = false)
         ),
-        color = MaterialTheme.colorScheme.onSurface,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )

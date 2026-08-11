@@ -14,12 +14,16 @@ import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
@@ -34,22 +38,20 @@ fun FreewdDialog(
     hintMsg2: String
 ) {
     BasicAlertDialog(
-        onDismissRequest = onDismiss // 点击外部/返回键关闭
+        onDismissRequest = onDismiss
     ) {
-        // 手动构建 Material 风格的卡片布局
         Card(
-            shape = RoundedCornerShape(28.dp), // 标准对话框圆角
+            shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp) // 左右留边距
+                .padding(horizontal = 24.dp)
         ) {
             Column(
                 modifier = Modifier.padding(24.dp) // 内边距
             ) {
-                // ---- 标题 ----
                 Text(
                     text = title,
                     style = MaterialTheme.typography.headlineSmall,
@@ -58,7 +60,6 @@ fun FreewdDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // ---- 内容描述 ----
                 Text(
                     text = msg,
                     style = MaterialTheme.typography.bodyMedium,
@@ -67,7 +68,6 @@ fun FreewdDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ---- 按钮区域（右对齐） ----
                 Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.fillMaxWidth()
@@ -79,7 +79,6 @@ fun FreewdDialog(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    // 确认删除按钮（红色警示）
                     TextButton(
                         onClick =
                             onConfirm
@@ -93,4 +92,37 @@ fun FreewdDialog(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun FreewdLoadingDialog(onDismiss: () -> Unit, text: String) {
+    BasicAlertDialog(
+        onDismissRequest = onDismiss
+    ) {
+        Card(
+            shape = RoundedCornerShape(28.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(24.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                LoadingIndicator()
+                Text(text)
+            }
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun Show() {
+
 }

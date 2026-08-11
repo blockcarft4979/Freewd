@@ -24,13 +24,13 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class FeedDetailViewmodel : ViewModel() {
-    private var currentId : Int = 0
+    private var currentId: Int = 0
     private val _feedDetailUiState = MutableStateFlow<FeedDetailUiState>(FeedDetailUiState.Loading)
     val feedDetailUiState: StateFlow<FeedDetailUiState> = _feedDetailUiState.asStateFlow()
     private val _isAuthor = MutableStateFlow(false)
     val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
-    fun fetchData(id: Int) {
-        if (currentId==id)return
+    fun fetchData(id: Int, refresh: Boolean = false) {
+        if (currentId == id && !refresh && _feedDetailUiState.value is FeedDetailUiState.Success) return
         _feedDetailUiState.value = FeedDetailUiState.Loading
         viewModelScope.launch {
             currentId = id
@@ -115,8 +115,8 @@ class FeedDetailViewmodel : ViewModel() {
             }
             val body = response.body.string()
             if (response.isSuccessful) {
-                fetchData(id)
-            }else{
+                fetchData(id,true)
+            } else {
                 val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
                 _feedDetailUiState.value = FeedDetailUiState.Error(errorData.msg)
             }

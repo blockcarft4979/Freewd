@@ -36,7 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.data.screen.LoginScreenData
 import com.freewdcmkt.bck.data.screen.RegisterScreenData
@@ -55,7 +55,10 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
     val noNetworkHint = stringResource(R.string.no_internet_hint)
     val scope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
-
+    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
+    if (isShowDialog.value) {
+        FreewdLoadingDialog(onDismiss = {},stringResource(R.string.loading_hint))
+    }
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Error) {
             val error = (uiState as LoginUiState.Error)
@@ -79,27 +82,26 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
                 snackbarHost = { SnackbarHost(snackBarHostState) }
             ) { innerPadding ->
                 Column(modifier = Modifier.padding(innerPadding)) {
-                    when (uiState) {
-
-                        is LoginUiState.Loading -> LoadingCard()
-
-                        else -> LoginLayout(
-                            onRegister = navToRegister,
-                            onLogin = { account, password ->
-                                if (account.isNotEmpty() && password.isNotEmpty()) run {
-                                    viewModel.fetchData(
-                                        password,
-                                        account
+                    LoginLayout(
+                        onRegister = navToRegister,
+                        onLogin = { account, password ->
+                            if (account.isNotEmpty() && password.isNotEmpty()) run {
+                                viewModel.fetchData(
+                                    password,
+                                    account
+                                )
+                            }
+                            else {
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(
+                                        noAccountOrPasswordHint
                                     )
                                 }
-                                else {
-                                    scope.launch {
-                                        snackBarHostState.showSnackbar(
-                                            noAccountOrPasswordHint
-                                        )
-                                    }
-                                }
-                            })
+                            }
+                        })
+                    when (uiState) {
+                        is LoginUiState.Loading -> isShowDialog.value = true
+                        else -> isShowDialog.value = false
                     }
                 }
             }
@@ -150,7 +152,8 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp)
+                    .padding(top = 10.dp),
+                enabled = password.isNotEmpty() && account.isNotEmpty()
             ) {
                 Text(stringResource(R.string.login_login_btn))
             }

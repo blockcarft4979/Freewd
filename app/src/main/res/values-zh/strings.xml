@@ -60,9 +60,16 @@
     <string name="reply_feed_hint">回复了你的帖子：%s</string>
     <string name="unsupported_notification_hint">不支持的类型，请升级应用</string>
     <string name="post_count_hint">帖子：%s</string>
-    <string name="likes_count_hint">收到的赞：%s</string>
+    <string name="likes_count_hint">获赞：%s</string>
     <string name="change_username_hint">修改用户名</string>
     <string name="change_username_description_hint">点击这里更改你的用户名</string>
     <string name="logout_hint">退出登录</string>
     <string name="logout_description_hint">退出当前账号</string>
+    <string name="hint_logout_hint">退出登录</string>
+    <string name="no_notifications_hint">无通知</string>
+    <string name="clear_all_notifications_hint">清理通知</string>
+    <string name="loading_hint">加载中</string>
+    <string name="image_hint">图片</string>
+    <string name="upload_image">上传图片</string>
+    <string name="preview_image">预览图片</string>
 </resources>

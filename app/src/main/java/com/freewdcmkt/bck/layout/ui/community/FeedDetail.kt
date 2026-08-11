@@ -101,7 +101,7 @@ fun FeedDetailLayout(
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 
-    LaunchedEffect(Unit) { viewmodel.fetchData(id) }
+    LaunchedEffect(id) { viewmodel.fetchData(id,true) }
     if (isShowDialog.value) {
         FreewdDialog(
             onDismiss = { isShowDialog.value = false },

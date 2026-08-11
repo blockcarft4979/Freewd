@@ -31,7 +31,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.viewmodel.RegisterUiState
 import com.freewdcmkt.bck.viewmodel.RegisterViewmodel
@@ -46,6 +46,8 @@ fun RegisterLayout(viewmodel: RegisterViewmodel = viewModel()) {
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val noNetWorkHint = stringResource(R.string.no_internet_hint)
+    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
+    if (isShowDialog.value) FreewdLoadingDialog(onDismiss = {},stringResource(R.string.loading_hint))
 
     LaunchedEffect(uiState) {
         if (uiState is RegisterUiState.Error) {
@@ -65,17 +67,16 @@ fun RegisterLayout(viewmodel: RegisterViewmodel = viewModel()) {
         topBar = { TopAppBar({ Text(stringResource(R.string.register_hint)) }) },
         snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
+            RegisterUiLayout(
+                onSendCode = { viewmodel.sendCode(it) },
+                onRegister = { account, password, code ->
+                    viewmodel.register(account, password, code)
+                },
+                countdown = countdown
+            )
             when (uiState) {
-
-                is RegisterUiState.Loading -> LoadingCard()
-
-                else -> RegisterUiLayout(
-                    onSendCode = { viewmodel.sendCode(it) },
-                    onRegister = { account, password, code ->
-                        viewmodel.register(account, password, code)
-                    },
-                    countdown = countdown
-                )
+                is RegisterUiState.Loading -> isShowDialog.value = true
+                else -> isShowDialog.value = false
             }
         }
     }
