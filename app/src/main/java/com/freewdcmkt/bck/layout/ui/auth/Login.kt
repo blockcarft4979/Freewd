@@ -36,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.data.screen.LoginScreenData
@@ -57,7 +58,7 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
     val snackBarHostState = remember { SnackbarHostState() }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
     if (isShowDialog.value) {
-        FreewdLoadingDialog(onDismiss = {},stringResource(R.string.loading_hint))
+        FreewdLoadingDialog(onDismiss = {}, stringResource(R.string.loading_hint))
     }
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Error) {
@@ -115,7 +116,10 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
 fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: String) -> Unit) {
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-
+    val userIcon = rememberSaveable() { mutableStateOf("") }
+    LaunchedEffect(account) {
+        userIcon.value = account
+    }
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -127,7 +131,7 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            FreewdTopComponent()
+            FreewdTopComponent(userIcon.value)
             OutlinedTextField(
                 value = account,
                 onValueChange = { account = it },

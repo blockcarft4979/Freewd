@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.viewmodel.RegisterUiState
@@ -44,6 +45,7 @@ fun RegisterLayout(viewmodel: RegisterViewmodel = viewModel()) {
     val uiState by viewmodel.registerUiState.collectAsState()
     val countdown by viewmodel.countdown.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
+
     val scope = rememberCoroutineScope()
     val noNetWorkHint = stringResource(R.string.no_internet_hint)
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
@@ -92,13 +94,17 @@ private fun RegisterUiLayout(
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var authCode by rememberSaveable { mutableStateOf("") }
+    val userIcon = rememberSaveable() { mutableStateOf("") }
+    LaunchedEffect(account) {
+        userIcon.value = account
+    }
     Column(
         modifier = Modifier
             .imePadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 15.dp)
     ) {
-        FreewdTopComponent()
+        FreewdTopComponent(userIcon.value)
         OutlinedTextField(
             value = account,
             onValueChange = { account = it },

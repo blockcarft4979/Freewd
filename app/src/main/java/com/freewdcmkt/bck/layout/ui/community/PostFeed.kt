@@ -180,7 +180,7 @@ fun PostFeedUiLayout(
                 .fillMaxWidth()
                 .padding(top = 8.dp),
             onClick = { onPostFeed(title, message) },
-            enabled = message.isNotEmpty()
+            enabled = message.isNotEmpty() && message.isNotBlank()
         ) {
             Text(stringResource(R.string.post_new_feed_hint))
         }

@@ -1,36 +1,53 @@
 package com.freewdcmkt.bck.components.freewd
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.userAvatarUrl
 
 @Composable
-fun FreewdTopComponent(){
+fun FreewdTopComponent(qq: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            modifier = Modifier
-                .size(40.dp)
-                .padding(5.dp),
-            painter = painterResource(R.mipmap.ic_launcher_monochrome),
-            contentDescription = null
-        )
+        if (qq.isEmpty()) {
+            Icon(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(40.dp)
+                    .padding(5.dp),
+                painter = painterResource(R.mipmap.ic_launcher_monochrome),
+                contentDescription = null
+            )
+        } else {
+            Image(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(40.dp)
+                    .padding(5.dp),
+                painter = rememberAsyncImagePainter(userAvatarUrl(qq)),
+                contentDescription = null
+            )
+        }
         Text(
             modifier = Modifier.padding(start = 4.dp),
             text = stringResource(R.string.login_welcome_title),
