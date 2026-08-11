@@ -25,12 +25,13 @@ import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.Feed
 
 @Composable
-fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit) {
+fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit,onToPreviewImg:(String)-> Unit) {
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.padding(vertical = 4.dp)) {
         Row(
             modifier = Modifier
@@ -69,6 +70,10 @@ fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit) {
 
                 if (feed.title != null) TitleText(feed.title)
                 if (feed.msg != null) ContentText(feed.msg)
+                if (feed.img!= null) ImageCard(
+                    feed.img,
+                    onClick = onToPreviewImg
+                )
             }
         }
     }
@@ -83,7 +88,12 @@ fun ShowCard() {
         "我是内容，你好世界\nI'm content hello world",
         100,
         "IM ", "",
-        "2025-08-13"
+        "2025-08-13",
+        ""
     )
-    FeedCard(feed) { }
+    FeedCard(
+        feed,
+        onClick = {  }
+        , onToPreviewImg = {}
+    )
 }

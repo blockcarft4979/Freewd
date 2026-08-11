@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.ui.community
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -58,7 +58,6 @@ import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link.feedLink
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.LoadErrorUiLayout
-import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.components.ReplyCard
 import com.freewdcmkt.bck.components.ReplyInputBar
 import com.freewdcmkt.bck.components.freewd.ContentMarkdown
@@ -66,8 +65,10 @@ import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.IconTextButton
+import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UsernameText
+import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.viewmodel.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.FeedDetailViewmodel
@@ -80,7 +81,8 @@ fun FeedDetailLayout(
     //zone: Int,
     viewmodel: FeedDetailViewmodel = viewModel(),
     onDeleteFeed: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onToPreviewImg: (String) -> Unit
 ) {
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
@@ -218,7 +220,7 @@ fun FeedDetailLayout(
                             focusRequester.requestFocus()
                             replyQq.value = qq
                             replyUsername.value = username
-                        })
+                        }, onToPreviewImg = onToPreviewImg)
                 }
             }
         }
@@ -229,7 +231,8 @@ fun FeedDetailLayout(
 private fun FeedUiLayout(
     feedDetailData: FeedDetailData,
     onClickLike: () -> Unit,
-    onReplyUser: (String, String) -> Unit
+    onReplyUser: (String, String) -> Unit,
+    onToPreviewImg: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -293,6 +296,10 @@ private fun FeedUiLayout(
                                     text = feedDetailData.msg
                                 )
                             }
+                            if (feedDetailData.img != null) ImageCard(
+                                feedDetailData.img,
+                                onClick = onToPreviewImg
+                            )
                         }
 
                     }

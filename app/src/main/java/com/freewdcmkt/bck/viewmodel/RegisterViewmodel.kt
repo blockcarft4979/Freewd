@@ -74,7 +74,7 @@ class RegisterViewmodel : ViewModel() {
                 }
             } catch (e: Exception) {
                 resetCountdown()
-                _registerUiState.value = RegisterUiState.Error(e.message.toString())
+                _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
             }
         }
     }
@@ -113,13 +113,6 @@ class RegisterViewmodel : ViewModel() {
                 _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
             }
         }
-    }
-    fun backToNoAction(){
-        _registerUiState.value = RegisterUiState.NoAction
-    }
-    fun resetState() {
-        resetCountdown()
-        _registerUiState.value = RegisterUiState.NoAction
     }
 
     override fun onCleared() {

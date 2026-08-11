@@ -16,7 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
-import com.freewdcmkt.bck.layout.ui.LoginLayout
+import com.freewdcmkt.bck.layout.ui.auth.LoginLayout
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.viewmodel.LoginState
 import com.freewdcmkt.bck.viewmodel.MainViewmodel
@@ -36,11 +36,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
-        super.onNewIntent(intent, caller)
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
         intentState.value  = intent
     }
 
+    override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+        onNewIntent(intent)
+    }
 }
 
 @Composable

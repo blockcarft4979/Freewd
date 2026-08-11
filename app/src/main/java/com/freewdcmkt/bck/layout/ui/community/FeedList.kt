@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.ui.community
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -16,16 +16,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,39 +31,30 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
-import com.freewdcmkt.bck.components.LoadingCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
+import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.Feed
-import com.freewdcmkt.bck.util.FeedEvent
+import com.freewdcmkt.bck.viewmodel.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.FeedUiState
-import com.freewdcmkt.bck.viewmodel.FeedViewmodel
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedLayout(
-    viewmodel: FeedViewmodel = viewModel(),
+    viewmodel: FeedListViewmodel= viewModel(),
+    isRefresh : Boolean,
     zone: Int,
     onToFeedDetail: (id: Int, zone: Int) -> Unit,
     onToPostFeed: (id: Int?, zone: Int) -> Unit,
-    onBack: () -> Unit
+    onToPreviewImg: (String) -> Unit,
+    onBack: () -> Unit,
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
 
     LaunchedEffect(zone) { viewmodel.fetchData(zone) }
-    LaunchedEffect(Unit) {
-        var lastVersion = 0
-        FeedEvent.refreshEvents.collect { version ->
-            if (version != lastVersion) {
-                lastVersion = version
-                if (version > 0) {
-                    Log.d("FeedLayout", "版本变化，刷新列表")
-                    viewmodel.fetchData(zone, forceRefresh = true)
-                }
-            }
-        }
+    LaunchedEffect(isRefresh) {
+        if (isRefresh){viewmodel.fetchData(zone,forceRefresh = true)}
     }
     LaunchedEffect(listState) {
         snapshotFlow {
@@ -123,7 +110,8 @@ fun FeedLayout(
                         onClick = { onToFeedDetail(it, zone) },
                         listState = listState,
                         isLoadingMore = (uiState as FeedUiState.Success).isLoadingMore,
-                        hasMore = (uiState as FeedUiState.Success).hasMore
+                        hasMore = (uiState as FeedUiState.Success).hasMore,
+                        onToPreviewImg = onToPreviewImg
                     )
                 }
 
@@ -138,7 +126,7 @@ fun FeedLayout(
 @Composable
 private fun FeedUiLayout(
     feed: List<Feed>, listState: LazyListState, isLoadingMore: Boolean,
-    hasMore: Boolean, onClick: (id: Int) -> Unit
+    hasMore: Boolean, onClick: (id: Int) -> Unit, onToPreviewImg: (String) -> Unit
 ) {
     LazyColumn(state = listState) {
         items(
@@ -147,7 +135,8 @@ private fun FeedUiLayout(
         ) { feed ->
             FeedCard(
                 feed,
-                onClick = { onClick(feed.id) }
+                onClick = { onClick(feed.id) },
+                onToPreviewImg = onToPreviewImg
             )
         }
         if (isLoadingMore) {

@@ -11,3 +11,6 @@ data class PostFeedData(
     val xp: Int? = null,
     val level: Int? = null,
 )
+
+@Serializable
+data class UploadImgData(val url: String)

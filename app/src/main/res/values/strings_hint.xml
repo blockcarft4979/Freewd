@@ -5,4 +5,7 @@
     <string name="clear_all_notifications_hint">Clear all</string>
     <string name="clear_notifications_from_7_days_ago">Before 7 days</string>
     <string name="loading_hint">Loading</string>
+    <string name="image_hint">Image</string>
+    <string name="upload_image">Upload image</string>
+    <string name="preview_image">Preview image</string>
 </resources>

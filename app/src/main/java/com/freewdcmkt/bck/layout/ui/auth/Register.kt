@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.ui.auth
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +31,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.LoadingCard
+import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.viewmodel.RegisterUiState
 import com.freewdcmkt.bck.viewmodel.RegisterViewmodel
@@ -148,6 +148,4 @@ private fun RegisterUiLayout(
             }, modifier = Modifier.fillMaxWidth()
         ) { Text(stringResource(R.string.register_hint)) }
     }
-
-
 }

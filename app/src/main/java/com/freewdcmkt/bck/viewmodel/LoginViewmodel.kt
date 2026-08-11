@@ -53,7 +53,7 @@ class LogInViewModel() : ViewModel() {
                     UserInfoManager.saveUid(loginData.uid.toString())
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
-                    _loginUiState.value = LoginUiState.Success
+                    _loginUiState.value = LoginUiState.NoAction
                 } else {
                     Log.d("VIEW MODEL", "ERROR")
                     val data = JsonParser.json.decodeFromString<ErrorData>(body)
@@ -66,16 +66,12 @@ class LogInViewModel() : ViewModel() {
         }
     }
 
-    fun backToNoAction() {
-        _loginUiState.value = LoginUiState.NoAction
-    }
 }
 
 
 sealed class LoginUiState {
     object NoAction : LoginUiState()
     object Loading : LoginUiState()
-    object Success : LoginUiState()
     class Error(val msg: String?=null, val isNoNetWork: Boolean = false) : LoginUiState()
 
 }

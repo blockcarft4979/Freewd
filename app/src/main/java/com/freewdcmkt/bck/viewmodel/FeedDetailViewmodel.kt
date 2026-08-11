@@ -7,7 +7,6 @@ import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
-import com.freewdcmkt.bck.util.FeedEvent
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
 import com.freewdcmkt.bck.util.UserInfoManager
@@ -25,13 +24,16 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class FeedDetailViewmodel : ViewModel() {
+    private var currentId : Int = 0
     private val _feedDetailUiState = MutableStateFlow<FeedDetailUiState>(FeedDetailUiState.Loading)
     val feedDetailUiState: StateFlow<FeedDetailUiState> = _feedDetailUiState.asStateFlow()
     private val _isAuthor = MutableStateFlow(false)
     val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
     fun fetchData(id: Int) {
+        if (currentId==id)return
         _feedDetailUiState.value = FeedDetailUiState.Loading
         viewModelScope.launch {
+            currentId = id
             try {
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
@@ -133,10 +135,6 @@ class FeedDetailViewmodel : ViewModel() {
                 val body = response.body.string()
                 if (response.isSuccessful) {
                     _feedDetailUiState.value = FeedDetailUiState.DeleteSuccess
-                    //FeedEvent.emitRefresh()
-                    Log.d("FeedDetail", "准备发送刷新事件")
-                    FeedEvent.emitRefresh()
-                    Log.d("FeedDetail", "刷新事件已发送")
                 } else {
                     val msg = JsonParser.json.decodeFromString<ErrorData>(body)
                     _feedDetailUiState.value = FeedDetailUiState.Error(msg.msg)

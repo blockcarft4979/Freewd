@@ -1,8 +1,6 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.ui.user
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,20 +19,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.LoadingCard
+import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.components.freewd.NotificationCard
 import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.viewmodel.NotificationUiStates
 import com.freewdcmkt.bck.viewmodel.NotificationViewmodel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,25 +40,25 @@ fun Notification(
     onBack: () -> Unit
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val uiStates by viewmodel.uiStates.collectAsState()
     val expand = remember { mutableStateOf(false) }
     val noNetworkHint = stringResource(R.string.no_internet_hint)
     val yesHint = stringResource(R.string.yes_hint)
     LaunchedEffect(Unit) { viewmodel.getNotification() }
+
     LaunchedEffect(uiStates) {
         if (uiStates is NotificationUiStates.LoadError) {
-            scope.launch {
-                if ((uiStates as NotificationUiStates.LoadError).isNoNetwork) {
-                    snackBarHostState.showSnackbar(noNetworkHint, yesHint)
-                } else {
-                    (uiStates as NotificationUiStates.LoadError).msg?.let {
-                        snackBarHostState.showSnackbar(
-                            it
-                        )
-                    }
+            val error = (uiStates as NotificationUiStates.LoadError)
+            if (error.isNoNetwork) {
+                snackBarHostState.showSnackbar(noNetworkHint, yesHint)
+            } else {
+                (uiStates as NotificationUiStates.LoadError).msg?.let {
+                    snackBarHostState.showSnackbar(
+                        it
+                    )
                 }
             }
+
         }
     }
     Scaffold(topBar = {

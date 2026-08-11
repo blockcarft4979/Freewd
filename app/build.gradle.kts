@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace = "com.freewdcmkt.bck"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 156
-        versionName = "1.5.6"
+        versionCode = 157
+        versionName = "1.5.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,9 +47,6 @@ dependencies {
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.32.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.32.0")
-    implementation("androidx.navigation3:navigation3-runtime:1.1.0")
-    implementation("androidx.navigation3:navigation3-ui:1.1.0")
-    implementation("androidx.navigation:navigation-compose:2.8.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
@@ -70,6 +67,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

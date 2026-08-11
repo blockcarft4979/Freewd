@@ -44,7 +44,7 @@ import com.freewdcmkt.bck.components.HomeTopZone
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.data.screen.HomeData
-import com.freewdcmkt.bck.layout.ui.Me
+import com.freewdcmkt.bck.layout.ui.user.Me
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel

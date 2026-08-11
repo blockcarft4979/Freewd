@@ -9,6 +9,9 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -20,11 +23,14 @@ import com.freewdcmkt.bck.data.screen.FeedScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
 import com.freewdcmkt.bck.data.screen.NotificationScreen
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
+import com.freewdcmkt.bck.data.screen.PreviewImgScreenData
+import com.freewdcmkt.bck.data.values.StringValues.REFRESH
 import com.freewdcmkt.bck.layout.ui.BrowserLayout
-import com.freewdcmkt.bck.layout.ui.FeedDetailLayout
-import com.freewdcmkt.bck.layout.ui.FeedLayout
-import com.freewdcmkt.bck.layout.ui.Notification
-import com.freewdcmkt.bck.layout.ui.PostFeedLayout
+import com.freewdcmkt.bck.layout.ui.PreviewImgUi
+import com.freewdcmkt.bck.layout.ui.community.FeedDetailLayout
+import com.freewdcmkt.bck.layout.ui.community.FeedLayout
+import com.freewdcmkt.bck.layout.ui.community.PostFeedLayout
+import com.freewdcmkt.bck.layout.ui.user.Notification
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -70,6 +76,9 @@ fun FreewdAppNavHost(navController: NavHostController) {
         }
         composable<FeedScreenData> { backStack ->
             val args = backStack.toRoute<FeedScreenData>()
+            val savedStateHandle = backStack.savedStateHandle
+            val isRefresh by savedStateHandle.getStateFlow(REFRESH, false).collectAsState()
+            LaunchedEffect(isRefresh) { savedStateHandle[REFRESH] = false }
             FeedLayout(
                 zone = args.zone,
                 onToFeedDetail = { id, zone ->
@@ -78,14 +87,21 @@ fun FreewdAppNavHost(navController: NavHostController) {
                 onToPostFeed = { id, zone ->
                     navController.navigate(PostFeedScreen(id, zone))
                 },
-                onBack = { navController.popBackStack() })
+                onBack = { navController.popBackStack() },
+                onToPreviewImg = { url -> navController.navigate(PreviewImgScreenData(url)) },
+                isRefresh = isRefresh
+            )
         }
         composable<FeedDetailScreenData> { backStack ->
             val args = backStack.toRoute<FeedDetailScreenData>()
             FeedDetailLayout(
                 args.id,
-                onDeleteFeed = { navController.popBackStack() },
-                onBack = { navController.popBackStack() })
+                onDeleteFeed = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(REFRESH, true)
+                    navController.popBackStack()
+                },
+                onBack = { navController.popBackStack() },
+                onToPreviewImg = { url -> navController.navigate(PreviewImgScreenData(url)) })
         }
         composable<BrowserScreenData> { backSTack ->
             val args = backSTack.toRoute<BrowserScreenData>()
@@ -93,10 +109,16 @@ fun FreewdAppNavHost(navController: NavHostController) {
         }
         composable<PostFeedScreen> { backStack ->
             val args = backStack.toRoute<PostFeedScreen>()
+
             PostFeedLayout(
                 args.zone,
-                onUploaded = { navController.popBackStack() },
-                onBack = { navController.popBackStack() })
+                onUploaded = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(REFRESH, true)
+                    navController.popBackStack()
+                },
+                onBack = { navController.popBackStack() },
+                onToPreviewImg = { url -> navController.navigate(PreviewImgScreenData(url)) },
+            )
         }
         composable<NotificationScreen> {
             Notification(
@@ -108,6 +130,10 @@ fun FreewdAppNavHost(navController: NavHostController) {
                     )
                 }, onBack = { navController.popBackStack() }
             )
+        }
+        composable<PreviewImgScreenData> { backStack ->
+            val args = backStack.toRoute<PreviewImgScreenData>()
+            PreviewImgUi(args.url)
         }
     }
 }

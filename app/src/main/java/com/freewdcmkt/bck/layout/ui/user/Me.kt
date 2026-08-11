@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.ui.user
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable

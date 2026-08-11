@@ -18,6 +18,7 @@ data class FeedDetailData(
     val likeCount: Int,
     val isLiked: Boolean,
     val isMarkdown: Boolean,
+    val img: String? = null,
     val reply: List<FeedReplyData>? = null
 )
 

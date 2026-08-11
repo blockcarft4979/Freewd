@@ -21,8 +21,7 @@ import okhttp3.Request
 //你妈的傻逼 FEED LIST VIEWMODEL
 // 看我今天下午不把你给杀了
 // TODO()
-
-class FeedViewmodel : ViewModel() {
+class FeedListViewmodel : ViewModel() {
     private var currentPage = 0
     private var totalPages = 0
     private var hasMore = true

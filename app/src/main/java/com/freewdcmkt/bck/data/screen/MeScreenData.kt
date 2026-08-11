@@ -3,7 +3,7 @@ package com.freewdcmkt.bck.data.screen
 import kotlinx.serialization.Serializable
 
 @Serializable
-object MeScreenData
+data object MeScreenData
 {
 }
 @Serializable

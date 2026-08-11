@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.ui.auth
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.LoadingCard
+import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.data.screen.LoginScreenData
 import com.freewdcmkt.bck.data.screen.RegisterScreenData
@@ -58,17 +58,15 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
 
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Error) {
-            scope.launch {
-                if ((uiState as LoginUiState.Error).isNoNetWork) {
-                    snackBarHostState.showSnackbar(noNetworkHint)
-                } else {
-                    (uiState as LoginUiState.Error).msg?.let {
-                        snackBarHostState.showSnackbar(it)
-                    }
+            val error = (uiState as LoginUiState.Error)
+            if (error.isNoNetWork) {
+                snackBarHostState.showSnackbar(noNetworkHint)
+            } else {
+                error.msg?.let {
+                    snackBarHostState.showSnackbar(it)
                 }
             }
         }
-
     }
 
     NavHost(navCollection, startDestination = LoginScreenData) {
@@ -82,7 +80,6 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
             ) { innerPadding ->
                 Column(modifier = Modifier.padding(innerPadding)) {
                     when (uiState) {
-                        is LoginUiState.Success -> viewModel.backToNoAction()
 
                         is LoginUiState.Loading -> LoadingCard()
 

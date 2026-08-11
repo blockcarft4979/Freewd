@@ -22,5 +22,6 @@ data class Feed(
     val id: Int,
     val username: String,
     val qq: String,
-    val date: String
+    val date: String,
+    val img: String? = null
 )
