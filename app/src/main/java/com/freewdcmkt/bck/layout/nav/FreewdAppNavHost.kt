@@ -138,6 +138,8 @@ fun FreewdAppNavHost(navController: NavHostController) {
             val args = backStack.toRoute<PreviewImgScreenData>()
             PreviewImgUi(args.url)
         }
-        composable<UserCenterScreenData> { UserCenter() }
+        composable<UserCenterScreenData> { UserCenter(
+            onBack = {navController.popBackStack()}
+        ) }
     }
 }

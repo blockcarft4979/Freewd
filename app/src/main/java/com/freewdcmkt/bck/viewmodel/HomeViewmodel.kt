@@ -7,7 +7,6 @@ import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.HomeData
-import com.freewdcmkt.bck.data.screen.MeData
 import com.freewdcmkt.bck.data.screen.Notification
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.data.screen.VerifyTokenData
@@ -58,13 +57,13 @@ class HomeViewmodel : ViewModel() {
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
-
-    private val _uiState = MutableStateFlow<MeUiState>(MeUiState.Loading)
+    private val _uiState = MutableStateFlow<MeUiState>(MeUiState.NoAction)
     val uiState: StateFlow<MeUiState> = _uiState.asStateFlow()
+
 
     private val _verifyTokenData = MutableStateFlow(VerifyTokenData("", 0))
     val verifyTokenData: StateFlow<VerifyTokenData> = _verifyTokenData.asStateFlow()
-    private var isLoadedMeData: Boolean = false
+
     fun fetchData(forceRefresh: Boolean = false) {
         Log.d("HOME VM", "是否刷新$forceRefresh")
         if (!forceRefresh) {
@@ -103,32 +102,6 @@ class HomeViewmodel : ViewModel() {
         }
     }
 
-    fun getUserInfo() {
-        if (isLoadedMeData) {
-            return
-        }
-        _uiState.value = MeUiState.Loading
-        viewModelScope.launch {
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.User.GET_USER_INFO_URL).build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                val data = JsonParser.json.decodeFromString<BaseData<MeData>>(body)
-                if (response.isSuccessful && data.data != null) {
-                    _uiState.value = MeUiState.Finish(data.data)
-                    isLoadedMeData = true
-                } else {
-                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                    _uiState.value = MeUiState.LoadError(errorData.msg)
-                }
-            } catch (e: Exception) {
-                _uiState.value = MeUiState.LoadError(isNoNetWork = true)
-            }
-        }
-    }
 
     fun submitUsername(username: String) {
         val requestBody = buildJsonObject { put("username", username) }.toString()
@@ -186,6 +159,7 @@ class HomeViewmodel : ViewModel() {
 }
 
 sealed class HomeUiState {
+
     object Loading : HomeUiState()
     object Finish : HomeUiState()
     class Error(val msg: String? = null, val isNoNetWork: Boolean = false) : HomeUiState()
@@ -193,9 +167,9 @@ sealed class HomeUiState {
 }
 
 sealed class MeUiState() {
+    object NoAction : MeUiState()
     object SubmittingUsername : MeUiState()
     object SubmitFinish : MeUiState()
-    object Loading : MeUiState()
-    class Finish(val meData: MeData) : MeUiState()
+
     class LoadError(val msg: String? = null, val isNoNetWork: Boolean = false) : MeUiState()
 }
