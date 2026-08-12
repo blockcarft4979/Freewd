@@ -3,9 +3,9 @@ package com.freewdcmkt.bck.data.screen
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object MeScreenData
-{
+data object MeScreenData {
 }
+
 @Serializable
 data class MeData(
     val xp: Int,
@@ -13,3 +13,6 @@ data class MeData(
     val postCount: Int,
     val totalLikes: Int
 )
+
+@Serializable
+data class UsernameData(val username: String)

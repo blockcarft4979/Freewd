@@ -9,6 +9,7 @@ import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.data.screen.MeData
 import com.freewdcmkt.bck.data.screen.Notification
+import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.data.screen.VerifyTokenData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.NetworkClient
@@ -22,7 +23,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class HomeViewmodel : ViewModel() {
     val userAccount = UserInfoManager.getUserAccountFlow()
@@ -89,10 +94,10 @@ class HomeViewmodel : ViewModel() {
                         Log.d("HOME VIEWMODEL", _homeData.value.zone.toString())
                     }
                 } else {
-                    _homeUiState.value = HomeUiState.Error(null,true)
+                    _homeUiState.value = HomeUiState.Error(null, true)
                 }
             } catch (e: Exception) {
-                _homeUiState.value = HomeUiState.Error(e.message.toString(),true)
+                _homeUiState.value = HomeUiState.Error(e.message.toString(), true)
                 e.printStackTrace()
             }
         }
@@ -120,7 +125,35 @@ class HomeViewmodel : ViewModel() {
                     _uiState.value = MeUiState.LoadError(errorData.msg)
                 }
             } catch (e: Exception) {
-                _uiState.value = MeUiState.LoadError(e.message.toString())
+                _uiState.value = MeUiState.LoadError(isNoNetWork = true)
+            }
+        }
+    }
+
+    fun submitUsername(username: String) {
+        val requestBody = buildJsonObject { put("username", username) }.toString()
+            .toRequestBody("application/json".toMediaType())
+        viewModelScope.launch {
+            _uiState.value = MeUiState.SubmittingUsername
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    NetworkClient.client.newCall(
+                        Request.Builder().url(RequestApi.User.SUBMIT_USER_NAME_URL)
+                            .post(requestBody)
+                            .build()
+                    ).execute()
+                }
+                val body = response.body.string()
+                val data = JsonParser.json.decodeFromString<BaseData<UsernameData>>(body)
+                if (response.isSuccessful && data.data != null) {
+                    _uiState.value = MeUiState.SubmitFinish
+                    UserInfoManager.saveUsername(data.data.username)
+                } else {
+                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                    _uiState.value = MeUiState.LoadError(errorData.msg)
+                }
+            } catch (e: Exception) {
+                _uiState.value = MeUiState.LoadError(isNoNetWork = true)
             }
         }
     }
@@ -160,7 +193,9 @@ sealed class HomeUiState {
 }
 
 sealed class MeUiState() {
+    object SubmittingUsername : MeUiState()
+    object SubmitFinish : MeUiState()
     object Loading : MeUiState()
     class Finish(val meData: MeData) : MeUiState()
-    class LoadError(val msg: String?) : MeUiState()
+    class LoadError(val msg: String? = null, val isNoNetWork: Boolean = false) : MeUiState()
 }

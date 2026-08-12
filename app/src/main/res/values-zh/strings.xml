@@ -72,4 +72,6 @@
     <string name="image_hint">图片</string>
     <string name="upload_image">上传图片</string>
     <string name="preview_image">预览图片</string>
+    <string name="cancel_hint">取消</string>
+    <string name="submitting_hint">提交中......</string>
 </resources>

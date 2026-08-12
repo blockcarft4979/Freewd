@@ -19,11 +19,13 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
@@ -122,7 +124,70 @@ fun FreewdLoadingDialog(onDismiss: () -> Unit, text: String) {
 }
 
 @Composable
-@Preview
-private fun Show() {
+fun FreewdEditDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+    title: String,
+    maxLength: Int? = null,
+    hintMsg1: String?,
+    hintMsg2: String?
+) {
+    val text = rememberSaveable() { mutableStateOf("") }
 
+    BasicAlertDialog(
+        onDismissRequest = onDismiss
+    ) {
+        Card(
+            shape = RoundedCornerShape(28.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = text.value,
+                    onValueChange = {
+                        if (maxLength == null) text.value = it else {
+                            if (it.length <= maxLength) {
+                                text.value = it
+                            }
+                        }
+                    },
+                    maxLines = 1,
+
+                    )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    if (hintMsg1 != null) TextButton(onClick = onDismiss) { Text(hintMsg1) }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    if (hintMsg2 != null) TextButton(
+                        onClick = { onConfirm(text.value) },
+                        enabled = text.value.isNotBlank()
+                    ) { Text(hintMsg2) }
+
+                }
+            }
+        }
+    }
 }

@@ -37,6 +37,7 @@ object RequestApi {
 
     object User {
         const val GET_USER_INFO_URL = "$USER_BASE/get_user_info"
+        const val SUBMIT_USER_NAME_URL = "$USER_BASE/submit_username"
     }
 
     object Other {

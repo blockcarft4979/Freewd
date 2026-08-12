@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,9 +30,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
+import com.freewdcmkt.bck.components.freewd.FreewdEditDialog
+import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.SettingCard
 import com.freewdcmkt.bck.components.freewd.UserCard
-import com.freewdcmkt.bck.data.screen.MeData
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
@@ -41,25 +41,60 @@ import com.freewdcmkt.bck.viewmodel.MeUiState
 import kotlinx.coroutines.launch
 
 @Composable
-fun Me(viewmodel: HomeViewmodel = viewModel()) {
+fun Me(viewmodel: HomeViewmodel = viewModel(),onToUserCenter: () -> Unit) {
     val uiState by viewmodel.uiState.collectAsState()
     val qq by viewmodel.userAccount.collectAsState()
     val username by viewmodel.username.collectAsState()
     val uid by viewmodel.uid.collectAsState()
+    val isShowLoadingDialog = rememberSaveable() { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) { viewmodel.getUserInfo() }
+    if (isShowLoadingDialog.value) {
+        FreewdLoadingDialog(onDismiss = {}, stringResource(R.string.submitting_hint))
+    }
 
+    MeUiLayout(
+        qq, username, uid,
+        onConfirmUsername = {
+            viewmodel.submitUsername(it)
+            isShowLoadingDialog.value = true
+        }, onToUserCenter = onToUserCenter
+    )
     when (uiState) {
-        is MeUiState.Finish -> MeUiLayout(qq, username, uid, (uiState as MeUiState.Finish).meData)
-        else -> MeUiLayout(qq, username, uid, null)
+
+        is MeUiState.SubmitFinish -> isShowLoadingDialog.value = false
+        else -> {
+            isShowLoadingDialog.value = false
+        }
     }
 
 }
 
 @Composable
-private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData? = null) {
+private fun MeUiLayout(
+    qq: String,
+    username: String,
+    uid: String,
+    onConfirmUsername: (String) -> Unit,
+    onToUserCenter:()-> Unit
+) {
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
+    val isShowEditDialog = rememberSaveable() { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    if (isShowEditDialog.value) {
+        FreewdEditDialog(
+            onDismiss = { isShowEditDialog.value = false },
+            onConfirm = {
+                onConfirmUsername(it)
+                isShowEditDialog.value = false
+            },
+            title = stringResource(R.string.change_username_hint),
+            maxLength = 15,
+            hintMsg1 = stringResource(R.string.cancel_hint),
+            hintMsg2 = stringResource(R.string.yes_hint)
+        )
+    }
+
     if (isShowDialog.value) {
         FreewdDialog(
             onDismiss = { isShowDialog.value = false },
@@ -73,6 +108,7 @@ private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData
             hintMsg2 = stringResource(R.string.yes_hint)
         )
     }
+
     LazyColumn() {
         item {
             Column {
@@ -82,41 +118,6 @@ private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData
                         username = username,
                         uid = stringResource(R.string.uid_hint, uid)
                     )
-                    Row(
-                        modifier = Modifier.padding(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (meData != null) {
-                            IconText(
-                                modifier = Modifier.weight(1f),
-                                icon = R.drawable.post,
-                                description = stringResource(
-                                    R.string.post_count_hint,
-                                    meData.postCount.toString()
-                                ),
-                                text = stringResource(
-                                    R.string.post_count_hint,
-                                    meData.postCount.toString()
-                                ),
-                                onClick = {},
-                            )
-                            IconText(
-                                modifier = Modifier.weight(1f),
-                                icon = R.drawable.baseline_favorite_24,
-                                description = stringResource(
-                                    R.string.likes_count_hint,
-                                    meData.totalLikes.toString()
-                                ),
-                                text = stringResource(
-                                    R.string.likes_count_hint,
-                                    meData.totalLikes.toString()
-                                ),
-                                onClick = {},
-                            )
-                        } else {
-                            Text(stringResource(R.string.loading_hint))
-                        }
-                    }
                 }
 
             }
@@ -125,10 +126,16 @@ private fun MeUiLayout(qq: String, username: String, uid: String, meData: MeData
         item {
             Spacer(modifier = Modifier.height(4.dp))
             SettingCard(
+                R.drawable.personal_center,
+                stringResource(R.string.user_center_hint),
+                stringResource(R.string.user_center_description_hint),
+                onClick = onToUserCenter
+            )
+            SettingCard(
                 icon = R.drawable.fa6solidpen,
                 name = stringResource(R.string.change_username_hint),
                 description = stringResource(R.string.change_username_description_hint),
-                onClick = {}
+                onClick = { isShowEditDialog.value = true }
             )
             SettingCard(
                 R.drawable.logout,

@@ -57,7 +57,8 @@ fun HomeLayout(
     viewmodel: HomeViewmodel = viewModel(),
     onToFeed: (zone: Int) -> Unit,
     onToBrowser: (link: String) -> Unit,
-    onToNotification: () -> Unit
+    onToNotification: () -> Unit,
+    onToUserCenter:()-> Unit
 ) {
     val username by viewmodel.username.collectAsState()
     val qq by viewmodel.userAccount.collectAsState()
@@ -128,7 +129,9 @@ fun HomeLayout(
                         onRefresh = { viewmodel.fetchData(true) }
                     )
                 }
-                composable(NavData.Me.route) { Me() }
+                composable(NavData.Me.route) { Me(
+                    onToUserCenter = onToUserCenter
+                ) }
             }
         }
     }
