@@ -101,7 +101,7 @@ fun FeedDetailLayout(
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 
-    LaunchedEffect(id) { viewmodel.fetchData(id,true) }
+    LaunchedEffect(id) { viewmodel.fetchData(id, true) }
     if (isShowDialog.value) {
         FreewdDialog(
             onDismiss = { isShowDialog.value = false },
@@ -116,7 +116,6 @@ fun FeedDetailLayout(
         )
     }
     Scaffold(
-
         topBar = {
             TopAppBar(
                 navigationIcon = {
@@ -175,17 +174,18 @@ fun FeedDetailLayout(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = {
-            if (uiState is FeedDetailUiState.Success) ReplyInputBar(
-                username = replyUsername.value,
-                onSend = {
-                    val targetQq = replyQq.value
-                    viewmodel.replyFeed(id, it, targetQq.ifEmpty { null })
-                    focusRequester.requestFocus()
-                    replyQq.value = ""
-                },
-                modifier = Modifier.imePadding(),
-                focusRequester = focusRequester
-            )
+            if (uiState is FeedDetailUiState.Success)
+                ReplyInputBar(
+                    username = replyUsername.value,
+                    onSend = {
+                        val targetQq = replyQq.value
+                        viewmodel.replyFeed(id, it, targetQq.ifEmpty { null })
+                        focusRequester.requestFocus()
+                        replyQq.value = ""
+                    },
+                    modifier = Modifier.imePadding(),
+                    focusRequester = focusRequester
+                )
         }
     ) { innerPadding ->
         Column(
@@ -220,7 +220,8 @@ fun FeedDetailLayout(
                             focusRequester.requestFocus()
                             replyQq.value = qq
                             replyUsername.value = username
-                        }, onToPreviewImg = onToPreviewImg)
+                        }, onToPreviewImg = onToPreviewImg
+                    )
                 }
             }
         }

@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import androidx.savedstate.savedState
 import com.freewdcmkt.bck.data.screen.BrowserScreenData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.FeedScreenData
@@ -74,7 +75,7 @@ fun FreewdAppNavHost(navController: NavHostController) {
                 },
                 onToBrowser = { url -> navController.navigate(BrowserScreenData(url)) },
                 onToNotification = { navController.navigate(NotificationScreen) },
-                onToUserCenter = {navController.navigate(UserCenterScreenData(0))}
+                onToUserCenter = { navController.navigate(UserCenterScreenData(0)) }
             )
         }
         composable<FeedScreenData> { backStack ->
@@ -138,8 +139,10 @@ fun FreewdAppNavHost(navController: NavHostController) {
             val args = backStack.toRoute<PreviewImgScreenData>()
             PreviewImgUi(args.url)
         }
-        composable<UserCenterScreenData> { UserCenter(
-            onBack = {navController.popBackStack()}
-        ) }
+        composable<UserCenterScreenData> {
+            UserCenter(
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }

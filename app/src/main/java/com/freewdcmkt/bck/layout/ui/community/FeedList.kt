@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,8 +42,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedLayout(
-    viewmodel: FeedListViewmodel= viewModel(),
-    isRefresh : Boolean,
+    viewmodel: FeedListViewmodel = viewModel(),
+    isRefresh: Boolean,
     zone: Int,
     onToFeedDetail: (id: Int, zone: Int) -> Unit,
     onToPostFeed: (id: Int?, zone: Int) -> Unit,
@@ -52,9 +53,15 @@ fun FeedLayout(
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
 
-    LaunchedEffect(zone) { viewmodel.fetchData(zone) }
+    LaunchedEffect(zone) {
+        viewmodel.fetchData(zone)
+        //listState.scrollToItem(0)
+    }
     LaunchedEffect(isRefresh) {
-        if (isRefresh){viewmodel.fetchData(zone,forceRefresh = true)}
+        if (isRefresh) {
+            listState.scrollToItem(0)
+            viewmodel.fetchData(zone, forceRefresh = true)
+        }
     }
     LaunchedEffect(listState) {
         snapshotFlow {

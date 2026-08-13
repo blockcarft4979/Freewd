@@ -49,7 +49,7 @@ fun Me(viewmodel: HomeViewmodel = viewModel(),onToUserCenter: () -> Unit) {
     val isShowLoadingDialog = rememberSaveable() { mutableStateOf(false) }
 
     if (isShowLoadingDialog.value) {
-        FreewdLoadingDialog(onDismiss = {}, stringResource(R.string.submitting_hint))
+        FreewdLoadingDialog( stringResource(R.string.submitting_hint))
     }
 
     MeUiLayout(

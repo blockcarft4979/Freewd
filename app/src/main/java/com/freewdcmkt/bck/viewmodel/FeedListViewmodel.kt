@@ -35,11 +35,10 @@ class FeedListViewmodel : ViewModel() {
 
     // 首次加载或下拉刷新
     fun fetchData(zone: Int, forceRefresh: Boolean = false) {
-        Log.d("FeedVM", "fetchData called, forceRefresh=$forceRefresh")
-        if (!forceRefresh && currentZone == zone && _feedUiState.value is FeedUiState.Success) {
-            Log.d("FEED VM", "fetchData: 数据已存在，不再重复请求")
-            return
-        }
+
+        Log.d("FeedVM", "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone")
+        if (!forceRefresh && currentZone == zone && _feedUiState.value is FeedUiState.Success) return
+
         currentZone = zone
         currentPage = 0
         totalPages = 0
@@ -49,6 +48,8 @@ class FeedListViewmodel : ViewModel() {
         viewModelScope.launch {
             loadPage(zone, page = 1, isAppend = false)
         }
+        Log.d("FeedVM", "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone")
+
     }
 
     // 加载更多（追加）

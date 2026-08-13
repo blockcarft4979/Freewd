@@ -26,6 +26,9 @@ fun UserCenter(onBack: () -> Unit) {
                     )
                 }
             })
-    }) { innerPadding -> Column(modifier = Modifier.padding(innerPadding)) {
-        Text("TODO:)") } }
+    }) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+            Text("TODO:)")
+        }
+    }
 }

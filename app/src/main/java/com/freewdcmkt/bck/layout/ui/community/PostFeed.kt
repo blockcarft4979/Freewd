@@ -17,6 +17,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -36,11 +39,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.LoadErrorUiLayout
+import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.ImageCard
-import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.util.file.uriToFile
 import com.freewdcmkt.bck.viewmodel.PostFeedUiState
 import com.freewdcmkt.bck.viewmodel.PostFeedViewmodel
@@ -52,96 +53,120 @@ fun PostFeedLayout(
     zone: Int,
     onUploaded: () -> Unit,
     onBack: () -> Unit,
-    onToPreviewImg:(String)-> Unit,
+    onToPreviewImg: (String) -> Unit,
     viewmodel: PostFeedViewmodel = viewModel()
 ) {
     val uiState by viewmodel.postFeedUiState.collectAsState()
+    val noNetworkHint = stringResource(R.string.no_internet_hint)
     val imgUrl = rememberSaveable { mutableStateOf("") }
+    val snackBarHostState = remember { SnackbarHostState() }
     val isUploadingImg = rememberSaveable { mutableStateOf(false) }
-
+    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
+    if (isShowDialog.value) {
+        FreewdLoadingDialog(stringResource(R.string.uploading_hint))
+    }
     LaunchedEffect(uiState) {
         when (uiState) {
-            is PostFeedUiState.ImageUploaded -> isUploadingImg.value
-            is PostFeedUiState.Error -> isUploadingImg.value = false
-            else -> {}
+            is PostFeedUiState.Error -> {
+                isShowDialog.value = false
+                isUploadingImg.value = false
+                imgUrl.value = ""
+                if ((uiState as PostFeedUiState.Error).isNoNetwork) snackBarHostState.showSnackbar(
+                    noNetworkHint,
+                    duration = SnackbarDuration.Short
+                ) else {
+                    (uiState as PostFeedUiState.Error).msg?.let {
+                        snackBarHostState.showSnackbar(
+                            it,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            }
+
+            is PostFeedUiState.Upload -> isShowDialog.value = true
+
+            is PostFeedUiState.Success -> onUploaded()
+
+            is PostFeedUiState.ImageUploaded -> {
+                isUploadingImg.value = false
+                isShowDialog.value = false
+                imgUrl.value = (uiState as PostFeedUiState.ImageUploaded).url
+            }
+
+            else -> {
+                isUploadingImg.value = false
+            }
         }
     }
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(R.string.add_post_hint)) },
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        painterResource(R.drawable.baseline_arrow_back_24),
-                        stringResource(R.string.back_hint)
-                    )
-                }
-            })
-    }) { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.add_post_hint)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painterResource(R.drawable.baseline_arrow_back_24),
+                            stringResource(R.string.back_hint)
+                        )
+                    }
+                })
+        },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
+        modifier = Modifier.imePadding()
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 15.dp)
                 .fillMaxSize()
         ) {
-            when (uiState) {
-                is PostFeedUiState.NoAction -> PostFeedUiLayout(
-                    onPostFeed = { title, message ->
-                        viewmodel.postFeed(
-                            zone = zone,
-                            title = title,
-                            message = message,
-                            imgUrl = imgUrl.value
-                        )
-                    },
-                    onUploadImg = { imgFile -> viewmodel.uploadImg(imgFile) },
-                    isUploadedImg = isUploadingImg.value,
-                    imgUrl = imgUrl.value,
-                    onClick = onToPreviewImg
-                )
-
-                is PostFeedUiState.Upload -> LoadingCard()
-                is PostFeedUiState.Error -> LoadErrorUiLayout(
-                    onClick = { viewmodel.resetState() },
-                    msg = (uiState as PostFeedUiState.Error).msg,
-                    buttonMsg = stringResource(R.string.yes_hint)
-                )
-
-                is PostFeedUiState.Success -> onUploaded()
-                is PostFeedUiState.ImageUploaded -> {
-                    viewmodel.resetState()
-                    imgUrl.value = (uiState as PostFeedUiState.ImageUploaded).url
-                }
-
-            }
+            PostFeedUiLayout(
+                onPostFeed = { title, message ->
+                    viewmodel.postFeed(
+                        zone = zone,
+                        title = title,
+                        message = message,
+                        imgUrl = imgUrl.value
+                    )
+                },
+                onUploadImg = { imgFile -> viewmodel.uploadImg(imgFile) },
+                isUploadedImg = isUploadingImg.value,
+                imgUrl = imgUrl.value,
+                onClick = onToPreviewImg
+            )
         }
     }
 }
 
 @Composable
 fun PostFeedUiLayout(
-    onPostFeed: (title: String?, message: String) -> Unit, onClick: (String) -> Unit,
-    onUploadImg: (file: File) -> Unit, isUploadedImg: Boolean, imgUrl: String?
+    onPostFeed: (title: String?, message: String) -> Unit,
+    onClick: (String) -> Unit,
+    onUploadImg: (file: File) -> Unit,
+    isUploadedImg: Boolean,
+    imgUrl: String?
 ) {
-    var title by rememberSaveable() { mutableStateOf("") }
-    var message by rememberSaveable() { mutableStateOf("") }
+    var title by rememberSaveable { mutableStateOf("") }
+    var message by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-
-    val isUploading = rememberSaveable() { mutableStateOf(isUploadedImg) }
 
     val context = LocalContext.current
     val imagePickerLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
             uri?.let {
                 val file = uriToFile(uri, context)
                 if (file != null) {
-                    isUploading.value = true
                     onUploadImg(file)
                 }
             }
         }
 
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     Column(
         modifier = Modifier
@@ -156,43 +181,54 @@ fun PostFeedUiLayout(
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = title,
-                onValueChange = { newTitle -> title = newTitle },
+                onValueChange = { title = it },
                 label = { Text(stringResource(R.string.title_hint)) },
                 maxLines = 1
             )
+
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 value = message,
-
-                onValueChange = { newMessage -> message = newMessage },
+                onValueChange = { message = it },
                 label = { Text(stringResource(R.string.content_hint)) }
             )
-            if (!imgUrl.isNullOrEmpty()) Card(shape = RoundedCornerShape(16.dp)) {
-                ImageCard(imgUrl, onClick = onClick)
+
+            if (!imgUrl.isNullOrEmpty()) {
+                Card(
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    ImageCard(
+                        imgUrl,
+                        onClick = onClick
+                    )
+                }
             }
         }
 
-        // 按钮固定在底部
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
-            onClick = { onPostFeed(title, message) },
+            onClick = {
+                onPostFeed(title, message)
+            },
             enabled = message.isNotEmpty() && message.isNotBlank()
         ) {
             Text(stringResource(R.string.post_new_feed_hint))
         }
+
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 4.dp),
-            enabled = !isUploading.value && imgUrl.isNullOrEmpty(),
-            onClick = { imagePickerLauncher.launch("image/*") },
+            enabled = !isUploadedImg && imgUrl.isNullOrEmpty(),
+            onClick = {
+                imagePickerLauncher.launch("image/*")
+            }
         ) {
             Text(stringResource(R.string.upload_image))
         }
     }
-
 }

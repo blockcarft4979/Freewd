@@ -49,7 +49,7 @@ fun RegisterLayout(viewmodel: RegisterViewmodel = viewModel()) {
     val scope = rememberCoroutineScope()
     val noNetWorkHint = stringResource(R.string.no_internet_hint)
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
-    if (isShowDialog.value) FreewdLoadingDialog(onDismiss = {},stringResource(R.string.loading_hint))
+    if (isShowDialog.value) FreewdLoadingDialog(stringResource(R.string.loading_hint))
 
     LaunchedEffect(uiState) {
         if (uiState is RegisterUiState.Error) {

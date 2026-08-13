@@ -2,16 +2,22 @@ package com.freewdcmkt.bck.layout.main
 
 import android.app.ComponentCaller
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
@@ -26,12 +32,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         intentState.value  = intent
+
         setContent {
             FreewdTheme {
+                val navigationBarColor = MaterialTheme.colorScheme.surfaceContainer
+
+                SideEffect {
+                    window.navigationBarColor = navigationBarColor.toArgb()
+
+                    window.decorView.systemUiVisibility =
+                        View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                }
                 MainLayout(
                     intent = intentState.value ?: Intent()
                 )
+
             }
         }
     }

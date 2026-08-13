@@ -98,9 +98,9 @@ fun FreewdDialog(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun FreewdLoadingDialog(onDismiss: () -> Unit, text: String) {
+fun FreewdLoadingDialog( text: String) {
     BasicAlertDialog(
-        onDismissRequest = onDismiss
+        onDismissRequest = {  }
     ) {
         Card(
             shape = RoundedCornerShape(28.dp),

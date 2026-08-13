@@ -58,7 +58,7 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
     val snackBarHostState = remember { SnackbarHostState() }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
     if (isShowDialog.value) {
-        FreewdLoadingDialog(onDismiss = {}, stringResource(R.string.loading_hint))
+        FreewdLoadingDialog( stringResource(R.string.loading_hint))
     }
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Error) {

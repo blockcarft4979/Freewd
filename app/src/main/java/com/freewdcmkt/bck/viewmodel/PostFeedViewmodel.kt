@@ -93,10 +93,7 @@ class PostFeedViewmodel : ViewModel() {
         }
     }
 
-    // PostFeedViewmodel.kt
-    fun resetState() {
-        _postFeedUiState.value = PostFeedUiState.NoAction
-    }
+
 }
 
 sealed class PostFeedUiState {

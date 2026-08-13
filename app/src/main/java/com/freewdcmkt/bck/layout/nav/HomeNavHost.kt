@@ -1,6 +1,11 @@
 package com.freewdcmkt.bck.layout.nav
 
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,7 +63,7 @@ fun HomeLayout(
     onToFeed: (zone: Int) -> Unit,
     onToBrowser: (link: String) -> Unit,
     onToNotification: () -> Unit,
-    onToUserCenter:()-> Unit
+    onToUserCenter: () -> Unit
 ) {
     val username by viewmodel.username.collectAsState()
     val qq by viewmodel.userAccount.collectAsState()
@@ -114,8 +119,33 @@ fun HomeLayout(
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             NavHost(
+                // modifier = Modifier.padding(horizontal = 15.dp).fillMaxSize(),
                 navController = navController,
                 startDestination = NavData.Home.route,
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it * 180 / 100 },
+                        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
+                    )
+                },
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it * 180 / 100 },
+                        animationSpec = tween(350, easing = FastOutSlowInEasing)
+                    )
+                }
             ) {
                 composable(NavData.Home.route) {
                     UiLayout(
@@ -129,9 +159,11 @@ fun HomeLayout(
                         onRefresh = { viewmodel.fetchData(true) }
                     )
                 }
-                composable(NavData.Me.route) { Me(
-                    onToUserCenter = onToUserCenter
-                ) }
+                composable(NavData.Me.route) {
+                    Me(
+                        onToUserCenter = onToUserCenter
+                    )
+                }
             }
         }
     }

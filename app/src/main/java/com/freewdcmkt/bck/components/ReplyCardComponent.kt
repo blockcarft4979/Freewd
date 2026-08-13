@@ -1,15 +1,17 @@
 package com.freewdcmkt.bck.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.freewd.ContentText
 
 @Composable
 fun ReplyInputBar(
@@ -39,7 +40,10 @@ fun ReplyInputBar(
     val isSendEnabled = text.isNotBlank()
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .background(MaterialTheme.colorScheme.onSurface),
         tonalElevation = 8.dp
     ) {
         Row(
@@ -55,7 +59,12 @@ fun ReplyInputBar(
                     .focusRequester(focusRequester)
                     .weight(1f),
                 maxLines = 5,
-                label =  { Text(stringResource(R.string.reply_to_user_hint, username), maxLines = 1) },
+                label = {
+                    Text(
+                        stringResource(R.string.reply_to_user_hint, username),
+                        maxLines = 1
+                    )
+                },
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(

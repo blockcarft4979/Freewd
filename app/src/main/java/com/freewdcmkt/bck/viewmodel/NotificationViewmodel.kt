@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.viewmodel
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -55,6 +56,7 @@ class NotificationViewmodel : ViewModel() {
         }
         Log.d("NOTIFICATION VIEWMODEL" ,_uiStates.value.toString())
     }
+
 
     fun clearNotifications(isAll: Boolean) {
         if (!isLoaded) {

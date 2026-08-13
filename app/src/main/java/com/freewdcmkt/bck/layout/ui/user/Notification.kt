@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,9 +26,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.components.freewd.NotificationCard
 import com.freewdcmkt.bck.components.ui.FreewdHint
+import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.viewmodel.NotificationUiStates
 import com.freewdcmkt.bck.viewmodel.NotificationViewmodel
@@ -94,7 +95,7 @@ fun Notification(
                     }
                 }
             })
-    }) { innerPadding ->
+    }, snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             when (uiStates) {
                 is NotificationUiStates.Loading -> LoadingCard()
