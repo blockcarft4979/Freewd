@@ -1,5 +1,6 @@
-package com.freewdcmkt.bck.util
+package com.freewdcmkt.bck.util.network
 
+import com.freewdcmkt.bck.util.network.AuthInterceptor
 import okhttp3.OkHttpClient
 
 object NetworkClient {

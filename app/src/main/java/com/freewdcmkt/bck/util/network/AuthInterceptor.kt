@@ -1,5 +1,6 @@
-package com.freewdcmkt.bck.util
+package com.freewdcmkt.bck.util.network
 
+import com.freewdcmkt.bck.util.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
 

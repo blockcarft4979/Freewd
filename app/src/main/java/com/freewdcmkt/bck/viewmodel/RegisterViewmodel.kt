@@ -4,13 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
-import com.freewdcmkt.bck.data.screen.LoginData
+import com.freewdcmkt.bck.data.request.RegisterRequestData
+import com.freewdcmkt.bck.data.request.SendAuthCodeRequestData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.NetworkClient
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
+import com.freewdcmkt.bck.util.network.NetworkClient
+import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,13 +21,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class RegisterViewmodel : ViewModel() {
-    private val _countdown = MutableStateFlow(0) // 剩余秒数，0 表示可用
+    private val _countdown = MutableStateFlow(0)
     val countdown: StateFlow<Int> = _countdown.asStateFlow()
 
     private var countdownJob: Job? = null
@@ -54,8 +56,8 @@ class RegisterViewmodel : ViewModel() {
         _registerUiState.value = RegisterUiState.Loading
         viewModelScope.launch {
             try {
-                val requestBody = buildJsonObject { put("qq", qq) }.toString()
-                    .toRequestBody("application/json".toMediaType())
+                val requestBody = JsonParser.json.encodeToJsonElement( SendAuthCodeRequestData(qq)).toString().toRequestBody("application/json".toMediaType())
+
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
                         Request.Builder().url(RequestApi.Auth.SEND_AUTH_CODE_URL).post(requestBody)
@@ -83,31 +85,19 @@ class RegisterViewmodel : ViewModel() {
         _registerUiState.value = RegisterUiState.Loading
         viewModelScope.launch {
             try {
-                val requestBody =
-                    buildJsonObject {
-                        put("qq", qq)
-                        put("password", password)
-                        put("code", code)
-                    }.toString().toRequestBody("application/json".toMediaType())
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Auth.REGISTER_URL).post(requestBody)
-                            .build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                val data = JsonParser.json.decodeFromString<BaseData<LoginData>>(body)
-                if (response.isSuccessful && data.data != null) {
+                val response =
+                    RetroClient.apiService.register(RegisterRequestData(qq, password, code))
 
-                    val loginData = data.data
+                if (response.data != null) {
+
+                    val loginData = response.data
                     TokenManager.saveToken(loginData.token)
                     UserInfoManager.saveUsername(loginData.username)
                     UserInfoManager.saveUid(loginData.uid.toString())
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
-                } else {
-                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                    _registerUiState.value = RegisterUiState.Error(errorData.msg)
+                } else if (response.msg != null) {
+                    _registerUiState.value = RegisterUiState.Error(response.msg)
                 }
             } catch (e: Exception) {
                 _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)

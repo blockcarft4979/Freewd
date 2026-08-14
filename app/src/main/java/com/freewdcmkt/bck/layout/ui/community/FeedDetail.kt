@@ -88,7 +88,7 @@ fun FeedDetailLayout(
     val isAuthor by viewmodel.isAuthor.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val copiedHint = stringResource(R.string.copy_feed_link_hint)
+    val copiedHint = stringResource(R.string.copied_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }

@@ -8,7 +8,7 @@ import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.NetworkClient
+import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.UserInfoManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

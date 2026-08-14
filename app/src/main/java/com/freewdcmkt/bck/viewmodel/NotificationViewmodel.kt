@@ -10,7 +10,7 @@ import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.data.screen.NotificationDataList
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.NetworkClient
+import com.freewdcmkt.bck.util.network.NetworkClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -11,7 +11,7 @@ import com.freewdcmkt.bck.data.screen.Notification
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.data.screen.VerifyTokenData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.NetworkClient
+import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import kotlinx.coroutines.Dispatchers

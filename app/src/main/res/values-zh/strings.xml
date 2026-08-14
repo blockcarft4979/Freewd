@@ -74,4 +74,6 @@
     <string name="preview_image">预览图片</string>
     <string name="cancel_hint">取消</string>
     <string name="submitting_hint">提交中......</string>
+    <string name="user_center_hint">用户中心</string>
+    <string name="user_center_description_hint">查看你的信息</string>
 </resources>

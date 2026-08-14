@@ -43,6 +43,8 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.32.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.32.0")

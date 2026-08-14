@@ -5,12 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.request.LoginRequestData
 import com.freewdcmkt.bck.data.screen.LoginData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.NetworkClient
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
+import com.freewdcmkt.bck.util.network.NetworkClient
+import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,21 +34,10 @@ class LogInViewModel() : ViewModel() {
         viewModelScope.launch {
             _loginUiState.value = LoginUiState.Loading
             try {
-                val requestBody = buildJsonObject {
-                    put("password", password)
-                    put("qq", qq)
-                }.toString().toRequestBody("application/json".toMediaType())
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Auth.LOGIN_URL).post(requestBody).build()
-                    )
-                        .execute()
-                }
-                val body = response.body.string()
-                val data = JsonParser.json.decodeFromString<BaseData<LoginData>>(body)
-
-                if (response.isSuccessful && data.data != null) {
-                    val loginData = data.data
+                val responseData = RetroClient.apiService.login(LoginRequestData(qq, password))
+                Log.d("LOGIN VIEWMODEL", "status=${responseData.status}, msg=${responseData.msg}, data=${responseData.data}")
+                if (responseData.data != null) {
+                    val loginData = responseData.data
                     TokenManager.saveToken(loginData.token)
                     UserInfoManager.saveUsername(loginData.username)
                     UserInfoManager.saveUid(loginData.uid.toString())
@@ -56,11 +46,10 @@ class LogInViewModel() : ViewModel() {
                     _loginUiState.value = LoginUiState.NoAction
                 } else {
                     Log.d("VIEW MODEL", "ERROR")
-                    val data = JsonParser.json.decodeFromString<ErrorData>(body)
-                    _loginUiState.value = LoginUiState.Error(data.msg)
-                    Log.d("LOGIN VIEWMODEL", data.msg)
+                    _loginUiState.value = LoginUiState.Error(responseData.msg)
                 }
             } catch (e: Exception) {
+                Log.d("LOGIN",e.toString())
                 _loginUiState.value = LoginUiState.Error(isNoNetWork = true)
             }
         }
@@ -72,6 +61,6 @@ class LogInViewModel() : ViewModel() {
 sealed class LoginUiState {
     object NoAction : LoginUiState()
     object Loading : LoginUiState()
-    class Error(val msg: String?=null, val isNoNetWork: Boolean = false) : LoginUiState()
+    class Error(val msg: String? = null, val isNoNetWork: Boolean = false) : LoginUiState()
 
 }
