@@ -4,12 +4,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class HomeData(
-    val notification: Notification,
+    val notification: Notification? = null,
     val zone: List<Zone>
 )
 
 @Serializable
 data class Notification(
+    val id: Int,
     val title: String? = null,
     val msg: String? = null,
     val imageUrl: String? = null,

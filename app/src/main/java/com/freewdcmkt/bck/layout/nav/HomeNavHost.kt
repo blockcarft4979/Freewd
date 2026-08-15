@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.layout.nav
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -31,8 +32,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,9 +51,11 @@ import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.HomeTopZone
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
+import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.layout.ui.user.Me
 import com.freewdcmkt.bck.util.TokenManager
+import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
 import kotlinx.coroutines.launch
@@ -68,7 +73,8 @@ fun HomeLayout(
     val username by viewmodel.username.collectAsState()
     val qq by viewmodel.userAccount.collectAsState()
     val uid by viewmodel.uid.collectAsState()
-    val homeData by viewmodel.homeData.collectAsState()
+    val notificationId by viewmodel.notificationId.collectAsState(null)
+    
     val userData by viewmodel.verifyTokenData.collectAsState()
     val homeUiState by viewmodel.homeUiState.collectAsState()
 
@@ -77,9 +83,11 @@ fun HomeLayout(
 
     val snackBarHostState = remember() { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val isShowNotification = rememberSaveable() { mutableStateOf(false) }
+
     val noNetWorkHint = stringResource(R.string.no_internet_hint)
 
-    LaunchedEffect(Unit) { if (homeData.zone.isEmpty()) viewmodel.fetchData(true) }
+    LaunchedEffect(Unit) { if (homeUiState is HomeUiState.Loading) viewmodel.fetchData(true) }
     LaunchedEffect(TokenManager.getToken()) { viewmodel.verifyToken() }
 
     LaunchedEffect(homeUiState) {
@@ -148,16 +156,56 @@ fun HomeLayout(
                 }
             ) {
                 composable(NavData.Home.route) {
-                    UiLayout(
-                        qq,
-                        username,
-                        uid,
-                        homeData,
-                        onToFeed = onToFeed,
-                        onToBrowser = onToBrowser,
-                        uiState = homeUiState,
-                        onRefresh = { viewmodel.fetchData(true) }
-                    )
+                    when (homeUiState) {
+                        is HomeUiState.Loading -> UiLayout(
+                            qq,
+                            username,
+                            uid,
+                            HomeData(null, emptyList()),
+                            onToFeed = onToFeed,
+                            onToBrowser = onToBrowser,
+                            uiState = homeUiState,
+                            onRefresh = { viewmodel.fetchData(true) }
+                        )
+
+                        is HomeUiState.Finish -> {
+                            val homeData = (homeUiState as HomeUiState.Finish).homeData
+                            Log.d("HOME NAV HOST",notificationId.toString()+homeData.notification.toString())
+                            UiLayout(
+                                qq,
+                                username,
+                                uid,
+                                homeData = homeData,
+                                onToFeed = onToFeed,
+                                onToBrowser = onToBrowser,
+                                uiState = homeUiState,
+                                onRefresh = { viewmodel.fetchData(true) }
+                            )
+                            if (homeData.notification?.id != notificationId) {
+                                isShowNotification.value = true
+                                val notificationData = homeData.notification
+                                if (isShowNotification.value) {
+                                    FreewdDialog(
+                                        onDismiss = { isShowNotification.value = false },
+                                        onConfirm = {
+                                            scope.launch {
+                                                UserInfoManager.saveNotificationId(
+                                                    notificationData?.id ?: 0
+                                                )
+                                            }
+                                        },
+                                        title = if (notificationData?.title != null) notificationData.title else "",
+                                        msg = if (notificationData?.msg != null) notificationData.msg else "",
+                                        hintMsg1 = stringResource(R.string.yes_hint),
+                                        hintMsg2 = stringResource(R.string.cancel_hint)
+                                    )
+                                }
+                            }
+                        }
+
+                        else -> {}
+                    }
+
                 }
                 composable(NavData.Me.route) {
                     Me(
@@ -193,7 +241,7 @@ private fun UiLayout(
                     qq = qq,
                     username = username,
                     uid = uid,
-                    homeData.notification.imageUrl
+                    homeData.notification?.imageUrl
                 )
             }
             items(

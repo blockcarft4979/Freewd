@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.catch
@@ -17,6 +18,8 @@ val UID = stringPreferencesKey("uid")
 val IS_LOGIN = booleanPreferencesKey("is_login")
 val USER_ACCOUNT = stringPreferencesKey("user_account")
 val HOME_IMAGE_URL = stringPreferencesKey("home_image_url")
+val NOTIFICATION_ID = intPreferencesKey("notification_id")
+
 object UserInfoManager {
     private lateinit var dataStore: DataStore<Preferences>
     fun init(context: Context) {
@@ -62,9 +65,16 @@ object UserInfoManager {
 
     fun getUserAccountFlow() = dataStore.data.catch { emit(emptyPreferences()) }
         .map { preferences -> preferences[USER_ACCOUNT] ?: "" }
-    suspend fun saveHomeImageUrl(url: String){
-        dataStore.edit { preferences ->preferences[HOME_IMAGE_URL] = url }
+
+    suspend fun saveHomeImageUrl(url: String) {
+        dataStore.edit { preferences -> preferences[HOME_IMAGE_URL] = url }
     }
+
     fun getHomeImageUrlFlow() = dataStore.data.catch { emit(emptyPreferences()) }
         .map { preferences -> preferences[HOME_IMAGE_URL] ?: "" }
+
+    suspend fun saveNotificationId(id: Int) {
+        dataStore.edit { preferences -> preferences[NOTIFICATION_ID] = id }
+    }
+    fun getNotificationIdFlow() = dataStore.data.catch { emit(emptyPreferences()) }.map { preferences -> preferences[NOTIFICATION_ID] }
 }
