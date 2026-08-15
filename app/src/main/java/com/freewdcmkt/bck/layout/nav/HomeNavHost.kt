@@ -54,7 +54,6 @@ import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.layout.ui.user.Me
-import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.viewmodel.HomeUiState
 import com.freewdcmkt.bck.viewmodel.HomeViewmodel
@@ -74,7 +73,7 @@ fun HomeLayout(
     val qq by viewmodel.userAccount.collectAsState()
     val uid by viewmodel.uid.collectAsState()
     val notificationId by viewmodel.notificationId.collectAsState(null)
-    
+
     val userData by viewmodel.verifyTokenData.collectAsState()
     val homeUiState by viewmodel.homeUiState.collectAsState()
 
@@ -87,27 +86,24 @@ fun HomeLayout(
 
     val noNetWorkHint = stringResource(R.string.no_internet_hint)
 
-    LaunchedEffect(Unit) { if (homeUiState is HomeUiState.Loading) viewmodel.fetchData(true) }
-    LaunchedEffect(TokenManager.getToken()) { viewmodel.verifyToken() }
-
     LaunchedEffect(homeUiState) {
-        if (homeUiState is HomeUiState.Error) {
-            if ((homeUiState as HomeUiState.Error).isNoNetWork) {
-                scope.launch {
-                    val result = snackBarHostState.showSnackbar(
-                        message = noNetWorkHint,
-                        actionLabel = retryHint,
-                        duration = SnackbarDuration.Long
-                    )
-                    when (result) {
-                        SnackbarResult.ActionPerformed -> {
-                            viewmodel.fetchData(true)
-                        }
+        if (homeUiState is HomeUiState.NoNetwork) {
 
-                        else -> {}
+            scope.launch {
+                val result = snackBarHostState.showSnackbar(
+                    message = noNetWorkHint,
+                    actionLabel = retryHint,
+                    duration = SnackbarDuration.Long
+                )
+                when (result) {
+                    SnackbarResult.ActionPerformed -> {
+                        viewmodel.fetchData(true)
                     }
+
+                    else -> {}
                 }
             }
+
         }
     }
     Scaffold(
@@ -170,7 +166,10 @@ fun HomeLayout(
 
                         is HomeUiState.Finish -> {
                             val homeData = (homeUiState as HomeUiState.Finish).homeData
-                            Log.d("HOME NAV HOST",notificationId.toString()+homeData.notification.toString())
+                            Log.d(
+                                "HOME NAV HOST",
+                                notificationId.toString() + homeData.notification.toString()
+                            )
                             UiLayout(
                                 qq,
                                 username,

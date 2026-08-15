@@ -21,7 +21,7 @@ import okhttp3.Request
 //你妈的傻逼 FEED LIST VIEWMODEL
 // 看我今天下午不把你给杀了
 // TODO()
-class FeedListViewmodel : ViewModel() {
+class FeedListViewmodel() : ViewModel() {
     private var currentPage = 0
     private var totalPages = 0
     private var hasMore = true
@@ -33,10 +33,17 @@ class FeedListViewmodel : ViewModel() {
 
     val listState = LazyListState()
 
+    init {
+        //fetchData(zone, true)
+    }
+
     // 首次加载或下拉刷新
     fun fetchData(zone: Int, forceRefresh: Boolean = false) {
 
-        Log.d("FeedVM", "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone")
+        Log.d(
+            "FeedVM",
+            "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone"
+        )
         if (!forceRefresh && currentZone == zone && _feedUiState.value is FeedUiState.Success) return
 
         currentZone = zone
@@ -48,7 +55,10 @@ class FeedListViewmodel : ViewModel() {
         viewModelScope.launch {
             loadPage(zone, page = 1, isAppend = false)
         }
-        Log.d("FeedVM", "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone")
+        Log.d(
+            "FeedVM",
+            "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone"
+        )
 
     }
 
@@ -103,7 +113,8 @@ class FeedListViewmodel : ViewModel() {
                     hasMore = currentPage < totalPages
 
                     val newFeed = if (isAppend) {
-                        val oldList = (_feedUiState.value as? FeedUiState.Success)?.feedData?.feed ?: emptyList()
+                        val oldList = (_feedUiState.value as? FeedUiState.Success)?.feedData?.feed
+                            ?: emptyList()
                         val merged = (oldList + feedData.feed).distinctBy { it.id }
                         feedData.copy(feed = merged)
                     } else {

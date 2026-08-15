@@ -56,10 +56,10 @@ class HomeViewmodel : ViewModel() {
         )
     val notificationId = UserInfoManager.getNotificationIdFlow()
         .stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0
-    )
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
 
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
@@ -69,6 +69,11 @@ class HomeViewmodel : ViewModel() {
 
     private val _verifyTokenData = MutableStateFlow(VerifyTokenData("", 0))
     val verifyTokenData: StateFlow<VerifyTokenData> = _verifyTokenData.asStateFlow()
+
+    init {
+        fetchData(true)
+        verifyToken()
+    }
 
     fun fetchData(forceRefresh: Boolean = false) {
         Log.d("HOME VM", "是否刷新$forceRefresh")
@@ -83,10 +88,10 @@ class HomeViewmodel : ViewModel() {
                 if (response.data != null) {
                     _homeUiState.value = HomeUiState.Finish(response.data)
                 } else {
-                    _homeUiState.value = HomeUiState.Error(null, true)
+                    _homeUiState.value = HomeUiState.NoNetwork
                 }
             } catch (e: Exception) {
-                _homeUiState.value = HomeUiState.Error(null, true)
+                _homeUiState.value = HomeUiState.Error(null)
                 e.printStackTrace()
             }
         }
@@ -143,8 +148,9 @@ class HomeViewmodel : ViewModel() {
 sealed class HomeUiState {
 
     object Loading : HomeUiState()
+    object NoNetwork: HomeUiState()
     class Finish(val homeData: HomeData) : HomeUiState()
-    class Error(val msg: String? = null, val isNoNetWork: Boolean = false) : HomeUiState()
+    class Error(val msg: String? = null) : HomeUiState()
 
 }
 
