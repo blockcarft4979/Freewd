@@ -163,8 +163,8 @@ fun HomeLayout(
                             },
                             title = if (notificationData?.title != null) notificationData.title else "",
                             msg = if (notificationData?.msg != null) notificationData.msg else "",
-                            hintMsg1 = stringResource(R.string.yes_hint),
-                            hintMsg2 = stringResource(R.string.cancel_hint)
+                             stringResource(R.string.cancel_hint),
+                             stringResource(R.string.yes_hint)
                         )
                     }
 

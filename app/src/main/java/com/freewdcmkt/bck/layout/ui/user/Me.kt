@@ -104,8 +104,8 @@ private fun MeUiLayout(
             },
             title = stringResource(R.string.logout_hint),
             msg = stringResource(R.string.logout_account_hint),
-            hintMsg1 = stringResource(R.string.no_hint),
-            hintMsg2 = stringResource(R.string.yes_hint)
+            cancelHint = stringResource(R.string.no_hint),
+            confirmHint = stringResource(R.string.yes_hint)
         )
     }
 

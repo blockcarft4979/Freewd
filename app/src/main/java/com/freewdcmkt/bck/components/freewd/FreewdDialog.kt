@@ -36,8 +36,8 @@ fun FreewdDialog(
     onConfirm: () -> Unit,
     title: String,
     msg: String,
-    hintMsg1: String,
-    hintMsg2: String
+    cancelHint: String? = null,
+    confirmHint: String? = null
 ) {
     BasicAlertDialog(
         onDismissRequest = onDismiss
@@ -75,18 +75,18 @@ fun FreewdDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     // 取消按钮
-                    TextButton(onClick = onDismiss) {
-                        Text(hintMsg1)
+                    if (cancelHint != null) TextButton(onClick = onDismiss) {
+                        Text(cancelHint)
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    TextButton(
+                    if (confirmHint != null) TextButton(
                         onClick =
                             onConfirm
                     ) {
                         Text(
-                            text = hintMsg2,
+                            text = confirmHint,
                             color = Color.Red
                         )
                     }
@@ -98,9 +98,9 @@ fun FreewdDialog(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun FreewdLoadingDialog( text: String) {
+fun FreewdLoadingDialog(text: String) {
     BasicAlertDialog(
-        onDismissRequest = {  }
+        onDismissRequest = { }
     ) {
         Card(
             shape = RoundedCornerShape(28.dp),

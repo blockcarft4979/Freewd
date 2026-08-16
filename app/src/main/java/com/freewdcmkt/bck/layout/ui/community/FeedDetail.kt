@@ -101,7 +101,7 @@ fun FeedDetailLayout(
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 
-    LaunchedEffect(id) { viewmodel.fetchData(id, true) }
+    LaunchedEffect(id) { viewmodel.fetchData(id, false) }
     if (isShowDialog.value) {
         FreewdDialog(
             onDismiss = { isShowDialog.value = false },
@@ -111,8 +111,8 @@ fun FeedDetailLayout(
             },
             title = stringResource(R.string.delete_post_title_hint),
             msg = stringResource(R.string.delete_post_message_hint),
-            hintMsg1 = stringResource(R.string.no_hint),
-            hintMsg2 = stringResource(R.string.yes_hint)
+            stringResource(R.string.no_hint),
+            stringResource(R.string.yes_hint)
         )
     }
     Scaffold(
