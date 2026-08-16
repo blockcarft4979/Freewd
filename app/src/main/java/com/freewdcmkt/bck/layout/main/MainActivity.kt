@@ -37,14 +37,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FreewdTheme {
-                val navigationBarColor = MaterialTheme.colorScheme.surfaceContainer
-
-                SideEffect {
-                    window.navigationBarColor = navigationBarColor.toArgb()
-
-                    window.decorView.systemUiVisibility =
-                        View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                }
                 MainLayout(
                     intent = intentState.value ?: Intent()
                 )
