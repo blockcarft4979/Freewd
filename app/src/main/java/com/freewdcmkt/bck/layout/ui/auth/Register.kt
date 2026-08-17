@@ -31,16 +31,18 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
-import com.freewdcmkt.bck.viewmodel.RegisterUiState
-import com.freewdcmkt.bck.viewmodel.RegisterViewmodel
+import com.freewdcmkt.bck.viewmodel.auth.RegisterUiState
+import com.freewdcmkt.bck.viewmodel.auth.RegisterViewmodel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterLayout(viewmodel: RegisterViewmodel = viewModel()) {
+fun RegisterLayout(
+    onToPolicyPrivacy: (String) -> Unit,
+    onToUserAgreement: (String) -> Unit, viewmodel: RegisterViewmodel = viewModel()
+) {
 
     val uiState by viewmodel.registerUiState.collectAsState()
     val countdown by viewmodel.countdown.collectAsState()
@@ -74,7 +76,9 @@ fun RegisterLayout(viewmodel: RegisterViewmodel = viewModel()) {
                 onRegister = { account, password, code ->
                     viewmodel.register(account, password, code)
                 },
-                countdown = countdown
+                countdown = countdown,
+                onToPolicyPrivacy = onToPolicyPrivacy,
+                onToUserAgreement = onToUserAgreement,
             )
             when (uiState) {
                 is RegisterUiState.Loading -> isShowDialog.value = true
@@ -88,6 +92,8 @@ fun RegisterLayout(viewmodel: RegisterViewmodel = viewModel()) {
 private fun RegisterUiLayout(
     onSendCode: (String) -> Unit,
     onRegister: (String, String, String) -> Unit,
+    onToPolicyPrivacy: (String) -> Unit,
+    onToUserAgreement: (String) -> Unit,
     countdown: Int
 ) {
     var account by rememberSaveable { mutableStateOf("") }
@@ -104,7 +110,11 @@ private fun RegisterUiLayout(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 15.dp)
     ) {
-        FreewdTopComponent(userIcon.value)
+        FreewdTopComponent(
+            userIcon.value,
+            onToUserAgreement = onToUserAgreement,
+            onToPolicyPrivacy = onToPolicyPrivacy
+        )
         OutlinedTextField(
             value = account,
             onValueChange = { account = it },

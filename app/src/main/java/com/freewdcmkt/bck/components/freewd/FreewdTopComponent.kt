@@ -1,8 +1,11 @@
 package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -19,10 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.api.userAvatarUrl
+import com.freewdcmkt.bck.ui.theme.FreewdTheme
 
 @Composable
-fun FreewdTopComponent(qq: String) {
+fun FreewdTopComponent(qq: String, onToUserAgreement: (String) -> Unit, onToPolicyPrivacy: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,4 +66,20 @@ fun FreewdTopComponent(qq: String) {
         fontWeight = FontWeight.Thin,
         fontSize = 15.sp
     )
+    Text(stringResource(R.string.agree_agreement_part), fontSize = 10.sp)
+    Spacer(modifier = Modifier.height(8.dp))
+    Row (){
+        Text(
+            stringResource(R.string.user_agreement),
+            fontSize = 12.sp,
+            color = FreewdTheme.themeColor,
+            modifier = Modifier.clickable(onClick = { onToUserAgreement(RequestApi.Document.USER_AGREEMENT) })
+        )
+        Text(
+            stringResource(R.string.policy_privacy),
+            fontSize = 12.sp,
+            color = FreewdTheme.themeColor,
+            modifier = Modifier.clickable(onClick = { onToPolicyPrivacy(RequestApi.Document.PRIVACY_POLICY) })
+        )
+    }
 }

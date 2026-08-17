@@ -2,30 +2,24 @@ package com.freewdcmkt.bck.layout.main
 
 import android.app.ComponentCaller
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.toArgb
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
 import com.freewdcmkt.bck.layout.ui.auth.LoginLayout
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
-import com.freewdcmkt.bck.viewmodel.LoginState
-import com.freewdcmkt.bck.viewmodel.MainViewmodel
+import com.freewdcmkt.bck.viewmodel.main.LoginState
+import com.freewdcmkt.bck.viewmodel.main.MainViewmodel
 
 class MainActivity : ComponentActivity() {
     private val intentState = mutableStateOf<Intent?>(null)

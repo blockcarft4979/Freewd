@@ -17,7 +17,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import androidx.savedstate.savedState
 import com.freewdcmkt.bck.data.screen.BrowserScreenData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.FeedScreenData
@@ -27,8 +26,8 @@ import com.freewdcmkt.bck.data.screen.PostFeedScreen
 import com.freewdcmkt.bck.data.screen.PreviewImgScreenData
 import com.freewdcmkt.bck.data.screen.UserCenterScreenData
 import com.freewdcmkt.bck.data.values.StringValues.REFRESH
-import com.freewdcmkt.bck.layout.ui.BrowserLayout
-import com.freewdcmkt.bck.layout.ui.PreviewImgUi
+import com.freewdcmkt.bck.layout.ui.other.BrowserLayout
+import com.freewdcmkt.bck.layout.ui.community.PreviewImgUi
 import com.freewdcmkt.bck.layout.ui.community.FeedDetailLayout
 import com.freewdcmkt.bck.layout.ui.community.FeedLayout
 import com.freewdcmkt.bck.layout.ui.community.PostFeedLayout

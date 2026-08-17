@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.viewmodel
+package com.freewdcmkt.bck.viewmodel.community
 
 import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState

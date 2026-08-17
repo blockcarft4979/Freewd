@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.viewmodel
+package com.freewdcmkt.bck.viewmodel.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

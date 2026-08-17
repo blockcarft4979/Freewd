@@ -12,4 +12,8 @@
     <string name="cancel_hint">Cancel</string>
     <string name="submitting_hint">Submitting…</string>
     <string name="uploading_hint">Uploading…</string>
+    <string name="about_hint">About</string>
+    <string name="agree_agreement_part">Logging in indicates that you have read and agreed to the terms of service and privacy policy</string>
+    <string name="user_agreement">User Agreement</string>
+    <string name="policy_privacy">Policy Privacy</string>
 </resources>

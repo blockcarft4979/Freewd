@@ -9,7 +9,14 @@ object RetroApi {
         const val REGISTER = "auth/register"
         const val VERIFY_TOKEN = "auth/verify_token"
     }
-    object Other{
+
+    object Other {
         const val HOME_DATA = "community/home_data.json"
     }
+
+    object Document {
+        const val PRIVACY_POLICY = "document/privacy_policy.txt"
+        const val USER_AGREEMENT = "document/user_agreement.txt"
+    }
+
 }

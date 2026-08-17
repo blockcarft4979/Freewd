@@ -1,28 +1,16 @@
-package com.freewdcmkt.bck.viewmodel
+package com.freewdcmkt.bck.viewmodel.auth
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.request.LoginRequestData
-import com.freewdcmkt.bck.data.screen.LoginData
-import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.network.RetroClient
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 
 
 class LogInViewModel() : ViewModel() {

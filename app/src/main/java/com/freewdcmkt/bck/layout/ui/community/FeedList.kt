@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +34,8 @@ import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
 import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.Feed
-import com.freewdcmkt.bck.viewmodel.FeedListViewmodel
-import com.freewdcmkt.bck.viewmodel.FeedUiState
+import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
+import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(ExperimentalMaterial3Api::class)

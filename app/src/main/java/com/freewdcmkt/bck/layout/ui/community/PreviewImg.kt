@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.layout.ui
+package com.freewdcmkt.bck.layout.ui.community
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize

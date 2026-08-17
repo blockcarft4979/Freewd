@@ -70,8 +70,8 @@ import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.FeedDetailData
-import com.freewdcmkt.bck.viewmodel.FeedDetailUiState
-import com.freewdcmkt.bck.viewmodel.FeedDetailViewmodel
+import com.freewdcmkt.bck.viewmodel.community.FeedDetailUiState
+import com.freewdcmkt.bck.viewmodel.community.FeedDetailViewmodel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

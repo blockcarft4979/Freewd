@@ -1,17 +1,17 @@
 package com.freewdcmkt.bck.components.freewd
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import coil.Coil.imageLoader
+import coil.compose.SubcomposeAsyncImage
 import com.freewdcmkt.bck.R
 
 @Composable
@@ -65,25 +66,28 @@ fun SettingCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ImageCard(url: String, onClick: (String) -> Unit) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.clickable(onClick = { onClick(url) })
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = { onClick(url) })
     ) {
-        Column {
-            Image(
-                rememberAsyncImagePainter(url),
-                contentDescription = stringResource(R.string.image_hint),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.Crop
-            )
-        }
+
+        SubcomposeAsyncImage(
+            model = url,
+            contentDescription = stringResource(R.string.image_hint),
+
+            modifier = Modifier
+                .fillMaxWidth(),
+            //.aspectRatio(16f / 9f),
+            contentScale = ContentScale.Crop,
+            loading = { LoadingIndicator(modifier = Modifier.size(48.dp)) })
     }
 }
+
 
 @Composable
 @Preview(showBackground = true)

@@ -36,8 +36,8 @@ import com.freewdcmkt.bck.components.freewd.SettingCard
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.viewmodel.HomeViewmodel
-import com.freewdcmkt.bck.viewmodel.MeUiState
+import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
+import com.freewdcmkt.bck.viewmodel.nav.MeUiState
 import kotlinx.coroutines.launch
 
 @Composable

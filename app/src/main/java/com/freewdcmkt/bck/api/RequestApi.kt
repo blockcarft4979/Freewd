@@ -43,6 +43,10 @@ object RequestApi {
     object Other {
         const val HOME_DATA = "${OTHER_BASE}community/home_data.json"
     }
+    object Document {
+        const val PRIVACY_POLICY = "${OTHER_BASE}document/privacy_policy.txt"
+        const val USER_AGREEMENT = "${OTHER_BASE}document/user_agreement.txt"
+    }
 }
 
 

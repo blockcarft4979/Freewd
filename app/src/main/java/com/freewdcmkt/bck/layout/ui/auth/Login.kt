@@ -35,14 +35,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
+import com.freewdcmkt.bck.data.screen.AboutScreenData
 import com.freewdcmkt.bck.data.screen.LoginScreenData
 import com.freewdcmkt.bck.data.screen.RegisterScreenData
-import com.freewdcmkt.bck.viewmodel.LogInViewModel
-import com.freewdcmkt.bck.viewmodel.LoginUiState
+import com.freewdcmkt.bck.layout.ui.other.Document
+import com.freewdcmkt.bck.viewmodel.auth.LogInViewModel
+import com.freewdcmkt.bck.viewmodel.auth.LoginUiState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -52,13 +54,14 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
     val uiState by viewModel.loginUiState.collectAsState()
     val navCollection = rememberNavController()
     val navToRegister = { navCollection.navigate(RegisterScreenData) }
+    val navToAbout = { navCollection.navigate(AboutScreenData) }
     val noAccountOrPasswordHint = stringResource(R.string.login_password_or_account_needed)
     val noNetworkHint = stringResource(R.string.no_internet_hint)
     val scope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
     if (isShowDialog.value) {
-        FreewdLoadingDialog( stringResource(R.string.loading_hint))
+        FreewdLoadingDialog(stringResource(R.string.loading_hint))
     }
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Error) {
@@ -99,7 +102,10 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
                                     )
                                 }
                             }
-                        })
+                        },
+                        onToUserAgreement = {navCollection.navigate(AboutScreenData(it))},
+                        onToPolicyPrivacy =  {navCollection.navigate(AboutScreenData(it))  }
+                    )
                     when (uiState) {
                         is LoginUiState.Loading -> isShowDialog.value = true
                         else -> isShowDialog.value = false
@@ -107,13 +113,23 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
                 }
             }
         }
-        composable<RegisterScreenData> { RegisterLayout() }
+        composable<RegisterScreenData> { RegisterLayout(
+            onToUserAgreement = {navCollection.navigate(AboutScreenData(it))},
+            onToPolicyPrivacy =  {navCollection.navigate(AboutScreenData(it))  }
+        ) }
+        composable<AboutScreenData> { backStack ->
+            val arg = backStack.toRoute<AboutScreenData>()
+            Document(
+                onBack = { navCollection.popBackStack() },
+                arg.url
+            )
+        }
     }
 
 }
 
 @Composable
-fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: String) -> Unit) {
+fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: String) -> Unit, onToUserAgreement:(String)-> Unit, onToPolicyPrivacy:(String)-> Unit) {
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     val userIcon = rememberSaveable() { mutableStateOf("") }
@@ -131,7 +147,11 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            FreewdTopComponent(userIcon.value)
+            FreewdTopComponent(
+                userIcon.value,
+                onToUserAgreement = onToUserAgreement,
+                onToPolicyPrivacy = onToPolicyPrivacy
+            )
             OutlinedTextField(
                 value = account,
                 onValueChange = { account = it },

@@ -30,8 +30,8 @@ import com.freewdcmkt.bck.components.freewd.NotificationCard
 import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.NotificationData
-import com.freewdcmkt.bck.viewmodel.NotificationUiStates
-import com.freewdcmkt.bck.viewmodel.NotificationViewmodel
+import com.freewdcmkt.bck.viewmodel.user.NotificationUiStates
+import com.freewdcmkt.bck.viewmodel.user.NotificationViewmodel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

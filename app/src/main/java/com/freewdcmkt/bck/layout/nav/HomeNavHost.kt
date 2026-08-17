@@ -32,7 +32,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,8 +50,8 @@ import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.layout.ui.user.Me
-import com.freewdcmkt.bck.viewmodel.HomeUiState
-import com.freewdcmkt.bck.viewmodel.HomeViewmodel
+import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
+import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
 import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)

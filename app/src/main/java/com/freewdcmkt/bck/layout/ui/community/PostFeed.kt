@@ -43,8 +43,8 @@ import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.util.file.uriToFile
-import com.freewdcmkt.bck.viewmodel.PostFeedUiState
-import com.freewdcmkt.bck.viewmodel.PostFeedViewmodel
+import com.freewdcmkt.bck.viewmodel.community.PostFeedUiState
+import com.freewdcmkt.bck.viewmodel.community.PostFeedViewmodel
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.viewmodel
+package com.freewdcmkt.bck.viewmodel.nav
 
 import android.app.Application
 import android.util.Log
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.MediaType.Companion.toMediaType
@@ -158,14 +157,14 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
                     ).execute()
                 }
                 val body = response.body.string()
-                val data = JsonParser.json.decodeFromString<BaseData<UsernameData>>(body)
+                val data = json.decodeFromString<BaseData<UsernameData>>(body)
 
                 if (response.isSuccessful && data.data != null) {
 
                     _uiState.value = MeUiState.SubmitFinish
                     UserInfoManager.saveUsername(data.data.username)
                 } else {
-                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                    val errorData = json.decodeFromString<ErrorData>(body)
                     _uiState.value = MeUiState.LoadError(errorData.msg)
                 }
             } catch (e: Exception) {
