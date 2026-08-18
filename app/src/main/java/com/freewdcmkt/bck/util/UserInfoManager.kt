@@ -19,6 +19,7 @@ val IS_LOGIN = booleanPreferencesKey("is_login")
 val USER_ACCOUNT = stringPreferencesKey("user_account")
 val HOME_IMAGE_URL = stringPreferencesKey("home_image_url")
 val NOTIFICATION_ID = intPreferencesKey("notification_id")
+val EXP = intPreferencesKey("exp")
 
 object UserInfoManager {
     private lateinit var dataStore: DataStore<Preferences>
@@ -76,5 +77,12 @@ object UserInfoManager {
     suspend fun saveNotificationId(id: Int) {
         dataStore.edit { preferences -> preferences[NOTIFICATION_ID] = id }
     }
-    fun getNotificationIdFlow() = dataStore.data.catch { emit(emptyPreferences()) }.map { preferences -> preferences[NOTIFICATION_ID] }
+
+    fun getNotificationIdFlow() = dataStore.data.catch { emit(emptyPreferences()) }
+        .map { preferences -> preferences[NOTIFICATION_ID] }
+
+    suspend fun saveExp(exp: Int?) {
+        dataStore.edit { preferences -> preferences[EXP] = exp ?: 0 }
+    }
+    fun getExpFlow() = dataStore.data.catch { emit(emptyPreferences()) }.map { preferences -> preferences[EXP] }
 }

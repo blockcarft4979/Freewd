@@ -4,15 +4,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.Coil.imageLoader
+import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.freewdcmkt.bck.R
 
@@ -82,9 +86,31 @@ fun ImageCard(url: String, onClick: (String) -> Unit) {
 
             modifier = Modifier
                 .fillMaxWidth(),
-            //.aspectRatio(16f / 9f),
             contentScale = ContentScale.Crop,
             loading = { LoadingIndicator(modifier = Modifier.size(48.dp)) })
+    }
+}
+
+@Composable
+fun ExpCard(exp: Int) {
+    val maxExp = when {
+        exp in 0..<200 -> 200f
+        exp < 1500 -> 1500f
+        exp < 4500 -> 4500f
+        exp < 10800 -> 10800f
+        exp < 28000 -> 28800f
+        else -> 28800f
+    }
+    Card(shape = RoundedCornerShape(16.dp)) {
+        Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
+                progress = { exp / maxExp },
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text("$exp/${maxExp.toInt()}", fontSize = 12.sp)
+        }
     }
 }
 
@@ -92,5 +118,7 @@ fun ImageCard(url: String, onClick: (String) -> Unit) {
 @Composable
 @Preview(showBackground = true)
 private fun Show() {
-    SettingCard(R.drawable.fa6solidpen, "gdfiugf", "sdbhiusdu", onClick = {})
+    val f: Float = 1000 / 2800f
+    // SettingCard(R.drawable.fa6solidpen, "gdfiugf", "sdbhiusdu", onClick = {})
+    ExpCard(500)
 }

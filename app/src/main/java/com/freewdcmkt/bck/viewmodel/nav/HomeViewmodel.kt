@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,19 +54,11 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
-    val homeImageUrl = UserInfoManager.getHomeImageUrlFlow()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ""
-        )
-    private val notificationId = UserInfoManager.getNotificationIdFlow()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = 0
-        )
-
+    val exp = UserInfoManager.getExpFlow().map { it ?: 0 }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
     private val _uiState = MutableStateFlow<MeUiState>(MeUiState.NoAction)
@@ -98,7 +91,8 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
                 Log.d("HOme", "EMPTY")
             } else {
                 Log.d("Home", "CACHED DATA")
-            } }
+            }
+        }
         fetchData(true)
         verifyToken()
     }

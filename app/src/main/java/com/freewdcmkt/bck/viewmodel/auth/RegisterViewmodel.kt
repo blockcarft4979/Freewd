@@ -92,6 +92,7 @@ class RegisterViewmodel : ViewModel() {
                     TokenManager.saveToken(loginData.token)
                     UserInfoManager.saveUsername(loginData.username)
                     UserInfoManager.saveUid(loginData.uid.toString())
+                    UserInfoManager.saveExp(loginData.xp)
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
                 } else if (response.msg != null) {

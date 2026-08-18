@@ -6,13 +6,17 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +37,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,11 +49,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.HomeTopZone
+import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
+import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.layout.ui.user.Me
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
@@ -95,12 +103,11 @@ fun HomeLayout(
         }
     }
 
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(R.string.home_hint))
+                    UserCard(userAvatarUrl(qq), username, uid)
                 },
                 actions = { IconButton(onClick = onToNotification) { NotificationIcon(userData.unreadCount) } })
         },
@@ -143,10 +150,7 @@ fun HomeLayout(
             ) {
                 composable(NavData.Home.route) {
                     UiLayout(
-                        qq,
-                        username,
-                        uid,
-                        homeData,
+                        homeData = homeData,
                         onToFeed = onToFeed,
                         onToBrowser = onToBrowser,
                         uiState = homeUiState,
@@ -162,8 +166,8 @@ fun HomeLayout(
                             },
                             title = if (notificationData?.title != null) notificationData.title else "",
                             msg = if (notificationData?.msg != null) notificationData.msg else "",
-                             stringResource(R.string.cancel_hint),
-                             stringResource(R.string.yes_hint)
+                            stringResource(R.string.cancel_hint),
+                            stringResource(R.string.yes_hint)
                         )
                     }
 
@@ -181,9 +185,6 @@ fun HomeLayout(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UiLayout(
-    qq: String,
-    username: String,
-    uid: String,
     homeData: HomeData,
     uiState: HomeUiState,
     onToFeed: (Int) -> Unit,
@@ -198,11 +199,14 @@ private fun UiLayout(
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
-                HomeTopZone(
-                    qq = qq,
-                    username = username,
-                    uid = uid,
-                    homeData.notification?.imageUrl
+                if (homeData.notification?.imageUrl != null) Image(
+                    painter = rememberAsyncImagePainter(homeData.notification.imageUrl),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .aspectRatio(16f / 9f),
+                    contentScale = ContentScale.Crop
                 )
             }
             items(

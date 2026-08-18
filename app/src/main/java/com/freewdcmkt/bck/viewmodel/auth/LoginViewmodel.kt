@@ -29,6 +29,7 @@ class LogInViewModel() : ViewModel() {
                     TokenManager.saveToken(loginData.token)
                     UserInfoManager.saveUsername(loginData.username)
                     UserInfoManager.saveUid(loginData.uid.toString())
+                    UserInfoManager.saveExp(loginData.xp)
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
                     _loginUiState.value = LoginUiState.NoAction
@@ -37,7 +38,7 @@ class LogInViewModel() : ViewModel() {
                     _loginUiState.value = LoginUiState.Error(responseData.msg)
                 }
             } catch (e: Exception) {
-                Log.d("LOGIN",e.toString())
+                Log.d("LOGIN Exception",e.toString())
                 _loginUiState.value = LoginUiState.Error(isNoNetWork = true)
             }
         }

@@ -2,15 +2,12 @@ package com.freewdcmkt.bck.layout.ui.user
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,12 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.api.userAvatarUrl
+import com.freewdcmkt.bck.components.freewd.ExpCard
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.FreewdEditDialog
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.SettingCard
-import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
@@ -41,23 +37,21 @@ import com.freewdcmkt.bck.viewmodel.nav.MeUiState
 import kotlinx.coroutines.launch
 
 @Composable
-fun Me(viewmodel: HomeViewmodel = viewModel(),onToUserCenter: () -> Unit) {
+fun Me(viewmodel: HomeViewmodel = viewModel(), onToUserCenter: () -> Unit) {
     val uiState by viewmodel.uiState.collectAsState()
-    val qq by viewmodel.userAccount.collectAsState()
-    val username by viewmodel.username.collectAsState()
-    val uid by viewmodel.uid.collectAsState()
+    val exp by viewmodel.exp.collectAsState()
     val isShowLoadingDialog = rememberSaveable() { mutableStateOf(false) }
 
     if (isShowLoadingDialog.value) {
-        FreewdLoadingDialog( stringResource(R.string.submitting_hint))
+        FreewdLoadingDialog(stringResource(R.string.submitting_hint))
     }
 
     MeUiLayout(
-        qq, username, uid,
         onConfirmUsername = {
             viewmodel.submitUsername(it)
             isShowLoadingDialog.value = true
-        }, onToUserCenter = onToUserCenter
+        }, onToUserCenter = onToUserCenter,
+        exp = exp
     )
     when (uiState) {
 
@@ -71,11 +65,9 @@ fun Me(viewmodel: HomeViewmodel = viewModel(),onToUserCenter: () -> Unit) {
 
 @Composable
 private fun MeUiLayout(
-    qq: String,
-    username: String,
-    uid: String,
+    exp: Int = 0,
     onConfirmUsername: (String) -> Unit,
-    onToUserCenter:()-> Unit
+    onToUserCenter: () -> Unit
 ) {
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
     val isShowEditDialog = rememberSaveable() { mutableStateOf(false) }
@@ -110,21 +102,9 @@ private fun MeUiLayout(
     }
 
     LazyColumn() {
+        item { ExpCard(exp = exp) }
         item {
-            Column {
-                Card(shape = RoundedCornerShape(16.dp)) {
-                    UserCard(
-                        userAvatarUrl(qq),
-                        username = username,
-                        uid = stringResource(R.string.uid_hint, uid)
-                    )
-                }
-
-            }
-
-        }
-        item {
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             SettingCard(
                 R.drawable.personal_center,
                 stringResource(R.string.user_center_hint),
