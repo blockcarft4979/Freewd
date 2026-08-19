@@ -14,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -92,7 +93,7 @@ fun ImageCard(url: String, onClick: (String) -> Unit) {
 }
 
 @Composable
-fun ExpCard(exp: Int) {
+fun ExpCard(exp: Int, checkInDays: Int) {
     val maxExp = when {
         exp in 0..<200 -> 200f
         exp < 1500 -> 1500f
@@ -101,24 +102,58 @@ fun ExpCard(exp: Int) {
         exp < 28000 -> 28800f
         else -> 28800f
     }
+    val level = when {
+        exp in 0..<200 -> "Lv 1"
+        exp < 1500 -> "Lv 2"
+        exp < 4500 -> "Lv 3"
+        exp < 10800 -> "Lv 4"
+        exp < 28000 -> "Lv 5"
+        else -> "Lv 6"
+    }
+   // val primaryColor = MaterialTheme.colorScheme.primary
     Card(shape = RoundedCornerShape(16.dp)) {
-        Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                LevelText(level)
+                Text(stringResource(R.string.check_in_days_hint, checkInDays), fontSize = 12.sp)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            LinearWavyProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
                 progress = { exp / maxExp },
+                amplitude = { 1.2f }
             )
+//            LinearProgressIndicator(
+//                modifier = Modifier.fillMaxWidth(),
+//                color = MaterialTheme.colorScheme.primary,
+//                trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
+//                progress = { exp / maxExp },
+//
+//            )
             Spacer(modifier = Modifier.height(4.dp))
             Text("$exp/${maxExp.toInt()}", fontSize = 12.sp)
         }
     }
 }
 
+@Composable
+fun FreewdProgressIndicator() {
+
+}
 
 @Composable
 @Preview(showBackground = true)
 private fun Show() {
     val f: Float = 1000 / 2800f
     // SettingCard(R.drawable.fa6solidpen, "gdfiugf", "sdbhiusdu", onClick = {})
-    ExpCard(500)
+    ExpCard(500, 1200)
 }

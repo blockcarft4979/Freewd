@@ -91,6 +91,34 @@ fun DateText(text: String) {
 }
 
 @Composable
+fun LevelText(text: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .size(3.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+        Text(
+            text = formatTime(text),
+            style = TextStyle(
+                fontSize = 12.sp,
+                lineHeight = 16.sp,
+                platformStyle = PlatformTextStyle(includeFontPadding = false),
+                fontWeight = FontWeight.Bold
+            ),
+            color = Color.Gray,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
 fun UidText(text: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

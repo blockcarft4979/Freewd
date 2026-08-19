@@ -59,6 +59,8 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = 0
     )
+    val checkInDays = UserInfoManager.getCheckInDaysFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initialValue = 0)
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
     private val _uiState = MutableStateFlow<MeUiState>(MeUiState.NoAction)
@@ -78,9 +80,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     init {
         viewModelScope.launch {
             UserInfoManager.getNotificationIdFlow().collect { id ->
-                if (id != null) {
-                    _savedNotificationId.value = id
-                }
+                _savedNotificationId.value = id
             }
         }
         viewModelScope.launch {

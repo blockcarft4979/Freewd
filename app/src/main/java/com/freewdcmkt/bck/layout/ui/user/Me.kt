@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 fun Me(viewmodel: HomeViewmodel = viewModel(), onToUserCenter: () -> Unit) {
     val uiState by viewmodel.uiState.collectAsState()
     val exp by viewmodel.exp.collectAsState()
+    val checkInDays by viewmodel.checkInDays.collectAsState()
     val isShowLoadingDialog = rememberSaveable() { mutableStateOf(false) }
 
     if (isShowLoadingDialog.value) {
@@ -51,7 +52,7 @@ fun Me(viewmodel: HomeViewmodel = viewModel(), onToUserCenter: () -> Unit) {
             viewmodel.submitUsername(it)
             isShowLoadingDialog.value = true
         }, onToUserCenter = onToUserCenter,
-        exp = exp
+        exp = exp, checkInDays = checkInDays
     )
     when (uiState) {
 
@@ -66,6 +67,7 @@ fun Me(viewmodel: HomeViewmodel = viewModel(), onToUserCenter: () -> Unit) {
 @Composable
 private fun MeUiLayout(
     exp: Int = 0,
+    checkInDays: Int = 0,
     onConfirmUsername: (String) -> Unit,
     onToUserCenter: () -> Unit
 ) {
@@ -102,7 +104,10 @@ private fun MeUiLayout(
     }
 
     LazyColumn() {
-        item { ExpCard(exp = exp) }
+        item { ExpCard(
+            exp = exp,
+            checkInDays = checkInDays
+        ) }
         item {
             Spacer(modifier = Modifier.height(8.dp))
             SettingCard(

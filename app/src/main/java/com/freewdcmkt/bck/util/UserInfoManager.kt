@@ -9,80 +9,59 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-private val Context.dataStore by preferencesDataStore(name = "user_info")
-val USERNAME = stringPreferencesKey("username")
-val UID = stringPreferencesKey("uid")
-val IS_LOGIN = booleanPreferencesKey("is_login")
-val USER_ACCOUNT = stringPreferencesKey("user_account")
-val HOME_IMAGE_URL = stringPreferencesKey("home_image_url")
-val NOTIFICATION_ID = intPreferencesKey("notification_id")
-val EXP = intPreferencesKey("exp")
+private suspend fun <T> DataStore<Preferences>.setValue(key: Preferences.Key<T>, value: T) {
+    edit { preferences -> preferences[key] = value }
+}
+
+private fun <T> DataStore<Preferences>.getValueFlow(
+    key: Preferences.Key<T>,
+    default: T
+): Flow<T> = data
+    .catch { emit(emptyPreferences()) }
+    .map { preferences -> preferences[key] ?: default }
 
 object UserInfoManager {
+    private val Context.dataStore by preferencesDataStore(name = "user_info")
+    private val USERNAME = stringPreferencesKey("username")
+    private val UID = stringPreferencesKey("uid")
+    private val IS_LOGIN = booleanPreferencesKey("is_login")
+    private val USER_ACCOUNT = stringPreferencesKey("user_account")
+    private val HOME_IMAGE_URL = stringPreferencesKey("home_image_url")
+    private val NOTIFICATION_ID = intPreferencesKey("notification_id")
+    private val EXP = intPreferencesKey("exp")
+    private val CHECK_IN_DAYS = intPreferencesKey("check_in_days")
     private lateinit var dataStore: DataStore<Preferences>
     fun init(context: Context) {
         dataStore = context.dataStore
     }
 
-    suspend fun saveUsername(username: String) {
-        dataStore.edit { preferences ->
-            preferences[USERNAME] = username
-        }
-    }
+    suspend fun saveUsername(username: String) =dataStore.setValue(USERNAME,username)
 
-    fun getUsernameFlow() = dataStore.data
-        .catch { exception ->
-            emit(emptyPreferences())
-        }
-        .map { preferences ->
-            preferences[USERNAME] ?: ""
-        }
+    fun getUsernameFlow() = dataStore.getValueFlow(USERNAME,"")
 
-    suspend fun saveUid(uid: String) {
-        dataStore.edit { preferences ->
-            preferences[UID] = uid
-        }
-    }
+    suspend fun saveUid(uid: String) = dataStore.setValue(UID,uid)
 
-    fun getUidFlow() = dataStore.data
-        .catch { exception -> emit(emptyPreferences()) }
-        .map { preferences -> preferences[UID] ?: "" }
+    fun getUidFlow() = dataStore.getValueFlow(UID,"")
+    suspend fun saveLogin(isLogin: Boolean)=dataStore.setValue(IS_LOGIN,isLogin)
 
-    suspend fun saveLogin(isLogin: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[IS_LOGIN] = isLogin
-        }
-    }
+    fun isLoginFlow() = dataStore.getValueFlow(IS_LOGIN,false)
 
-    fun isLoginFlow() = dataStore.data.catch { emit(emptyPreferences()) }
-        .map { preferences -> preferences[IS_LOGIN] ?: false }
+    suspend fun saveUserAccount(qq: String) = dataStore.setValue(USER_ACCOUNT,qq)
 
-    suspend fun saveUserAccount(qq: String) {
-        dataStore.edit { preferences -> preferences[USER_ACCOUNT] = qq }
-    }
+    fun getUserAccountFlow() = dataStore.getValueFlow(USER_ACCOUNT,"")
 
-    fun getUserAccountFlow() = dataStore.data.catch { emit(emptyPreferences()) }
-        .map { preferences -> preferences[USER_ACCOUNT] ?: "" }
+    suspend fun saveNotificationId(id: Int)=dataStore.setValue(NOTIFICATION_ID,id)
 
-    suspend fun saveHomeImageUrl(url: String) {
-        dataStore.edit { preferences -> preferences[HOME_IMAGE_URL] = url }
-    }
+    fun getNotificationIdFlow() =dataStore.getValueFlow(NOTIFICATION_ID,0)
 
-    fun getHomeImageUrlFlow() = dataStore.data.catch { emit(emptyPreferences()) }
-        .map { preferences -> preferences[HOME_IMAGE_URL] ?: "" }
+    suspend fun saveExp(exp: Int?)=dataStore.setValue(EXP,exp?:0)
 
-    suspend fun saveNotificationId(id: Int) {
-        dataStore.edit { preferences -> preferences[NOTIFICATION_ID] = id }
-    }
+    fun getExpFlow() = dataStore.getValueFlow(EXP,0)
 
-    fun getNotificationIdFlow() = dataStore.data.catch { emit(emptyPreferences()) }
-        .map { preferences -> preferences[NOTIFICATION_ID] }
-
-    suspend fun saveExp(exp: Int?) {
-        dataStore.edit { preferences -> preferences[EXP] = exp ?: 0 }
-    }
-    fun getExpFlow() = dataStore.data.catch { emit(emptyPreferences()) }.map { preferences -> preferences[EXP] }
+    suspend fun saveCheckInDays(day: Int?) = dataStore.setValue(CHECK_IN_DAYS, day?:0)
+    fun getCheckInDaysFlow() = dataStore.getValueFlow(CHECK_IN_DAYS,0)
 }
