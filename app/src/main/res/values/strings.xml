@@ -56,7 +56,7 @@
     <string name="freewd_feed_hint">Freewd Feed</string>
     <string name="copied_link_hint">Link copied</string>
     <string name="like_feed_hint">Liked your feed</string>
-    <string name="reply_feed_hint">Replied your feed: %s</string>
+    <string name="reply_feed_hint">Replied you feed: %s</string>
     <string name="unsupported_notification_hint">Unsupported type,please update your app</string>
     <string name="post_count_hint">Post: %s</string>
     <string name="likes_count_hint">Likes: %s</string>

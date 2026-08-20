@@ -76,4 +76,10 @@
     <string name="submitting_hint">提交中......</string>
     <string name="user_center_hint">用户中心</string>
     <string name="user_center_description_hint">查看你的信息</string>
+    <string name="uploading_hint">上传中......</string>
+    <string name="about_hint">关于</string>
+    <string name="agree_agreement_part">登录即代表您同意用户协议和隐私政策</string>
+    <string name="user_agreement">用户协议</string>
+    <string name="policy_privacy">隐私政策</string>
+    <string name="check_in_days_hint">你已签到%d天</string>
 </resources>

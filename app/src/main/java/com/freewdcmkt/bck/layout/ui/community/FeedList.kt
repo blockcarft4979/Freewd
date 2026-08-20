@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
+import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.Feed
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
@@ -54,7 +55,6 @@ fun FeedLayout(
 
     LaunchedEffect(zone) {
         viewmodel.fetchData(zone)
-        //listState.scrollToItem(0)
     }
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
@@ -121,7 +121,7 @@ fun FeedLayout(
                     )
                 }
 
-                is FeedUiState.Error -> {}
+                is FeedUiState.Error -> FreewdHint(hint = stringResource(R.string.load_error_hint))
             }
         }
     }

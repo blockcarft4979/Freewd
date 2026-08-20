@@ -16,5 +16,5 @@
     <string name="agree_agreement_part">Logging in indicates that you have read and agreed to the terms of service and privacy policy</string>
     <string name="user_agreement">User Agreement</string>
     <string name="policy_privacy">Policy Privacy</string>
-    <string name="check_in_days_hint">You have checked in for %d day(s).</string>
+    <string name="check_in_days_hint">checked in for %d days.</string>
 </resources>
