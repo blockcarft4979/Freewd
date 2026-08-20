@@ -133,7 +133,7 @@ fun PostFeedLayout(
                 onUploadImg = { imgFile -> viewmodel.uploadImg(imgFile) },
                 isUploadedImg = isUploadingImg.value,
                 imgUrl = imgUrl.value,
-                onClick = onToPreviewImg
+                onToPreviewImg = onToPreviewImg
             )
         }
     }
@@ -142,7 +142,7 @@ fun PostFeedLayout(
 @Composable
 fun PostFeedUiLayout(
     onPostFeed: (title: String?, message: String) -> Unit,
-    onClick: (String) -> Unit,
+    onToPreviewImg: (String) -> Unit,
     onUploadImg: (file: File) -> Unit,
     isUploadedImg: Boolean,
     imgUrl: String?
@@ -201,7 +201,7 @@ fun PostFeedUiLayout(
                 ) {
                     ImageCard(
                         imgUrl,
-                        onClick = onClick
+                        onClick = onToPreviewImg
                     )
                 }
             }

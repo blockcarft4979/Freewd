@@ -25,7 +25,7 @@ interface ApiService {
     suspend fun login(@Body request: LoginRequestData): BaseData<LoginData>
     @POST(RetroApi.Auth.REGISTER)
     suspend fun register(@Body request: RegisterRequestData): BaseData<LoginData>
-    @GET
+    @GET(RetroApi.Auth.VERIFY_TOKEN)
     suspend fun verifyToken(): BaseData<VerifyTokenData>
     @GET(RetroApi.Other.HOME_DATA)
     suspend fun getHomeData(): BaseData<HomeData>
