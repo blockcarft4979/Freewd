@@ -3,11 +3,14 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -40,8 +44,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.ImageCard
+import com.freewdcmkt.bck.components.freewd.UserIcon
+import com.freewdcmkt.bck.components.freewd.UsernameText
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.file.uriToFile
 import com.freewdcmkt.bck.viewmodel.community.PostFeedUiState
 import com.freewdcmkt.bck.viewmodel.community.PostFeedViewmodel
@@ -57,6 +65,8 @@ fun PostFeedLayout(
     viewmodel: PostFeedViewmodel = viewModel()
 ) {
     val uiState by viewmodel.postFeedUiState.collectAsState()
+    val qq by UserInfoData.account.collectAsState()
+    val username by UserInfoData.username.collectAsState()
     val noNetworkHint = stringResource(R.string.no_internet_hint)
     val imgUrl = rememberSaveable { mutableStateOf("") }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -133,7 +143,8 @@ fun PostFeedLayout(
                 onUploadImg = { imgFile -> viewmodel.uploadImg(imgFile) },
                 isUploadedImg = isUploadingImg.value,
                 imgUrl = imgUrl.value,
-                onToPreviewImg = onToPreviewImg
+                onToPreviewImg = onToPreviewImg,
+                qq = qq
             )
         }
     }
@@ -145,7 +156,8 @@ fun PostFeedUiLayout(
     onToPreviewImg: (String) -> Unit,
     onUploadImg: (file: File) -> Unit,
     isUploadedImg: Boolean,
-    imgUrl: String?
+    imgUrl: String?,
+    qq: String,
 ) {
     var title by rememberSaveable { mutableStateOf("") }
     var message by rememberSaveable { mutableStateOf("") }
@@ -173,62 +185,79 @@ fun PostFeedUiLayout(
             .fillMaxSize()
             .imePadding()
     ) {
-        Column(
+        Row(
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = title,
-                onValueChange = { title = it },
-                label = { Text(stringResource(R.string.title_hint)) },
-                maxLines = 1
-            )
+            UserIcon(userAvatarUrl(qq))
 
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                value = message,
-                onValueChange = { message = it },
-                label = { Text(stringResource(R.string.content_hint)) }
-            )
-
-            if (!imgUrl.isNullOrEmpty()) {
-                Card(
-                    shape = RoundedCornerShape(16.dp)
+            Column() {
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text(stringResource(R.string.title_hint)) },
+                    maxLines = 1
+                )
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    value = message,
+                    onValueChange = { message = it },
+                    label = { Text(stringResource(R.string.content_hint)) }
+                )
+                if (!imgUrl.isNullOrEmpty()) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        ImageCard(
+                            imgUrl,
+                            onClick = onToPreviewImg
+                        )
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    ImageCard(
-                        imgUrl,
-                        onClick = onToPreviewImg
-                    )
+                    IconButton(
+                        enabled = !isUploadedImg && imgUrl.isNullOrEmpty(),
+                        onClick = { imagePickerLauncher.launch("image/*") },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .padding(4.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.pictuer),
+                            contentDescription = stringResource(R.string.add_picture_hint)
+                        )
+                    }
                 }
             }
+
         }
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            onClick = {
-                onPostFeed(title, message)
-            },
-            enabled = message.isNotEmpty() && message.isNotBlank()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(R.string.post_new_feed_hint))
-        }
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
-            enabled = !isUploadedImg && imgUrl.isNullOrEmpty(),
-            onClick = {
-                imagePickerLauncher.launch("image/*")
+            Button(
+                modifier = Modifier
+                    .padding(top = 8.dp),
+                onClick = {
+                    onPostFeed(title, message)
+                },
+                enabled = message.isNotEmpty() && message.isNotBlank()
+            ) {
+                Text(stringResource(R.string.post_new_feed_hint))
             }
-        ) {
-            Text(stringResource(R.string.upload_image))
         }
+
+
     }
 }

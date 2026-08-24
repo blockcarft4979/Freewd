@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -58,8 +59,7 @@ fun FeedLayout(
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
     val snackBarHostState = remember { SnackbarHostState() }
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     LaunchedEffect(zone) { viewmodel.fetchData(zone) }
     LaunchedEffect(uiState) {
         if (uiState is FeedUiState.Error && (uiState as FeedUiState.Error).msg != null) (uiState as FeedUiState.Error).msg?.let {
@@ -90,10 +90,9 @@ fun FeedLayout(
     }
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             //TopAppBar()
-            LargeTopAppBar(
+            TopAppBar(
                 title = {
                     Text(stringResource(R.string.post_hint))
                 },
@@ -104,8 +103,7 @@ fun FeedLayout(
                             contentDescription = stringResource(R.string.back_hint)
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }
             )
         },
         floatingActionButton = {

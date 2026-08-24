@@ -8,11 +8,14 @@ import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.UploadImgData
 import com.freewdcmkt.bck.util.JsonParser
+import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.network.NetworkClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
@@ -26,6 +29,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class PostFeedViewmodel : ViewModel() {
+
     private val _postFeedUiState = MutableStateFlow<PostFeedUiState>(PostFeedUiState.NoAction)
     val postFeedUiState: StateFlow<PostFeedUiState> = _postFeedUiState.asStateFlow()
     fun postFeed(
@@ -80,6 +84,7 @@ class PostFeedViewmodel : ViewModel() {
                     ).execute()
                 }
                 val body = response.body.string()
+                Log.d("POST FEED",body)
                 val data = JsonParser.json.decodeFromString<BaseData<UploadImgData>>(body)
                 if (response.isSuccessful && data.data != null) {
                     _postFeedUiState.value = PostFeedUiState.ImageUploaded(data.data.url)

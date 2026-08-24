@@ -36,31 +36,6 @@ import java.io.File
 
 class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     private val app = application
-    val userAccount = UserInfoManager.getUserAccountFlow()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ""
-        )
-    val username = UserInfoManager.getUsernameFlow()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ""
-        )
-    val uid = UserInfoManager.getUidFlow()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ""
-        )
-    val exp = UserInfoManager.getExpFlow().map { it ?: 0 }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0
-    )
-    val checkInDays = UserInfoManager.getCheckInDaysFlow()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initialValue = 0)
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
     private val _uiState = MutableStateFlow<MeUiState>(MeUiState.NoAction)

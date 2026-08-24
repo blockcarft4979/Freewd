@@ -51,11 +51,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.UserCard
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.layout.ui.user.Me
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
@@ -71,9 +73,9 @@ fun HomeLayout(
     onToNotification: () -> Unit,
     onToUserCenter: () -> Unit
 ) {
-    val username by viewmodel.username.collectAsState()
-    val qq by viewmodel.userAccount.collectAsState()
-    val uid by viewmodel.uid.collectAsState()
+    val username by UserInfoData.username.collectAsState()
+    val qq by UserInfoData.account.collectAsState()
+    val uid by UserInfoData.uid.collectAsState()
     val isShowNotification by viewmodel.isShowNotification.collectAsState()
     val isShowNoNetwork by viewmodel.isShowNoNetwork.collectAsState()
     val userData by viewmodel.verifyTokenData.collectAsState()

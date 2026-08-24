@@ -28,10 +28,6 @@ class FeedListViewmodel() : ViewModel() {
 
     val listState = LazyListState()
 
-    init {
-        //fetchData(zone, true)
-    }
-
     // 首次加载或下拉刷新
     fun fetchData(zone: Int, forceRefresh: Boolean = false) {
 

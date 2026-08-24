@@ -17,4 +17,5 @@
     <string name="user_agreement">User Agreement</string>
     <string name="policy_privacy">Policy Privacy</string>
     <string name="check_in_days_hint">checked in for %d days.</string>
+    <string name="add_picture_hint">Add picture</string>
 </resources>

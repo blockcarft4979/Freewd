@@ -30,6 +30,7 @@ import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.FreewdEditDialog
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.SettingCard
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
@@ -39,8 +40,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun Me(viewmodel: HomeViewmodel = viewModel(), onToUserCenter: () -> Unit) {
     val uiState by viewmodel.uiState.collectAsState()
-    val exp by viewmodel.exp.collectAsState()
-    val checkInDays by viewmodel.checkInDays.collectAsState()
+    val exp by UserInfoData.exp.collectAsState()
+    val checkInDays by UserInfoData.checkInDays.collectAsState()
     val isShowLoadingDialog = rememberSaveable() { mutableStateOf(false) }
 
     if (isShowLoadingDialog.value) {

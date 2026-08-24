@@ -37,8 +37,8 @@ fun ReplyCard(replyData: FeedReplyData, onReplyUser: (String, String) -> Unit) {
                 verticalArrangement = Arrangement.Top
             ) {
                 UsernameText(replyData.username)
-                if (replyData.msg != null) ContentText(replyData.msg)
                 DateText(replyData.date)
+                ContentText(replyData.msg)
             }
         }
     }

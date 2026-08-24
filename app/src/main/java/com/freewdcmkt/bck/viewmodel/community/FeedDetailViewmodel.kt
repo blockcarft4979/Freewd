@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.request.LikeFeedRequestData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.util.JsonParser
@@ -42,7 +43,7 @@ class FeedDetailViewmodel : ViewModel() {
                 Log.d("FEED DETAIL VIEWMODEL", response.toString())
 
                 if (response.data != null) {
-                    val currentAccount = UserInfoManager.getUserAccountFlow().first()
+                    val currentAccount = UserInfoData.account.value
                     val data = response.data
                     _isAuthor.value = (currentAccount == data.qq)
                     _feedDetailData.value = data

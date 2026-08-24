@@ -4,8 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,10 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
@@ -28,13 +24,14 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,15 +42,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link.feedLink
 import com.freewdcmkt.bck.api.userAvatarUrl
@@ -67,6 +66,7 @@ import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.TitleText
+import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.FeedDetailData
@@ -78,7 +78,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun FeedDetailLayout(
     id: Int,
-    //zone: Int,
     viewmodel: FeedDetailViewmodel = viewModel(),
     onDeleteFeed: () -> Unit,
     onBack: () -> Unit,
@@ -89,6 +88,9 @@ fun FeedDetailLayout(
     val isAuthor by viewmodel.isAuthor.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     val copiedHint = stringResource(R.string.copied_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
@@ -123,7 +125,9 @@ fun FeedDetailLayout(
     }
     Scaffold(
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
+                modifier = Modifier,
+                scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onBack) {
                         Icon(
@@ -132,7 +136,27 @@ fun FeedDetailLayout(
                         )
                     }
                 },
-                title = { Text(stringResource(R.string.feed_detail_hint)) },
+
+                title = {
+
+                    if (uiState is FeedDetailUiState.Loading)
+                        Text(stringResource(R.string.feed_detail_hint))
+                    else
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            UserIcon(userAvatarUrl(feedDetailData.qq))
+                            Column(
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                UsernameText(
+                                    feedDetailData.username,
+                                )
+                                DateText(
+                                    feedDetailData.date,
+                                )
+                            }
+
+                        }
+                },
                 actions = {
                     IconButton(onClick = {
                         isExpanded.value = true
@@ -176,7 +200,8 @@ fun FeedDetailLayout(
                         )
 
                     }
-                })
+                }
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = {
@@ -212,9 +237,11 @@ fun FeedDetailLayout(
                 }
 
                 else -> {
-                    replyUsername.value = feedDetailData?.username ?: ""
+                    replyUsername.value = feedDetailData.username
+
                     FeedUiLayout(
                         feedDetailData,
+                        nestedScrollConnection = scrollBehavior.nestedScrollConnection,
                         onClickLike = {
                             viewmodel.seedLike(
                                 id,
@@ -236,6 +263,7 @@ fun FeedDetailLayout(
 @Composable
 private fun FeedUiLayout(
     feedDetailData: FeedDetailData,
+    nestedScrollConnection: NestedScrollConnection,
     onClickLike: () -> Unit,
     onReplyUser: (String, String) -> Unit,
     onToPreviewImg: (String) -> Unit
@@ -243,6 +271,7 @@ private fun FeedUiLayout(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(nestedScrollConnection)
     ) {
         item {
             Card(
@@ -256,36 +285,6 @@ private fun FeedUiLayout(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 14.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(userAvatarUrl(feedDetailData.qq)),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(44.dp) // 稍微缩小，更精致
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)) // 加载占位背景
-                        )
-                        Column(
-                            modifier = Modifier
-                                .padding(start = 10.dp)
-                                .weight(1f), // 3. 加weight，防止用户名过长挤占右边按钮空间
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            UsernameText(
-                                feedDetailData.username,
-                                // style = MaterialTheme.typography.titleMedium // 建议加粗
-                            )
-                            DateText(
-                                feedDetailData.date,
-                            )
-                        }
-                    }
-
-                    // ===== 内容区域 (增加间距) =====
-                    Spacer(modifier = Modifier.height(10.dp))
                     SelectionContainer {
                         Column {
                             if (feedDetailData.title != null) {
