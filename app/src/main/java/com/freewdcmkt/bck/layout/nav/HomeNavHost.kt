@@ -56,6 +56,7 @@ import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
+import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.HomeData
@@ -159,7 +160,7 @@ fun HomeLayout(
                         onRefresh = { viewmodel.fetchData(true) })
                     if (homeUiState is HomeUiState.Finish && isShowNotification) {
                         val notificationData = homeData.notification
-                        FreewdDialog(
+                        FreewdModalBottomSheet(
                             onDismiss = { viewmodel.dismissNotification(null) },
                             onConfirm = {
                                 viewmodel.dismissNotification(

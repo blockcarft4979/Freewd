@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.encodeToJsonElement
@@ -96,6 +97,7 @@ class RegisterViewmodel : ViewModel() {
                     UserInfoManager.saveCheckInDays(loginData.checkInDays)
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
+                    UserInfoManager.isLoginFlow().first()
                 } else if (response.msg != null) {
                     _registerUiState.value = RegisterUiState.Error(response.msg)
                 }

@@ -63,6 +63,7 @@ import com.freewdcmkt.bck.components.freewd.ContentMarkdown
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
+import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.TitleText
@@ -111,7 +112,7 @@ fun FeedDetailLayout(
     }
 
     if (isShowDialog.value) {
-        FreewdDialog(
+        FreewdModalBottomSheet(
             onDismiss = { isShowDialog.value = false },
             onConfirm = {
                 viewmodel.deleteFeed(id)

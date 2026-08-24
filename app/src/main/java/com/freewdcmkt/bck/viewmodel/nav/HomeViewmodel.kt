@@ -38,8 +38,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     private val app = application
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
-    private val _uiState = MutableStateFlow<MeUiState>(MeUiState.NoAction)
-    val uiState: StateFlow<MeUiState> = _uiState.asStateFlow()
+
     private val _homeData = MutableStateFlow(HomeData(null, emptyList()))
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _savedNotificationId = MutableStateFlow(0)
@@ -112,36 +111,6 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun submitUsername(username: String) {
-        val requestBody = buildJsonObject { put("username", username) }.toString()
-            .toRequestBody("application/json".toMediaType())
-        viewModelScope.launch {
-            _uiState.value = MeUiState.SubmittingUsername
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.User.SUBMIT_USER_NAME_URL)
-                            .post(requestBody)
-                            .build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                val data = json.decodeFromString<BaseData<UsernameData>>(body)
-
-                if (response.isSuccessful && data.data != null) {
-
-                    _uiState.value = MeUiState.SubmitFinish
-                    UserInfoManager.saveUsername(data.data.username)
-                } else {
-                    val errorData = json.decodeFromString<ErrorData>(body)
-                    _uiState.value = MeUiState.LoadError(errorData.msg)
-                }
-            } catch (e: Exception) {
-                _isShowNoNetwork.value = true
-                _uiState.value = MeUiState.LoadError(isNoNetWork = true)
-            }
-        }
-    }
 
     fun verifyToken() {
         viewModelScope.launch {
@@ -207,10 +176,3 @@ sealed class HomeUiState {
 
 }
 
-sealed class MeUiState() {
-    object NoAction : MeUiState()
-    object SubmittingUsername : MeUiState()
-    object SubmitFinish : MeUiState()
-
-    class LoadError(val msg: String? = null, val isNoNetWork: Boolean = false) : MeUiState()
-}

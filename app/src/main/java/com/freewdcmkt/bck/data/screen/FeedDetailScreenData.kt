@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.data.screen
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,6 +33,7 @@ data class FeedReplyData(
 )
 
 @Serializable
+@Keep
 data class LikeFeedResultData(
     val isLiked: Boolean,
     val likeCount: Int

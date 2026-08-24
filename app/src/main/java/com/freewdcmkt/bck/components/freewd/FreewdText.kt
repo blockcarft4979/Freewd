@@ -37,14 +37,11 @@ import java.util.regex.Pattern
 @Composable
 fun TitleText(text: String) {
     Text(
-        text = text,
-        style = TextStyle(
+        text = text, style = TextStyle(
             fontSize = 15.sp,
             lineHeight = 20.sp,
             //platformStyle = PlatformTextStyle(includeFontPadding = false)
-        ),
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface
+        ), fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface
     )
 }
 
@@ -149,8 +146,7 @@ fun UidText(text: String) {
 fun ContentText(text: String) {
     val annotatedString = buildAnnotatedString {
         val urlPattern = Pattern.compile(
-            "((https?|ftp)://|www\\.)[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=]+",
-            Pattern.CASE_INSENSITIVE
+            "((https?|ftp)://|www\\.)[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=]+", Pattern.CASE_INSENSITIVE
         )
         val matcher = urlPattern.matcher(text)
         var lastIndex = 0
@@ -159,23 +155,21 @@ fun ContentText(text: String) {
             append(text.substring(lastIndex, matcher.start()))
 
             val url = text.substring(matcher.start(), matcher.end())
-
-            if (url.startsWith("https://community.freewd.top/u/page?id=")) {
-                withLink(
-                    LinkAnnotation.Url(
-                        url = url,
-                        styles = TextLinkStyles(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.primary.copy(0.8f),
-                                textDecoration = TextDecoration.Underline
-                            )
+            withLink(
+                LinkAnnotation.Url(
+                    url = url, styles = TextLinkStyles(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary.copy(0.8f),
+                            textDecoration = TextDecoration.Underline
                         )
                     )
-                ) {
+                )
+            ) {
+                if (url.startsWith("https://community.freewd.top/u/page?id=")) {
                     append(stringResource(R.string.freewd_feed_hint))
+                } else {
+                    append(url)
                 }
-            } else {
-                append(url)
             }
 
             lastIndex = matcher.end()
@@ -184,23 +178,20 @@ fun ContentText(text: String) {
     }
 
     Text(
-        text = annotatedString, fontSize = 14.sp,
-        color = MaterialTheme.colorScheme.onSurface
+        text = annotatedString, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface
     )
 }
 
 @Composable
 fun ContentMarkdown(text: String) {
     Markdown(
-        content = text,
-        typography = markdownTypography(
+        content = text, typography = markdownTypography(
             h1 = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
             h2 = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             h3 = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             h4 = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             h5 = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
             h6 = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-        ),
-        imageTransformer = Coil2ImageTransformerImpl
+        ), imageTransformer = Coil2ImageTransformerImpl
     )
 }

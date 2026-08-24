@@ -10,6 +10,7 @@ import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -34,6 +35,7 @@ class LogInViewModel() : ViewModel() {
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
                     _loginUiState.value = LoginUiState.NoAction
+                    UserInfoManager.isLoginFlow().first()
                 } else {
                     Log.d("VIEW MODEL", "ERROR")
                     _loginUiState.value = LoginUiState.Error(responseData.msg)

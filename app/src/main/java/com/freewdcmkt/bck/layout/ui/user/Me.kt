@@ -29,16 +29,16 @@ import com.freewdcmkt.bck.components.freewd.ExpCard
 import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.FreewdEditDialog
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
+import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.SettingCard
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
-import com.freewdcmkt.bck.viewmodel.nav.MeUiState
+import com.freewdcmkt.bck.viewmodel.user.MeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Me(viewmodel: HomeViewmodel = viewModel(), onToUserCenter: () -> Unit) {
+fun Me(viewmodel: MeViewModel = viewModel(), onToUserCenter: () -> Unit) {
     val uiState by viewmodel.uiState.collectAsState()
     val exp by UserInfoData.exp.collectAsState()
     val checkInDays by UserInfoData.checkInDays.collectAsState()
@@ -57,7 +57,7 @@ fun Me(viewmodel: HomeViewmodel = viewModel(), onToUserCenter: () -> Unit) {
     )
     when (uiState) {
 
-        is MeUiState.SubmitFinish -> isShowLoadingDialog.value = false
+        is MeUiState.SubmittingUsername -> isShowLoadingDialog.value = true
         else -> {
             isShowLoadingDialog.value = false
         }
@@ -91,7 +91,7 @@ private fun MeUiLayout(
     }
 
     if (isShowDialog.value) {
-        FreewdDialog(
+        FreewdModalBottomSheet(
             onDismiss = { isShowDialog.value = false },
             onConfirm = {
                 TokenManager.clearToken()
@@ -159,4 +159,11 @@ private fun IconText(
         Text(text = text, fontSize = 14.sp)
     }
 
+}
+sealed class MeUiState() {
+    object NoAction : MeUiState()
+    object SubmittingUsername : MeUiState()
+    object SubmitFinish : MeUiState()
+
+    class LoadError(val msg: String? = null, val isNoNetWork: Boolean = false) : MeUiState()
 }
