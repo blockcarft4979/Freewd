@@ -30,3 +30,9 @@ data class FeedReplyData(
     val qq: String,
     val username: String
 )
+
+@Serializable
+data class LikeFeedResultData(
+    val isLiked: Boolean,
+    val likeCount: Int
+)

@@ -20,23 +20,24 @@ import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedReplyData
 
 @Composable
-fun ReplyCard(replyData: FeedReplyData,onReplyUser:(String,String)-> Unit) {
+fun ReplyCard(replyData: FeedReplyData, onReplyUser: (String, String) -> Unit) {
 
-        Card(
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 4.dp)
-                .fillMaxWidth().clickable(onClick = { onReplyUser(replyData.qq,replyData.username) }),
-            shape = RoundedCornerShape(10.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        ) {
-            Row(modifier = Modifier.padding(10.dp)) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .fillMaxWidth()
+            .clickable(onClick = { onReplyUser(replyData.qq, replyData.username) }),
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Row(modifier = Modifier.padding(10.dp)) {
             SmallUserIcon(userAvatarUrl(replyData.qq))
             Column(
                 modifier = Modifier.padding(start = 8.dp),
                 verticalArrangement = Arrangement.Top
             ) {
                 UsernameText(replyData.username)
-                ContentText(replyData.msg)
+                if (replyData.msg != null) ContentText(replyData.msg)
                 DateText(replyData.date)
             }
         }

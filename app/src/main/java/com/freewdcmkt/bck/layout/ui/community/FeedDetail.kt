@@ -84,6 +84,7 @@ fun FeedDetailLayout(
     onBack: () -> Unit,
     onToPreviewImg: (String) -> Unit
 ) {
+    val feedDetailData by viewmodel.feedDetailData.collectAsState()
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -102,6 +103,11 @@ fun FeedDetailLayout(
     }
 
     LaunchedEffect(id) { viewmodel.fetchData(id, false) }
+    LaunchedEffect(uiState) {
+        if (uiState is FeedDetailUiState.LikeError)
+            snackBarHostState.showSnackbar((uiState as FeedDetailUiState.LikeError).msg)
+    }
+
     if (isShowDialog.value) {
         FreewdDialog(
             onDismiss = { isShowDialog.value = false },
@@ -205,15 +211,14 @@ fun FeedDetailLayout(
                     onDeleteFeed()
                 }
 
-                is FeedDetailUiState.Success -> {
-                    replyUsername.value =
-                        (uiState as FeedDetailUiState.Success).feedDetailData.username
+                else -> {
+                    replyUsername.value = feedDetailData?.username ?: ""
                     FeedUiLayout(
-                        (uiState as FeedDetailUiState.Success).feedDetailData,
+                        feedDetailData,
                         onClickLike = {
                             viewmodel.seedLike(
                                 id,
-                                (uiState as FeedDetailUiState.Success).feedDetailData.isLiked
+                                feedDetailData?.isLiked ?: false
                             )
                             Log.d("FEED DETAIL LAYOUT", "ONCLICKLIKEBUTTON")
                         }, onReplyUser = { qq, username ->

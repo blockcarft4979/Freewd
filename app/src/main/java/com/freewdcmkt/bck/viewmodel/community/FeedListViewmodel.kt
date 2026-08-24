@@ -4,19 +4,14 @@ import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.FeedData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.network.NetworkClient
-import kotlinx.coroutines.Dispatchers
+import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Request
 
 //你妈的傻逼 FEED LIST VIEWMODEL
 // 看我今天下午不把你给杀了
@@ -96,55 +91,33 @@ class FeedListViewmodel() : ViewModel() {
 
     private suspend fun loadPage(zone: Int, page: Int, isAppend: Boolean) {
         try {
-            val response = withContext(Dispatchers.IO) {
-                NetworkClient.client.newCall(
-                    Request.Builder().url(RequestApi.Community.feed(zone, page)).build()
-                ).execute()
-            }
-            val body = response.body.string()
-            Log.d("FEED VM", "loadPage response: $body")
+            val response = RetroClient.apiService.getFeed(zone,page)
 
-            if (response.isSuccessful) {
-                val data = JsonParser.json.decodeFromString<BaseData<FeedData>>(body)
-                if (data.data != null) {
-                    val feedData = data.data
-                    totalPages = feedData.pages
-                    currentPage = feedData.page
-                    hasMore = currentPage < totalPages
+            if (response.data != null) {
 
-                    val newFeed = if (isAppend) {
-                        val oldList = (_feedUiState.value as? FeedUiState.Success)?.feedData?.feed
-                            ?: emptyList()
-                        val merged = (oldList + feedData.feed).distinctBy { it.id }
-                        feedData.copy(feed = merged)
-                    } else {
-                        feedData
-                    }
+                val feedData = response.data
+                totalPages = feedData.pages
+                currentPage = feedData.page
+                hasMore = currentPage < totalPages
 
-                    _feedUiState.value = FeedUiState.Success(
-                        feedData = newFeed,
-                        isLoadingMore = false,
-                        hasMore = hasMore,
-                        error = null
-                    )
-                    Log.d("FEED VM", "加载成功，当前条目数: ${newFeed.feed.size}, hasMore=$hasMore")
+                val newFeed = if (isAppend) {
+                    val oldList = (_feedUiState.value as? FeedUiState.Success)?.feedData?.feed
+                        ?: emptyList()
+                    val merged = (oldList + feedData.feed).distinctBy { it.id }
+                    feedData.copy(feed = merged)
                 } else {
-                    hasMore = false
-                    val current = _feedUiState.value
-                    if (current is FeedUiState.Success) {
-                        _feedUiState.value = current.copy(
-                            isLoadingMore = false,
-                            hasMore = false,
-                            error = "数据为空"
-                        )
-                    } else {
-                        _feedUiState.value = FeedUiState.Error("数据为空")
-                    }
+                    feedData
                 }
+
+                _feedUiState.value = FeedUiState.Success(
+                    feedData = newFeed,
+                    isLoadingMore = false,
+                    hasMore = hasMore,
+                    error = null
+                )
+                Log.d("FEED VM", "加载成功，当前条目数: ${newFeed.feed.size}, hasMore=$hasMore")
             } else {
-                // HTTP 非 2xx 响应
-                val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                val errorMsg = errorData.msg ?: "请求失败"
+                val errorMsg = response.msg
                 val current = _feedUiState.value
                 if (current is FeedUiState.Success) {
                     _feedUiState.value = current.copy(

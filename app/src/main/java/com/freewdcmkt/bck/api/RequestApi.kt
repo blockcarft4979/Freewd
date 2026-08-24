@@ -4,7 +4,7 @@ package com.freewdcmkt.bck.api
  * 所有 API 路由的统一入口
  */
 object RequestApi {
-    const val BASE_URL = "https://app.freewd.top/app/api/v1/"
+    const val BASE_URL = "https://app.freewd.top/api/v1/"
     private const val COMMUNITY_BASE = "${BASE_URL}community/"
     private const val NOTIFICATION_BASE = "${BASE_URL}notification/"
     private const val USER_BASE = "${BASE_URL}user/"

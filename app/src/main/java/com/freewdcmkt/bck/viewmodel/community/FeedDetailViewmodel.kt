@@ -4,12 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.request.LikeFeedRequestData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.UserInfoManager
+import com.freewdcmkt.bck.util.network.NetworkClient
+import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 class FeedDetailViewmodel : ViewModel() {
     private var currentId: Int = 0
+    private val _feedDetailData = MutableStateFlow(FeedDetailData(qq = "", username = "", date = "", likeCount = 0, isLiked = false, isMarkdown = false))
+    val feedDetailData : StateFlow<FeedDetailData> = _feedDetailData.asStateFlow()
     private val _feedDetailUiState = MutableStateFlow<FeedDetailUiState>(FeedDetailUiState.Loading)
     val feedDetailUiState: StateFlow<FeedDetailUiState> = _feedDetailUiState.asStateFlow()
     private val _isAuthor = MutableStateFlow(false)
@@ -35,23 +38,17 @@ class FeedDetailViewmodel : ViewModel() {
         viewModelScope.launch {
             currentId = id
             try {
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Community.feedDetail(id)).build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                Log.d("FEED DETAIL VIEWMODEL", body)
-                Log.d("FEED VIEW MODEL", response.code.toString())
-                val date = JsonParser.json.decodeFromString<BaseData<FeedDetailData>>(body)
+                val response = RetroClient.apiService.getFeedDetail(id)
+                Log.d("FEED DETAIL VIEWMODEL", response.toString())
 
-                if (response.isSuccessful && date.data != null) {
+                if (response.data != null) {
                     val currentAccount = UserInfoManager.getUserAccountFlow().first()
-                    _isAuthor.value = (currentAccount == date.data.qq)
-                    _feedDetailUiState.value = FeedDetailUiState.Success(date.data)
+                    val data = response.data
+                    _isAuthor.value = (currentAccount == data.qq)
+                    _feedDetailData.value = data
+                    _feedDetailUiState.value = FeedDetailUiState.Success
                 } else {
-                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                    _feedDetailUiState.value = FeedDetailUiState.Error(errorData.msg)
+                    _feedDetailUiState.value = FeedDetailUiState.Error(response.msg ?: "")
                 }
             } catch (e: Exception) {
                 Log.e("FEED DETAIL VIEWMODEL", e.message.toString())
@@ -65,7 +62,7 @@ class FeedDetailViewmodel : ViewModel() {
             val currentState = _feedDetailUiState.value
             if (currentState !is FeedDetailUiState.Success) return@launch
 
-            val oldData = currentState.feedDetailData
+            val oldData = feedDetailData.value
 
             val newLikeCount = if (isLiked) oldData.likeCount - 1 else oldData.likeCount + 1
             val newIsLiked = !isLiked
@@ -74,26 +71,21 @@ class FeedDetailViewmodel : ViewModel() {
                 likeCount = newLikeCount,
                 isLiked = newIsLiked
             )
-            _feedDetailUiState.value = FeedDetailUiState.Success(updatedData)
-            val requestBody =
-                buildJsonObject {
-                    put("id", id)
-                }.toString().toRequestBody("application/json".toMediaType())
+            _feedDetailData.value = updatedData
+            _feedDetailUiState.value = FeedDetailUiState.Success
+
             try {
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Community.LIKE_FEED_URL)
-                            .post(requestBody).build()
-                    ).execute()
-                }
-                val body = response.body.string()
+                val response = RetroClient.apiService.replyFeed(LikeFeedRequestData((id)))
 
-                if (!response.isSuccessful) {
-                    _feedDetailUiState.value = FeedDetailUiState.Success(oldData)
-
+                if (response.data == null) {
+                    _feedDetailData.value = oldData
+                    _feedDetailUiState.value = FeedDetailUiState.Success
+                }else{
+                  if (response.msg!=null)  _feedDetailUiState.value = FeedDetailUiState.LikeError(response.msg)
                 }
             } catch (e: Exception) {
-                _feedDetailUiState.value = FeedDetailUiState.Success(oldData)
+                _feedDetailData.value = oldData
+                _feedDetailUiState.value = FeedDetailUiState.Success
                 Log.e("FEED DETAIL VIEWMODEL", "Exception: ${e.message}", e)
             }
         }
@@ -115,7 +107,7 @@ class FeedDetailViewmodel : ViewModel() {
             }
             val body = response.body.string()
             if (response.isSuccessful) {
-                fetchData(id,true)
+                fetchData(id, true)
             } else {
                 val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
                 _feedDetailUiState.value = FeedDetailUiState.Error(errorData.msg)
@@ -150,6 +142,7 @@ class FeedDetailViewmodel : ViewModel() {
 sealed class FeedDetailUiState {
     object Loading : FeedDetailUiState()
     object DeleteSuccess : FeedDetailUiState()
-    class Success(val feedDetailData: FeedDetailData) : FeedDetailUiState()
+    class LikeError(val msg: String): FeedDetailUiState()
+    object Success : FeedDetailUiState()
     class Error(val msg: String) : FeedDetailUiState()
 }

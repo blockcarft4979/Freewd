@@ -17,6 +17,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -24,9 +26,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,7 +38,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
-import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.Feed
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
@@ -54,10 +57,16 @@ fun FeedLayout(
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val listState = viewmodel.listState
+    val snackBarHostState = remember { SnackbarHostState() }
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    LaunchedEffect(zone) {
-        viewmodel.fetchData(zone)
+    LaunchedEffect(zone) { viewmodel.fetchData(zone) }
+    LaunchedEffect(uiState) {
+        if (uiState is FeedUiState.Error && (uiState as FeedUiState.Error).msg != null) (uiState as FeedUiState.Error).msg?.let {
+            snackBarHostState.showSnackbar(
+                it
+            )
+        }
     }
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
@@ -81,6 +90,7 @@ fun FeedLayout(
     }
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             //TopAppBar()
             LargeTopAppBar(
@@ -107,7 +117,7 @@ fun FeedLayout(
                     contentDescription = stringResource(R.string.add_post_hint)
                 )
             }
-        }) { innerPadding ->
+        }, snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -127,7 +137,7 @@ fun FeedLayout(
                     )
                 }
 
-                is FeedUiState.Error -> FreewdHint(hint = stringResource(R.string.load_error_hint))
+                is FeedUiState.Error -> {}
             }
         }
     }
