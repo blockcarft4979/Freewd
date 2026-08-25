@@ -73,7 +73,7 @@ class UserCenterViewModel : ViewModel() {
                     val data = response.data
                     UserInfoManager.saveCheckInDays(data.checkInDays)
                     UserInfoManager.saveExp(data.totalXp)
-                    UserInfoManager.saveLastCheckInDate(data.lastCheckInDate)
+                    UserInfoManager.saveLastCheckInDate(getSystemDate())
                     _isChecked.value = true
                     _isShowCheckInDialog.value = false
                    // Log.d("USER CENTER", UserInfoData.lastCheckInDate.value)

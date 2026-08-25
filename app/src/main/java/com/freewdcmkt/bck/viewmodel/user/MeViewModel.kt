@@ -3,7 +3,6 @@ package com.freewdcmkt.bck.viewmodel.user
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.layout.ui.user.MeUiState
 import com.freewdcmkt.bck.util.UserInfoManager
@@ -29,7 +28,7 @@ class MeViewModel : ViewModel() {
                 val response = RetroClient.apiService.submitUsername(UsernameData(username))
                 if (response.data != null) {
                     val data = response.data
-                   _isShowSubmittingDialog.value = false
+                    _isShowSubmittingDialog.value = false
                     UserInfoManager.saveUsername(data.username)
                 } else {
                     val errorMsg = response.msg

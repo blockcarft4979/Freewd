@@ -24,15 +24,4 @@
 -dontwarn com.google.errorprone.annotations.Immutable
 -dontwarn com.google.errorprone.annotations.RestrictedApi
 
-# 保留所有标记 @Serializable 的类及其成员
--keep @kotlinx.serialization.Serializable class ** { *; }
--keepclassmembers class * {
-    @kotlinx.serialization.SerialName <fields>;
-}
-
-# 保留泛型签名
--keepattributes Signature, RuntimeVisibleAnnotations, AnnotationDefault
-
--keepclassmembers class * {
-    kotlinx.serialization.KSerializer serializer();
-}
+-keep class com.freewdcmkt.bck.data.**{ *;}

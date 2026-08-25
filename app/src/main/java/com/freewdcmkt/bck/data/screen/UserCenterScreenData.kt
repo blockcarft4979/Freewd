@@ -14,9 +14,8 @@ data class UserData(
     val joinedAt: String,
     val postCount: Int,
     val totalLikes: Int,
-    val checkInDays : Int
+    val checkInDays: Int
 )
 
-@Serializable
-data class CheckInData(val earnedXp: Int,val totalXp: Int,val checkInDays: Int,val lastCheckInDate: String){
+{
 }
