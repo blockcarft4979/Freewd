@@ -34,34 +34,38 @@ object UserInfoManager {
     private val NOTIFICATION_ID = intPreferencesKey("notification_id")
     private val EXP = intPreferencesKey("exp")
     private val CHECK_IN_DAYS = intPreferencesKey("check_in_days")
+    private val CHECK_IN_DATE = stringPreferencesKey("last_check_in_date")
     private lateinit var dataStore: DataStore<Preferences>
     fun init(context: Context) {
         dataStore = context.dataStore
     }
 
-    suspend fun saveUsername(username: String) =dataStore.setValue(USERNAME,username)
+    suspend fun saveUsername(username: String) = dataStore.setValue(USERNAME, username)
 
-    fun getUsernameFlow() = dataStore.getValueFlow(USERNAME,"")
+    fun getUsernameFlow() = dataStore.getValueFlow(USERNAME, "")
 
-    suspend fun saveUid(uid: String) = dataStore.setValue(UID,uid)
+    suspend fun saveUid(uid: String) = dataStore.setValue(UID, uid)
 
-    fun getUidFlow() = dataStore.getValueFlow(UID,"")
-    suspend fun saveLogin(isLogin: Boolean)=dataStore.setValue(IS_LOGIN,isLogin)
+    fun getUidFlow() = dataStore.getValueFlow(UID, "")
+    suspend fun saveLogin(isLogin: Boolean) = dataStore.setValue(IS_LOGIN, isLogin)
 
-    fun isLoginFlow() = dataStore.getValueFlow(IS_LOGIN,false)
+    fun isLoginFlow() = dataStore.getValueFlow(IS_LOGIN, false)
 
-    suspend fun saveUserAccount(qq: String) = dataStore.setValue(USER_ACCOUNT,qq)
+    suspend fun saveUserAccount(qq: String) = dataStore.setValue(USER_ACCOUNT, qq)
 
-    fun getUserAccountFlow() = dataStore.getValueFlow(USER_ACCOUNT,"")
+    fun getUserAccountFlow() = dataStore.getValueFlow(USER_ACCOUNT, "")
 
-    suspend fun saveNotificationId(id: Int)=dataStore.setValue(NOTIFICATION_ID,id)
+    suspend fun saveNotificationId(id: Int) = dataStore.setValue(NOTIFICATION_ID, id)
 
-    fun getNotificationIdFlow() =dataStore.getValueFlow(NOTIFICATION_ID,0)
+    fun getNotificationIdFlow() = dataStore.getValueFlow(NOTIFICATION_ID, 0)
 
-    suspend fun saveExp(exp: Int?)=dataStore.setValue(EXP,exp?:0)
+    suspend fun saveExp(exp: Int?) = dataStore.setValue(EXP, exp ?: 0)
 
-    fun getExpFlow() = dataStore.getValueFlow(EXP,0)
+    fun getExpFlow() = dataStore.getValueFlow(EXP, 0)
 
-    suspend fun saveCheckInDays(day: Int?) = dataStore.setValue(CHECK_IN_DAYS, day?:0)
-    fun getCheckInDaysFlow() = dataStore.getValueFlow(CHECK_IN_DAYS,0)
+    suspend fun saveCheckInDays(day: Int?) = dataStore.setValue(CHECK_IN_DAYS, day ?: 0)
+    fun getCheckInDaysFlow() = dataStore.getValueFlow(CHECK_IN_DAYS, 0)
+
+    suspend fun saveLastCheckInDate(date: String) = dataStore.setValue(CHECK_IN_DATE,date)
+    fun getLastCheckInDate() = dataStore.getValueFlow(CHECK_IN_DATE,"")
 }

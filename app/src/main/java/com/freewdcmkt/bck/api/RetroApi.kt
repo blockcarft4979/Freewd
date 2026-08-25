@@ -10,12 +10,18 @@ object RetroApi {
         const val REGISTER = "auth/register"
         const val VERIFY_TOKEN = "auth/verify_token"
     }
-    object Community{
+
+    object Community {
         const val GET_FEED = "community/get_feed"
         const val GET_FEED_DETAIL = "community/get_feed_detail"
         const val LIKE_FEED = "community/like_feed"
     }
 
+    object User {
+        const val GET_USER_INFO = "user/get_user_info"
+        const val CHECK_IN = "user/check_in"
+        const val SUBMIT_USERNAME = "user/submit_username"
+    }
 
     object Other {
         const val HOME_DATA = "community/home_data.json"

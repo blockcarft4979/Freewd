@@ -10,15 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -28,99 +25,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FreewdDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    title: String,
-    msg: String,
-    cancelHint: String? = null,
-    confirmHint: String? = null
-) {
-    BasicAlertDialog(
-        onDismissRequest = onDismiss
-    ) {
-        Card(
-            shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(24.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = msg,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // 取消按钮
-                    if (cancelHint != null) TextButton(onClick = onDismiss) {
-                        Text(cancelHint)
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    if (confirmHint != null) TextButton(
-                        onClick =
-                            onConfirm
-                    ) {
-                        Text(
-                            text = confirmHint,
-                            color = Color.Red
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FreewdLoadingDialog(text: String) {
-    BasicAlertDialog(
-        onDismissRequest = { }
+    ModalBottomSheet(
+        onDismissRequest = { },
+        sheetGesturesEnabled = false,
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnClickOutside = false,
+            shouldDismissOnBackPress = false,
+        )
     ) {
-        Card(
-            shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
+        Row(
+            modifier = Modifier.padding(24.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.padding(24.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                LoadingIndicator()
-                Text(text)
-            }
+            LoadingIndicator()
+            Text(text, modifier = Modifier.padding(horizontal = 8.dp))
         }
     }
 }
@@ -197,8 +123,10 @@ fun FreewdModalBottomSheet(
     cancelHint: String?,
     confirmHint: String?
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
 
+    ModalBottomSheet(
+        onDismissRequest = onDismiss
+    ) {
         Column(
             modifier = Modifier.padding(24.dp)
         ) {
@@ -218,16 +146,18 @@ fun FreewdModalBottomSheet(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // 取消按钮
-                if (cancelHint != null) TextButton(onClick = onDismiss) {
-                    Text(cancelHint)
+                if (cancelHint != null) {
+                    TextButton(
+                        onClick = onDismiss
+                    ) {
+                        Text(cancelHint)
+                    }
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 if (confirmHint != null) TextButton(
-                    onClick =
-                        onConfirm
+                    onClick = onConfirm
                 ) {
                     Text(
                         text = confirmHint,

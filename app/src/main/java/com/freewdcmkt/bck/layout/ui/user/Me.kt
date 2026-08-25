@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.ExpCard
-import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.FreewdEditDialog
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
@@ -39,29 +38,23 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Me(viewmodel: MeViewModel = viewModel(), onToUserCenter: () -> Unit) {
-    val uiState by viewmodel.uiState.collectAsState()
+
+    val isShowChenInDialog by viewmodel.isShowChenInDialog.collectAsState()
+    val isChecked by UserInfoData.isChecked.collectAsState()
     val exp by UserInfoData.exp.collectAsState()
     val checkInDays by UserInfoData.checkInDays.collectAsState()
-    val isShowLoadingDialog = rememberSaveable() { mutableStateOf(false) }
+    val isShowLoadingDialog by viewmodel.isShowSubmittingDialog.collectAsState()
 
-    if (isShowLoadingDialog.value) {
-        FreewdLoadingDialog(stringResource(R.string.submitting_hint))
-    }
+    if (isShowLoadingDialog) FreewdLoadingDialog(stringResource(R.string.submitting_hint))
 
+    if (isShowChenInDialog) FreewdLoadingDialog(stringResource(R.string.checking_hint))
     MeUiLayout(
-        onConfirmUsername = {
-            viewmodel.submitUsername(it)
-            isShowLoadingDialog.value = true
-        }, onToUserCenter = onToUserCenter,
-        exp = exp, checkInDays = checkInDays
+        onConfirmUsername = { viewmodel.submitUsername(it) },
+        onToUserCenter = onToUserCenter,
+        exp = exp, checkInDays = checkInDays,
+        isChecked = isChecked,
+        onCheckIn = { viewmodel.checkIn() }
     )
-    when (uiState) {
-
-        is MeUiState.SubmittingUsername -> isShowLoadingDialog.value = true
-        else -> {
-            isShowLoadingDialog.value = false
-        }
-    }
 
 }
 
@@ -69,7 +62,9 @@ fun Me(viewmodel: MeViewModel = viewModel(), onToUserCenter: () -> Unit) {
 private fun MeUiLayout(
     exp: Int = 0,
     checkInDays: Int = 0,
+    isChecked: Boolean,
     onConfirmUsername: (String) -> Unit,
+    onCheckIn: () -> Unit,
     onToUserCenter: () -> Unit
 ) {
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
@@ -105,17 +100,34 @@ private fun MeUiLayout(
     }
 
     LazyColumn() {
-        item { ExpCard(
-            exp = exp,
-            checkInDays = checkInDays
-        ) }
+        item {
+            ExpCard(
+                exp = exp,
+                checkInDays = checkInDays
+            )
+        }
         item {
             Spacer(modifier = Modifier.height(8.dp))
+
+//            SettingCard(
+//                R.drawable.personal_center,
+//                stringResource(R.string.user_center_hint),
+//                stringResource(R.string.user_center_description_hint),
+//                onClick = onToUserCenter
+//            )
             SettingCard(
-                R.drawable.personal_center,
-                stringResource(R.string.user_center_hint),
-                stringResource(R.string.user_center_description_hint),
-                onClick = onToUserCenter
+                icon = if (isChecked) R.drawable.calendarchecked else
+                    R.drawable.calendaruncheck,
+                name = stringResource(R.string.check_in_hint),
+                description = if (isChecked) stringResource(
+                    R.string.checked_hint,
+                    checkInDays
+                ) else stringResource(R.string.unchenked_hint),
+                onClick = {
+                    if (!isChecked) {
+                        onCheckIn()
+                    }
+                }
             )
             SettingCard(
                 icon = R.drawable.fa6solidpen,
@@ -160,6 +172,7 @@ private fun IconText(
     }
 
 }
+
 sealed class MeUiState() {
     object NoAction : MeUiState()
     object SubmittingUsername : MeUiState()

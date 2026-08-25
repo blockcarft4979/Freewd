@@ -97,7 +97,7 @@ fun LevelText(text: String) {
                 .padding(end = 8.dp)
                 .size(3.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.primary.copy(0.4f))
         )
         Text(
             text = formatTime(text),
@@ -107,7 +107,7 @@ fun LevelText(text: String) {
                 platformStyle = PlatformTextStyle(includeFontPadding = false),
                 fontWeight = FontWeight.Bold
             ),
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.primary.copy(0.95f),
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

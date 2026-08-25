@@ -64,4 +64,5 @@
     <string name="change_username_description_hint">Tap here to change your username</string>
     <string name="user_center_hint">User center</string>
     <string name="user_center_description_hint">View your information</string>
+    <string name="checking_hint">Checking…</string>
 </resources>

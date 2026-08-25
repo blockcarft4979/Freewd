@@ -51,11 +51,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
-import com.freewdcmkt.bck.components.freewd.FreewdDialog
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.data.common.UserInfoData

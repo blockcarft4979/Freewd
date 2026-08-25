@@ -1,7 +1,10 @@
 package com.freewdcmkt.bck.util
 
+import java.time.LocalTime
 import android.text.format.DateUtils
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -21,4 +24,7 @@ fun formatTime(dateStr: String): String {
     } catch (e: Exception) {
         dateStr // 解析失败时返回原始字符串
     }
+}
+fun getSystemDate(): String {
+    return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 }

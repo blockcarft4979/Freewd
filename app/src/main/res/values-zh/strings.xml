@@ -81,6 +81,9 @@
     <string name="agree_agreement_part">登录即代表您同意用户协议和隐私政策</string>
     <string name="user_agreement">用户协议</string>
     <string name="policy_privacy">隐私政策</string>
-    <string name="check_in_days_hint">已签到%d天</string>
     <string name="add_picture_hint">添加图片</string>
+    <string name="check_in_hint">签到</string>
+    <string name="unchenked_hint">今天还没签到哦</string>
+    <string name="checked_hint">已签到 %d 天</string>
+    <string name="checking_hint">签到中......</string>
 </resources>

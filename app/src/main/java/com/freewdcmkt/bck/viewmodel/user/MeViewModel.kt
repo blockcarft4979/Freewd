@@ -1,61 +1,69 @@
 package com.freewdcmkt.bck.viewmodel.user
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.layout.ui.user.MeUiState
-import com.freewdcmkt.bck.util.JsonParser.json
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.util.network.NetworkClient
-import kotlinx.coroutines.Dispatchers
+import com.freewdcmkt.bck.util.getSystemDate
+import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 
-class MeViewModel: ViewModel() {
+class MeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<MeUiState>(MeUiState.NoAction)
     val uiState: StateFlow<MeUiState> = _uiState.asStateFlow()
-    private val _isShowNoNetwork = MutableStateFlow(false)
-    val isShowNoNetwork: StateFlow<Boolean> = _isShowNoNetwork.asStateFlow()
+    private val _isShowSubmittingDialog = MutableStateFlow(false)
+    val isShowSubmittingDialog: StateFlow<Boolean> = _isShowSubmittingDialog.asStateFlow()
+    private val _isShowCheckInDialog = MutableStateFlow(false)
+    val isShowChenInDialog: StateFlow<Boolean> = _isShowCheckInDialog.asStateFlow()
 
     fun submitUsername(username: String) {
-        val requestBody = buildJsonObject { put("username", username) }.toString()
-            .toRequestBody("application/json".toMediaType())
         viewModelScope.launch {
-            _uiState.value = MeUiState.SubmittingUsername
+            _isShowSubmittingDialog.value = true
             try {
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.User.SUBMIT_USER_NAME_URL)
-                            .post(requestBody)
-                            .build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                val data = json.decodeFromString<BaseData<UsernameData>>(body)
-
-                if (response.isSuccessful && data.data != null) {
-
-                    _uiState.value = MeUiState.SubmitFinish
-                    UserInfoManager.saveUsername(data.data.username)
+                val response = RetroClient.apiService.submitUsername(UsernameData(username))
+                if (response.data != null) {
+                    val data = response.data
+                   _isShowSubmittingDialog.value = false
+                    UserInfoManager.saveUsername(data.username)
                 } else {
-                    val errorData = json.decodeFromString<ErrorData>(body)
-                    _uiState.value = MeUiState.LoadError(errorData.msg)
+                    val errorMsg = response.msg
+                    _uiState.value = MeUiState.LoadError(errorMsg)
+                    _isShowSubmittingDialog.value = false
                 }
             } catch (e: Exception) {
-                _isShowNoNetwork.value = true
+                e.printStackTrace()
                 _uiState.value = MeUiState.LoadError(isNoNetWork = true)
+                _isShowSubmittingDialog.value = false
             }
         }
     }
+
+    fun checkIn() {
+        _isShowCheckInDialog.value = true
+        viewModelScope.launch {
+            try {
+                val response = RetroClient.apiService.checkIn()
+                Log.d("USER CENTER rep", response.toString())
+                if (response.data != null) {
+                    val data = response.data
+                    UserInfoManager.saveCheckInDays(data.checkInDays)
+                    UserInfoManager.saveExp(data.totalXp)
+                    UserInfoManager.saveLastCheckInDate(getSystemDate())
+                    _isShowCheckInDialog.value = false
+                }
+            } catch (e: Exception) {
+                _isShowCheckInDialog.value = false
+                Log.d("USER CENTER", e.toString())
+            }
+        }
+
+    }
+
+
 }

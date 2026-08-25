@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -36,8 +35,8 @@ import com.freewdcmkt.bck.R
 fun SettingCard(
     icon: Int,
     name: String,
-    description: String?,
-    isRed: Boolean = false,
+    description: String? = null,
+    isRed: Boolean? = false,
     onClick: () -> Unit
 ) {
     Card(
@@ -56,7 +55,7 @@ fun SettingCard(
             Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
-                tint = if (isRed) Color.Red else MaterialTheme.colorScheme.onSurface,
+                tint = if (isRed == true) Color.Red else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .size(40.dp)
                     .padding(10.dp)
@@ -110,37 +109,29 @@ fun ExpCard(exp: Int, checkInDays: Int) {
         exp < 28000 -> "Lv 5"
         else -> "Lv 6"
     }
-   // val primaryColor = MaterialTheme.colorScheme.primary
+
     Card(shape = RoundedCornerShape(16.dp)) {
         Column(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(15.dp)
                 .fillMaxWidth()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                LevelText(level)
-                Text(stringResource(R.string.check_in_days_hint, checkInDays), fontSize = 12.sp)
-            }
             Spacer(modifier = Modifier.height(4.dp))
             LinearWavyProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
                 progress = { exp / maxExp },
-                amplitude = { 1.2f }
+                amplitude = { 1.4f }
             )
-//            LinearProgressIndicator(
-//                modifier = Modifier.fillMaxWidth(),
-//                color = MaterialTheme.colorScheme.primary,
-//                trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
-//                progress = { exp / maxExp },
-//
-//            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("$exp/${maxExp.toInt()}", fontSize = 12.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                LevelText(level)
+                Text(
+                    "$exp/${maxExp.toInt()}",
+                    fontSize = 12.sp
+                )
+            }
         }
     }
 }
