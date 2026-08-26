@@ -53,8 +53,17 @@ object UserInfoData {
         appScope.launch {
             lastCheckInDate.collect { date ->
                 _isChecked.value = date == getSystemDate()
-                Log.d("USER INFO DATA", "isChecked updated: ${_isChecked.value}")
             }
         }
+    }
+
+    private val _unreadNotificationCount = MutableStateFlow(0)
+    val unreadNotificationCount: StateFlow<Int> = _unreadNotificationCount.asStateFlow()
+    fun updateUnreadCount(count: Int) {
+        _unreadNotificationCount.value = count
+    }
+
+    fun clearUnreadCount() {
+        _unreadNotificationCount.value = 0
     }
 }

@@ -117,15 +117,22 @@ fun ExpCard(exp: Int, checkInDays: Int) {
                 .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            LinearWavyProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
-                progress = { exp / maxExp },
-                amplitude = { 1.4f }
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                LinearWavyProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
+                    progress = { exp / maxExp },
+                    amplitude = { 1.4f }
+                )
+                LevelText("${(exp / maxExp * 100).toInt()}%")
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 LevelText(level)
                 Text(
                     "$exp/${maxExp.toInt()}",

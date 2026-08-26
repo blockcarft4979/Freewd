@@ -39,7 +39,11 @@ object UserInfoManager {
     fun init(context: Context) {
         dataStore = context.dataStore
     }
-
+    suspend fun clearAllData() {
+        dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
     suspend fun saveUsername(username: String) = dataStore.setValue(USERNAME, username)
 
     fun getUsernameFlow() = dataStore.getValueFlow(USERNAME, "")

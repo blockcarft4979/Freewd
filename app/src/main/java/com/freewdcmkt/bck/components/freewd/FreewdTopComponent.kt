@@ -2,6 +2,7 @@ package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,7 +69,7 @@ fun FreewdTopComponent(qq: String, onToUserAgreement: (String) -> Unit, onToPoli
     )
     Text(stringResource(R.string.agree_agreement_part), fontSize = 10.sp)
     Spacer(modifier = Modifier.height(8.dp))
-    Row (){
+    Row (horizontalArrangement = Arrangement.spacedBy(8.dp)){
         Text(
             stringResource(R.string.user_agreement),
             fontSize = 12.sp,

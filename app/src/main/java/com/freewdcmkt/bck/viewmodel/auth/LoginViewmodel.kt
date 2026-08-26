@@ -24,7 +24,10 @@ class LogInViewModel() : ViewModel() {
             _loginUiState.value = LoginUiState.Loading
             try {
                 val responseData = RetroClient.apiService.login(LoginRequestData(qq, password))
-                Log.d("LOGIN VIEWMODEL", "status=${responseData.status}, msg=${responseData.msg}, data=${responseData.data}")
+                Log.d(
+                    "LOGIN VIEWMODEL",
+                    "status=${responseData.status}, msg=${responseData.msg}, data=${responseData.data}"
+                )
                 if (responseData.data != null) {
                     val loginData = responseData.data
                     TokenManager.saveToken(loginData.token)
@@ -32,6 +35,7 @@ class LogInViewModel() : ViewModel() {
                     UserInfoManager.saveUid(loginData.uid.toString())
                     UserInfoManager.saveExp(loginData.xp)
                     UserInfoManager.saveCheckInDays(loginData.checkInDays)
+                    UserInfoManager.saveLastCheckInDate(loginData.lastCheckInDate ?: "")
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
                     _loginUiState.value = LoginUiState.NoAction
@@ -41,7 +45,7 @@ class LogInViewModel() : ViewModel() {
                     _loginUiState.value = LoginUiState.Error(responseData.msg)
                 }
             } catch (e: Exception) {
-                Log.d("LOGIN Exception",e.toString())
+                Log.d("LOGIN Exception", e.toString())
                 _loginUiState.value = LoginUiState.Error(isNoNetWork = true)
             }
         }

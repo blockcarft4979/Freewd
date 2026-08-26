@@ -75,9 +75,9 @@ fun HomeLayout(
     val username by UserInfoData.username.collectAsState()
     val qq by UserInfoData.account.collectAsState()
     val uid by UserInfoData.uid.collectAsState()
+    val unreadCount by UserInfoData.unreadNotificationCount.collectAsState()
     val isShowNotification by viewmodel.isShowNotification.collectAsState()
     val isShowNoNetwork by viewmodel.isShowNoNetwork.collectAsState()
-    val userData by viewmodel.verifyTokenData.collectAsState()
     val homeUiState by viewmodel.homeUiState.collectAsState()
     val homeData by viewmodel.homeData.collectAsState()
 
@@ -110,7 +110,7 @@ fun HomeLayout(
                 title = {
                     UserCard(userAvatarUrl(qq), username, uid)
                 },
-                actions = { IconButton(onClick = onToNotification) { NotificationIcon(userData.unreadCount) } })
+                actions = { IconButton(onClick = onToNotification) { NotificationIcon(unreadCount) } })
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         bottomBar = { NavigationBar() { NavBar(navController) } }) { innerPadding ->

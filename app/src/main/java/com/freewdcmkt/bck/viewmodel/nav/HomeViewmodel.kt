@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.file.FilePath
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.data.screen.UsernameData
@@ -47,9 +48,6 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     private val _isShowNoNetwork = MutableStateFlow(false)
     val isShowNoNetwork: StateFlow<Boolean> = _isShowNoNetwork.asStateFlow()
 
-
-    private val _verifyTokenData = MutableStateFlow(VerifyTokenData("", 0))
-    val verifyTokenData: StateFlow<VerifyTokenData> = _verifyTokenData.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -117,10 +115,12 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
             try {
                 val response = RetroClient.apiService.verifyToken()
                 if (response.data != null) {
+                    val data = response.data
+                    UserInfoData.updateUnreadCount(data.unreadCount)
                     UserInfoManager.saveUsername(response.data.username)
-                    _verifyTokenData.value = response.data
                 } else {
                     TokenManager.clearToken()
+                    UserInfoManager.clearAllData()
                     _homeUiState.value = HomeUiState.Error(null)
                 }
             } catch (e: Exception) {

@@ -13,11 +13,11 @@ object TokenManager {
         try {
             appContext = context.applicationContext
             masterKey =
-                MasterKey.Builder(TokenManager.appContext)
+                MasterKey.Builder(appContext)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .setUserAuthenticationRequired(false)
                     .build()
-            TokenManager.sharedPreferences =
+            sharedPreferences =
                 EncryptedSharedPreferences.create(
                     TokenManager.appContext,
                     "secure_prefs",

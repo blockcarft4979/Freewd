@@ -95,6 +95,7 @@ class RegisterViewmodel : ViewModel() {
                     UserInfoManager.saveUid(loginData.uid.toString())
                     UserInfoManager.saveExp(loginData.xp)
                     UserInfoManager.saveCheckInDays(loginData.checkInDays)
+                    UserInfoManager.saveLastCheckInDate(loginData.lastCheckInDate ?: "")
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
                     UserInfoManager.isLoginFlow().first()

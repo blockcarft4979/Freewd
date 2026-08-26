@@ -10,12 +10,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -167,7 +170,6 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp)
             )
 
             Button(
@@ -181,14 +183,8 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
             ) {
                 Text(stringResource(R.string.login_login_btn))
             }
-            Button(
-                onClick = onRegister,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp)
-            ) {
-                Text(stringResource(R.string.login_register_btn))
-            }
+            TextButton(onClick = onRegister, modifier = Modifier.fillMaxWidth()) {Text(stringResource(R.string.login_register_btn), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface) }
+
         }
     }
 

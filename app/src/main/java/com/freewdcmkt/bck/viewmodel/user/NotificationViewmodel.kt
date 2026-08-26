@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.data.screen.NotificationDataList
 import com.freewdcmkt.bck.util.JsonParser
@@ -44,6 +45,7 @@ class NotificationViewmodel : ViewModel() {
                 Log.d("NOTIFICATION VIEWMODEL DATA", data.toString())
                 if (response.isSuccessful && data.data != null) {
                     isLoaded = true
+                    UserInfoData.clearUnreadCount()
                     _uiStates.value = NotificationUiStates.Finish(data.data.list)
                 } else {
                     val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
