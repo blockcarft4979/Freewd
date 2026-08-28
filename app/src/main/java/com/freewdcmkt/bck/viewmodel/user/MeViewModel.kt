@@ -26,12 +26,13 @@ class MeViewModel : ViewModel() {
             _isShowSubmittingDialog.value = true
             try {
                 val response = RetroClient.apiService.submitUsername(UsernameData(username))
-                if (response.data != null) {
-                    val data = response.data
+                val data = response.body()
+                if (data?.data != null) {
+                    val data = data.data
                     _isShowSubmittingDialog.value = false
                     UserInfoManager.saveUsername(data.username)
                 } else {
-                    val errorMsg = response.msg
+                    val errorMsg = data?.msg
                     _uiState.value = MeUiState.LoadError(errorMsg)
                     _isShowSubmittingDialog.value = false
                 }
@@ -48,13 +49,16 @@ class MeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = RetroClient.apiService.checkIn()
+                val data = response.body()
                 Log.d("USER CENTER rep", response.toString())
-                if (response.data != null) {
-                    val data = response.data
+                if (data?.data != null) {
+                    val data = data.data
                     UserInfoManager.saveCheckInDays(data.checkInDays)
                     UserInfoManager.saveExp(data.totalXp)
                     UserInfoManager.saveLastCheckInDate(getSystemDate())
                     _isShowCheckInDialog.value = false
+                }else{
+
                 }
             } catch (e: Exception) {
                 _isShowCheckInDialog.value = false

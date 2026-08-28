@@ -80,13 +80,14 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
                 _isShowNoNetwork.value = false
                 _homeUiState.value = HomeUiState.Loading
                 val response = CommunityClient.apiService.getHomeData()
-                if (response.data != null) {
-                    if (response.data.notification?.id != _savedNotificationId.value) {
+                val data = response.body()
+                if (data?.data != null) {
+                    if (data.data.notification?.id != _savedNotificationId.value) {
                         _isShowNotification.value = true
                     }
                     _homeUiState.value = HomeUiState.Finish
-                    _homeData.value = response.data
-                    viewModelScope.launch { saveHomeDataToCache(response.data) }
+                    _homeData.value = data.data
+                    viewModelScope.launch { saveHomeDataToCache(data.data) }
                 } else {
                     _homeUiState.value = HomeUiState.NoNetwork
                 }
@@ -114,16 +115,18 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 val response = RetroClient.apiService.verifyToken()
-                if (response.data != null) {
-                    val data = response.data
+                val data = response.body()
+                if (data?.data != null) {
+                    val data = data.data
                     UserInfoData.updateUnreadCount(data.unreadCount)
-                    UserInfoManager.saveUsername(response.data.username)
+                    UserInfoManager.saveUsername(data.username)
                 } else {
                     TokenManager.clearToken()
                     UserInfoManager.clearAllData()
                     _homeUiState.value = HomeUiState.Error(null)
                 }
             } catch (e: Exception) {
+                Log.d("HOME VIEWMODEL",e.message.toString())
                 e.printStackTrace()
             }
         }

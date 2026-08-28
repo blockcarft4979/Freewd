@@ -23,13 +23,11 @@ class LogInViewModel() : ViewModel() {
         viewModelScope.launch {
             _loginUiState.value = LoginUiState.Loading
             try {
-                val responseData = RetroClient.apiService.login(LoginRequestData(qq, password))
-                Log.d(
-                    "LOGIN VIEWMODEL",
-                    "status=${responseData.status}, msg=${responseData.msg}, data=${responseData.data}"
-                )
-                if (responseData.data != null) {
-                    val loginData = responseData.data
+                val response = RetroClient.apiService.login(LoginRequestData(qq, password))
+                val data = response.body()
+
+                if (data?.data != null) {
+                    val loginData = data.data
                     TokenManager.saveToken(loginData.token)
                     UserInfoManager.saveUsername(loginData.username)
                     UserInfoManager.saveUid(loginData.uid.toString())
@@ -41,8 +39,7 @@ class LogInViewModel() : ViewModel() {
                     _loginUiState.value = LoginUiState.NoAction
                     UserInfoManager.isLoginFlow().first()
                 } else {
-                    Log.d("VIEW MODEL", "ERROR")
-                    _loginUiState.value = LoginUiState.Error(responseData.msg)
+                    _loginUiState.value = LoginUiState.Error(data?.msg?:"")
                 }
             } catch (e: Exception) {
                 Log.d("LOGIN Exception", e.toString())

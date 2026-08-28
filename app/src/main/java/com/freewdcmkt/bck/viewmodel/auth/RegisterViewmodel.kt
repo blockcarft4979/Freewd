@@ -55,7 +55,9 @@ class RegisterViewmodel : ViewModel() {
         _registerUiState.value = RegisterUiState.Loading
         viewModelScope.launch {
             try {
-                val requestBody = JsonParser.json.encodeToJsonElement( SendAuthCodeRequestData(qq)).toString().toRequestBody("application/json".toMediaType())
+                val requestBody =
+                    JsonParser.json.encodeToJsonElement(SendAuthCodeRequestData(qq)).toString()
+                        .toRequestBody("application/json".toMediaType())
 
                 val response = withContext(Dispatchers.IO) {
                     NetworkClient.client.newCall(
@@ -86,10 +88,9 @@ class RegisterViewmodel : ViewModel() {
             try {
                 val response =
                     RetroClient.apiService.register(RegisterRequestData(qq, password, code))
-
-                if (response.data != null) {
-
-                    val loginData = response.data
+                val data = response.body()
+                if (data?.data != null) {
+                    val loginData = data.data
                     TokenManager.saveToken(loginData.token)
                     UserInfoManager.saveUsername(loginData.username)
                     UserInfoManager.saveUid(loginData.uid.toString())
@@ -99,8 +100,8 @@ class RegisterViewmodel : ViewModel() {
                     UserInfoManager.saveLogin(isLogin = true)
                     UserInfoManager.saveUserAccount(qq = qq)
                     UserInfoManager.isLoginFlow().first()
-                } else if (response.msg != null) {
-                    _registerUiState.value = RegisterUiState.Error(response.msg)
+                } else  {
+                    _registerUiState.value = RegisterUiState.Error(data?.msg?:"")
                 }
             } catch (e: Exception) {
                 _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)

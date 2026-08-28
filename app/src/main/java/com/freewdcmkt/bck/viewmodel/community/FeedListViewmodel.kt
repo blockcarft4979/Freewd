@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.screen.FeedData
-import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,15 +85,13 @@ class FeedListViewmodel() : ViewModel() {
 
     private suspend fun loadPage(zone: Int, page: Int, isAppend: Boolean) {
         try {
-            val response = RetroClient.apiService.getFeed(zone,page)
-
-            if (response.data != null) {
-
-                val feedData = response.data
+            val response = RetroClient.apiService.getFeed(zone, page)
+            val data = response.body()
+            if (data?.data != null) {
+                val feedData = data.data
                 totalPages = feedData.pages
                 currentPage = feedData.page
                 hasMore = currentPage < totalPages
-
                 val newFeed = if (isAppend) {
                     val oldList = (_feedUiState.value as? FeedUiState.Success)?.feedData?.feed
                         ?: emptyList()
@@ -113,7 +109,7 @@ class FeedListViewmodel() : ViewModel() {
                 )
                 Log.d("FEED VM", "加载成功，当前条目数: ${newFeed.feed.size}, hasMore=$hasMore")
             } else {
-                val errorMsg = response.msg
+                val errorMsg = data?.msg
                 val current = _feedUiState.value
                 if (current is FeedUiState.Success) {
                     _feedUiState.value = current.copy(

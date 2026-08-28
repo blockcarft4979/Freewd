@@ -32,7 +32,7 @@ import com.freewdcmkt.bck.layout.ui.community.FeedDetailLayout
 import com.freewdcmkt.bck.layout.ui.community.FeedLayout
 import com.freewdcmkt.bck.layout.ui.community.PostFeedLayout
 import com.freewdcmkt.bck.layout.ui.user.Notification
-import com.freewdcmkt.bck.layout.ui.user.UserCenter
+
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -138,10 +138,6 @@ fun FreewdAppNavHost(navController: NavHostController) {
             val args = backStack.toRoute<PreviewImgScreenData>()
             PreviewImgUi(args.url)
         }
-        composable<UserCenterScreenData> {
-            UserCenter(
-                onBack = { navController.popBackStack() }
-            )
-        }
+
     }
 }
