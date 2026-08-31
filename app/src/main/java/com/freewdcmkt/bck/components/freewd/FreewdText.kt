@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
-import com.freewdcmkt.bck.util.formatTime
+import com.freewdcmkt.bck.util.time.formatTime
 import com.mikepenz.markdown.coil2.Coil2ImageTransformerImpl
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownTypography

@@ -3,9 +3,12 @@ package com.freewdcmkt.bck.viewmodel.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.request.LoginRequestData
+import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
+import com.freewdcmkt.bck.util.initUserInfo
 import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,18 +31,13 @@ class LogInViewModel() : ViewModel() {
 
                 if (data?.data != null) {
                     val loginData = data.data
-                    TokenManager.saveToken(loginData.token)
-                    UserInfoManager.saveUsername(loginData.username)
-                    UserInfoManager.saveUid(loginData.uid.toString())
-                    UserInfoManager.saveExp(loginData.xp)
-                    UserInfoManager.saveCheckInDays(loginData.checkInDays)
-                    UserInfoManager.saveLastCheckInDate(loginData.lastCheckInDate ?: "")
-                    UserInfoManager.saveLogin(isLogin = true)
-                    UserInfoManager.saveUserAccount(qq = qq)
+                    initUserInfo(loginData,qq)
                     _loginUiState.value = LoginUiState.NoAction
                     UserInfoManager.isLoginFlow().first()
                 } else {
-                    _loginUiState.value = LoginUiState.Error(data?.msg?:"")
+                    val errorData = response.errorBody()?.string() ?: ""
+                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
+                    _loginUiState.value = LoginUiState.Error(errorMsg.msg)
                 }
             } catch (e: Exception) {
                 Log.d("LOGIN Exception", e.toString())

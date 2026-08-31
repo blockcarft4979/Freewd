@@ -2,9 +2,12 @@ package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -78,6 +81,7 @@ fun ImageCard(url: String, onClick: (String) -> Unit) {
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = { onClick(url) })
+            .aspectRatio(16f / 9f)
     ) {
 
         SubcomposeAsyncImage(
@@ -87,12 +91,20 @@ fun ImageCard(url: String, onClick: (String) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth(),
             contentScale = ContentScale.Crop,
-            loading = { LoadingIndicator(modifier = Modifier.size(48.dp)) })
+            loading = {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    LoadingIndicator(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+            })
     }
 }
 
 @Composable
-fun ExpCard(exp: Int, checkInDays: Int) {
+fun ExpCard(exp: Int) {
     val maxExp = when {
         exp in 0..<200 -> 200f
         exp < 1500 -> 1500f
@@ -117,9 +129,14 @@ fun ExpCard(exp: Int, checkInDays: Int) {
                 .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.height(4.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 LinearWavyProgressIndicator(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     color = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.primary.copy(0.5f),
                     progress = { exp / maxExp },
@@ -143,15 +160,11 @@ fun ExpCard(exp: Int, checkInDays: Int) {
     }
 }
 
-@Composable
-fun FreewdProgressIndicator() {
-
-}
 
 @Composable
 @Preview(showBackground = true)
 private fun Show() {
     val f: Float = 1000 / 2800f
     // SettingCard(R.drawable.fa6solidpen, "gdfiugf", "sdbhiusdu", onClick = {})
-    ExpCard(500, 1200)
+    ImageCard("") {}
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
+import com.freewdcmkt.bck.data.screen.PostFeedData
 import com.freewdcmkt.bck.data.screen.UploadImgData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.UserInfoManager
@@ -54,8 +55,10 @@ class PostFeedViewmodel : ViewModel() {
                     ).execute()
                 }
                 val body = response.body.string()
+                val data = JsonParser.json.decodeFromString<BaseData<PostFeedData>>(body)
                 if (response.isSuccessful) {
                     _postFeedUiState.value = PostFeedUiState.Success
+                    if (data.data?.xp !=null) UserInfoManager.saveExp(data.data.xp)
                 } else {
                     Log.d("POST FEED VIEWMODEL", body + response.code)
                     _postFeedUiState.value =
@@ -88,6 +91,7 @@ class PostFeedViewmodel : ViewModel() {
                 val data = JsonParser.json.decodeFromString<BaseData<UploadImgData>>(body)
                 if (response.isSuccessful && data.data != null) {
                     _postFeedUiState.value = PostFeedUiState.ImageUploaded(data.data.url)
+
                 } else {
                     val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
                     _postFeedUiState.value = PostFeedUiState.Error(errorData.msg)

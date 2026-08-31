@@ -102,8 +102,7 @@ private fun MeUiLayout(
     LazyColumn() {
         item {
             ExpCard(
-                exp = exp,
-                checkInDays = checkInDays
+                exp = exp
             )
         }
         item {

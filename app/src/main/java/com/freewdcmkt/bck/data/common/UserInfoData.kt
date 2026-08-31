@@ -1,8 +1,7 @@
 package com.freewdcmkt.bck.data.common
 
-import android.util.Log
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.util.getSystemDate
+import com.freewdcmkt.bck.util.time.getSystemDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -36,7 +35,7 @@ object UserInfoData {
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
-    val exp = UserInfoManager.getExpFlow().map { it ?: 0 }.stateIn(
+    val exp = UserInfoManager.getExpFlow().map { it }.stateIn(
         scope = appScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = 0

@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.freewdcmkt.bck.data.screen.LoginData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -39,11 +40,13 @@ object UserInfoManager {
     fun init(context: Context) {
         dataStore = context.dataStore
     }
+
     suspend fun clearAllData() {
         dataStore.edit { preferences ->
             preferences.clear()
         }
     }
+
     suspend fun saveUsername(username: String) = dataStore.setValue(USERNAME, username)
 
     fun getUsernameFlow() = dataStore.getValueFlow(USERNAME, "")
@@ -70,6 +73,17 @@ object UserInfoManager {
     suspend fun saveCheckInDays(day: Int?) = dataStore.setValue(CHECK_IN_DAYS, day ?: 0)
     fun getCheckInDaysFlow() = dataStore.getValueFlow(CHECK_IN_DAYS, 0)
 
-    suspend fun saveLastCheckInDate(date: String) = dataStore.setValue(CHECK_IN_DATE,date)
-    fun getLastCheckInDate() = dataStore.getValueFlow(CHECK_IN_DATE,"")
+    suspend fun saveLastCheckInDate(date: String) = dataStore.setValue(CHECK_IN_DATE, date)
+    fun getLastCheckInDate() = dataStore.getValueFlow(CHECK_IN_DATE, "")
+}
+
+suspend fun initUserInfo(loginData: LoginData, qq: String) {
+    TokenManager.saveToken(loginData.token)
+    UserInfoManager.saveUsername(loginData.username)
+    UserInfoManager.saveUid(loginData.uid.toString())
+    UserInfoManager.saveExp(loginData.xp)
+    UserInfoManager.saveCheckInDays(loginData.checkInDays)
+    UserInfoManager.saveLastCheckInDate(loginData.lastCheckInDate ?: "")
+    UserInfoManager.saveLogin(isLogin = true)
+    UserInfoManager.saveUserAccount(qq = qq)
 }

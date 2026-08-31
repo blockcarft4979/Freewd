@@ -9,7 +9,6 @@ data class PostFeedScreen(val id: Int? = null, val zone: Int)
 data class PostFeedData(
     val id: String,
     val xp: Int? = null,
-    val level: Int? = null,
 )
 
 @Serializable

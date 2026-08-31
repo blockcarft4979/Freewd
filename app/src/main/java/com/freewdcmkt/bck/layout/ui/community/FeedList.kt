@@ -14,24 +14,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,6 +41,7 @@ import com.freewdcmkt.bck.data.screen.Feed
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,16 +55,19 @@ fun FeedLayout(
     onBack: () -> Unit,
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
+    val feedListData by viewmodel.feedListData.collectAsState()
+    val isLoadingMore by viewmodel.isLoadingMore.collectAsState()
+    val hasMore by viewmodel.hasMore.collectAsState()
     val listState = viewmodel.listState
+    val errorMsg by viewmodel.errorMsg.collectAsState()
+    val isNoNetwork by viewmodel.isNoNetwork.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
-
+    val noNetworkHint = stringResource(R.string.no_internet_hint)
+    val scope = rememberCoroutineScope()
     LaunchedEffect(zone) { viewmodel.fetchData(zone) }
-    LaunchedEffect(uiState) {
-        if (uiState is FeedUiState.Error && (uiState as FeedUiState.Error).msg != null) (uiState as FeedUiState.Error).msg?.let {
-            snackBarHostState.showSnackbar(
-                it
-            )
-        }
+
+    LaunchedEffect(uiState, feedListData) {
+        Log.d("FEED_UI", "uiState=$uiState, feedSize=${feedListData?.feed?.size ?: 0}")
     }
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
@@ -79,43 +80,36 @@ fun FeedLayout(
             val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()
             val totalCount = listState.layoutInfo.totalItemsCount
             lastVisible?.index == totalCount - 1
-        }
-            .distinctUntilChanged()
-            .collect { isAtEnd ->
-                if (isAtEnd) {
-                    Log.d("FEED LAYOUT", "AT END")
-                    viewmodel.loadMore()
-                }
+        }.distinctUntilChanged().collect { isAtEnd ->
+            if (isAtEnd) {
+                Log.d("FEED LAYOUT", "AT END")
+                viewmodel.loadMore()
             }
+        }
     }
 
-    Scaffold(
-        topBar = {
-            //TopAppBar()
-            TopAppBar(
-                title = {
-                    Text(stringResource(R.string.post_hint))
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            painterResource(R.drawable.baseline_arrow_back_24),
-                            contentDescription = stringResource(R.string.back_hint)
-                        )
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onToPostFeed(null, zone) },
-            ) {
+    Scaffold(topBar = {
+        //TopAppBar()
+        TopAppBar(title = {
+            Text(stringResource(R.string.post_hint))
+        }, navigationIcon = {
+            IconButton(onClick = onBack) {
                 Icon(
-                    painter = painterResource(R.drawable.baseline_add_24),
-                    contentDescription = stringResource(R.string.add_post_hint)
+                    painterResource(R.drawable.baseline_arrow_back_24),
+                    contentDescription = stringResource(R.string.back_hint)
                 )
             }
-        }, snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
+        })
+    }, floatingActionButton = {
+        FloatingActionButton(
+            onClick = { onToPostFeed(null, zone) },
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_add_24),
+                contentDescription = stringResource(R.string.add_post_hint)
+            )
+        }
+    }, snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -124,18 +118,24 @@ fun FeedLayout(
         ) {
             when (uiState) {
                 is FeedUiState.Loading -> LoadingCard()
-                is FeedUiState.Success -> {
+
+                else -> {
+                    if (uiState is FeedUiState.Error) {
+                       LaunchedEffect(errorMsg) {
+                           if (isNoNetwork) snackBarHostState.showSnackbar(
+                               noNetworkHint
+                           ) else snackBarHostState.showSnackbar(errorMsg)
+                       }
+                    }
                     FeedUiLayout(
-                        feed = (uiState as FeedUiState.Success).feedData.feed,
+                        feed = feedListData?.feed ?: emptyList(),
                         onClick = { onToFeedDetail(it, zone) },
                         listState = listState,
-                        isLoadingMore = (uiState as FeedUiState.Success).isLoadingMore,
-                        hasMore = (uiState as FeedUiState.Success).hasMore,
+                        isLoadingMore = isLoadingMore,
+                        hasMore = hasMore,
                         onToPreviewImg = onToPreviewImg
                     )
                 }
-
-                is FeedUiState.Error -> {}
             }
         }
     }
@@ -145,18 +145,18 @@ fun FeedLayout(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FeedUiLayout(
-    feed: List<Feed>, listState: LazyListState, isLoadingMore: Boolean,
-    hasMore: Boolean, onClick: (id: Int) -> Unit, onToPreviewImg: (String) -> Unit
+    feed: List<Feed>,
+    listState: LazyListState,
+    isLoadingMore: Boolean,
+    hasMore: Boolean,
+    onClick: (id: Int) -> Unit,
+    onToPreviewImg: (String) -> Unit
 ) {
     LazyColumn(state = listState) {
         items(
-            items = feed,
-            key = { it.id }
-        ) { feed ->
+            items = feed, key = { it.id }) { feed ->
             FeedCard(
-                feed,
-                onClick = { onClick(feed.id) },
-                onToPreviewImg = onToPreviewImg
+                feed, onClick = { onClick(feed.id) }, onToPreviewImg = onToPreviewImg
             )
         }
         if (isLoadingMore) {

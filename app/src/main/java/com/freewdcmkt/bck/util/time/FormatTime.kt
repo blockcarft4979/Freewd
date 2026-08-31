@@ -1,6 +1,5 @@
-package com.freewdcmkt.bck.util
+package com.freewdcmkt.bck.util.time
 
-import java.time.LocalTime
 import android.text.format.DateUtils
 import java.text.SimpleDateFormat
 import java.time.LocalDate

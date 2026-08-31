@@ -3,7 +3,6 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,14 +23,12 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,25 +41,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link.feedLink
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.LoadErrorUiLayout
 import com.freewdcmkt.bck.components.ReplyCard
 import com.freewdcmkt.bck.components.ReplyInputBar
 import com.freewdcmkt.bck.components.freewd.ContentMarkdown
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
-
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
@@ -87,10 +78,9 @@ fun FeedDetailLayout(
     val feedDetailData by viewmodel.feedDetailData.collectAsState()
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
+    val errorMSg by viewmodel.errorMsg.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val copiedHint = stringResource(R.string.copied_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
@@ -106,10 +96,6 @@ fun FeedDetailLayout(
     }
 
     LaunchedEffect(id) { viewmodel.fetchData(id, false) }
-    LaunchedEffect(uiState) {
-        if (uiState is FeedDetailUiState.LikeError)
-            snackBarHostState.showSnackbar((uiState as FeedDetailUiState.LikeError).msg)
-    }
 
     if (isShowDialog.value) {
         FreewdModalBottomSheet(
@@ -124,11 +110,11 @@ fun FeedDetailLayout(
             stringResource(R.string.yes_hint)
         )
     }
+
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 modifier = Modifier,
-                scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onBack) {
                         Icon(
@@ -141,9 +127,12 @@ fun FeedDetailLayout(
                 title = {
 
                     if (uiState is FeedDetailUiState.Loading)
-                        Text(stringResource(R.string.feed_detail_hint))
+                        Text(stringResource(R.string.loading_hint))
                     else
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
                             UserIcon(userAvatarUrl(feedDetailData.qq))
                             Column(
                                 verticalArrangement = Arrangement.Center
@@ -226,29 +215,18 @@ fun FeedDetailLayout(
         ) {
             when (uiState) {
                 is FeedDetailUiState.Loading -> LoadingCard()
-                is FeedDetailUiState.Error -> {
-                    LoadErrorUiLayout(
-                        onClick = { viewmodel.fetchData(id) },
-                        msg = (uiState as FeedDetailUiState.Error).msg,
-                    )
-                }
-
-                is FeedDetailUiState.DeleteSuccess -> {
-                    onDeleteFeed()
-                }
+                is FeedDetailUiState.Error -> LaunchedEffect(errorMSg) { snackBarHostState.showSnackbar(errorMSg)}
 
                 else -> {
                     replyUsername.value = feedDetailData.username
 
                     FeedUiLayout(
                         feedDetailData,
-                        nestedScrollConnection = scrollBehavior.nestedScrollConnection,
                         onClickLike = {
                             viewmodel.seedLike(
                                 id,
-                                feedDetailData?.isLiked ?: false
+                                feedDetailData.isLiked
                             )
-                            Log.d("FEED DETAIL LAYOUT", "ONCLICKLIKEBUTTON")
                         }, onReplyUser = { qq, username ->
                             focusRequester.requestFocus()
                             replyQq.value = qq
@@ -264,7 +242,6 @@ fun FeedDetailLayout(
 @Composable
 private fun FeedUiLayout(
     feedDetailData: FeedDetailData,
-    nestedScrollConnection: NestedScrollConnection,
     onClickLike: () -> Unit,
     onReplyUser: (String, String) -> Unit,
     onToPreviewImg: (String) -> Unit
@@ -272,7 +249,6 @@ private fun FeedUiLayout(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(nestedScrollConnection)
     ) {
         item {
             Card(

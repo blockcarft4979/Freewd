@@ -148,7 +148,7 @@ private fun NotificationUi(
         }
     } else {
         FreewdHint(
-            icon = R.drawable.baseline_notifications_none_24,
+            icon = R.drawable.baseline_notifications_off_24,
             hint = stringResource(R.string.no_notifications_hint)
         )
     }

@@ -1,9 +1,11 @@
 package com.freewdcmkt.bck.viewmodel.community
 
+
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
+import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.request.LikeFeedRequestData
@@ -40,6 +42,8 @@ class FeedDetailViewmodel : ViewModel() {
     val feedDetailUiState: StateFlow<FeedDetailUiState> = _feedDetailUiState.asStateFlow()
     private val _isAuthor = MutableStateFlow(false)
     val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
+    private val _errorMsg = MutableStateFlow("")
+    val errorMsg : StateFlow<String> = _errorMsg.asStateFlow()
     fun fetchData(id: Int, refresh: Boolean = false) {
         if (currentId == id && !refresh && _feedDetailUiState.value is FeedDetailUiState.Success) return
         _feedDetailUiState.value = FeedDetailUiState.Loading
@@ -48,22 +52,27 @@ class FeedDetailViewmodel : ViewModel() {
             try {
                 val response = RetroClient.apiService.getFeedDetail(id)
                 val data = response.body()
-                Log.d("FEED DETAIL VIEWMODEL", response.toString())
-                if (data?.data != null) {
+                Log.d("FEED DETAIL VIEWMODEL", "$response ${response.code()}")
+                if (response.isSuccessful && data?.data != null) {
                     val currentAccount = UserInfoData.account.value
                     val data = data.data
                     _isAuthor.value = (currentAccount == data.qq)
                     _feedDetailData.value = data
                     _feedDetailUiState.value = FeedDetailUiState.Success
-                } else if (data?.msg != null) _feedDetailUiState.value =
-                    FeedDetailUiState.Error(data.msg)
+                } else {
+                    val errorData = response.errorBody()?.string() ?: ""
+                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
+                    _errorMsg.value = errorMsg.msg?:""
+                    _feedDetailUiState.value = FeedDetailUiState.Error
+                    Log.d("FEED DETAIL VIEWMODEL", errorData)
+                }
+
             } catch (e: Exception) {
-                val msg = e.message
-                Log.e("FEED DETAIL VIEWMODEL", msg ?: "")
-                _feedDetailUiState.value = FeedDetailUiState.Error(msg ?: "")
+                _feedDetailUiState.value = FeedDetailUiState.Error
             }
         }
     }
+
 
     fun seedLike(id: Int, isLiked: Boolean) {
         viewModelScope.launch {
@@ -85,12 +94,14 @@ class FeedDetailViewmodel : ViewModel() {
             try {
                 val response = RetroClient.apiService.replyFeed(LikeFeedRequestData((id)))
                 val data = response.body()
-                if (data?.data == null) {
+                if (response.isSuccessful&&data?.data == null) {
                     _feedDetailData.value = oldData
                     _feedDetailUiState.value = FeedDetailUiState.Success
                 } else {
-                    if (data.msg != null) _feedDetailUiState.value =
-                        FeedDetailUiState.LikeError(data.msg)
+                    val errorData = response.errorBody()?.string() ?: ""
+                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
+                    _errorMsg.value = errorMsg.msg?:""
+                    _feedDetailUiState.value = FeedDetailUiState.Error
                 }
             } catch (e: Exception) {
                 _feedDetailData.value = oldData
@@ -119,7 +130,8 @@ class FeedDetailViewmodel : ViewModel() {
                 fetchData(id, true)
             } else {
                 val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                _feedDetailUiState.value = FeedDetailUiState.Error(errorData.msg)
+                _errorMsg.value = errorData.msg
+                _feedDetailUiState.value = FeedDetailUiState.Error
             }
         }
     }
@@ -138,10 +150,12 @@ class FeedDetailViewmodel : ViewModel() {
                     _feedDetailUiState.value = FeedDetailUiState.DeleteSuccess
                 } else {
                     val msg = JsonParser.json.decodeFromString<ErrorData>(body)
-                    _feedDetailUiState.value = FeedDetailUiState.Error(msg.msg)
+                    _errorMsg.value = msg.msg
+                    _feedDetailUiState.value = FeedDetailUiState.Error
                 }
             } catch (e: Exception) {
-                _feedDetailUiState.value = FeedDetailUiState.Error(e.message.toString())
+                _errorMsg.value = e.message.toString()
+                _feedDetailUiState.value = FeedDetailUiState.Error
             }
         }
 
@@ -151,7 +165,6 @@ class FeedDetailViewmodel : ViewModel() {
 sealed class FeedDetailUiState {
     object Loading : FeedDetailUiState()
     object DeleteSuccess : FeedDetailUiState()
-    class LikeError(val msg: String) : FeedDetailUiState()
     object Success : FeedDetailUiState()
-    class Error(val msg: String) : FeedDetailUiState()
+    object Error : FeedDetailUiState()
 }

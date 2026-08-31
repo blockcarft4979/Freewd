@@ -66,7 +66,6 @@ fun PostFeedLayout(
 ) {
     val uiState by viewmodel.postFeedUiState.collectAsState()
     val qq by UserInfoData.account.collectAsState()
-    val username by UserInfoData.username.collectAsState()
     val noNetworkHint = stringResource(R.string.no_internet_hint)
     val imgUrl = rememberSaveable { mutableStateOf("") }
     val snackBarHostState = remember { SnackbarHostState() }

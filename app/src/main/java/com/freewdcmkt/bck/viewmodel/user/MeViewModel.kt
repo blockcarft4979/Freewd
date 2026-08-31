@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.layout.ui.user.MeUiState
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.util.getSystemDate
+import com.freewdcmkt.bck.util.time.getSystemDate
 import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

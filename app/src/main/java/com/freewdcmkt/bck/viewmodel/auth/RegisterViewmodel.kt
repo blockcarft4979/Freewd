@@ -4,12 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
+import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.request.RegisterRequestData
 import com.freewdcmkt.bck.data.request.SendAuthCodeRequestData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
+import com.freewdcmkt.bck.util.initUserInfo
 import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.Dispatchers
@@ -91,17 +93,12 @@ class RegisterViewmodel : ViewModel() {
                 val data = response.body()
                 if (data?.data != null) {
                     val loginData = data.data
-                    TokenManager.saveToken(loginData.token)
-                    UserInfoManager.saveUsername(loginData.username)
-                    UserInfoManager.saveUid(loginData.uid.toString())
-                    UserInfoManager.saveExp(loginData.xp)
-                    UserInfoManager.saveCheckInDays(loginData.checkInDays)
-                    UserInfoManager.saveLastCheckInDate(loginData.lastCheckInDate ?: "")
-                    UserInfoManager.saveLogin(isLogin = true)
-                    UserInfoManager.saveUserAccount(qq = qq)
+                    initUserInfo(loginData,qq)
                     UserInfoManager.isLoginFlow().first()
                 } else  {
-                    _registerUiState.value = RegisterUiState.Error(data?.msg?:"")
+                    val errorData = response.errorBody()?.string() ?: ""
+                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
+                    _registerUiState.value = RegisterUiState.Error(errorMsg.msg)
                 }
             } catch (e: Exception) {
                 _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
