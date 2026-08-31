@@ -2,8 +2,11 @@ name: Android Release Auto-Build
 on:
   push:
     tags:
-      - 'v*'  # 推送 v1.0.0 时触发
+      - 'v*'
 
+permissions:
+  contents: write
+  
 jobs:
   build:
     runs-on: ubuntu-latest
