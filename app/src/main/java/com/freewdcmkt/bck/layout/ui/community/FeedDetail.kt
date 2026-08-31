@@ -215,6 +215,7 @@ fun FeedDetailLayout(
         ) {
             when (uiState) {
                 is FeedDetailUiState.Loading -> LoadingCard()
+                is  FeedDetailUiState.DeleteSuccess ->onDeleteFeed()
                 is FeedDetailUiState.Error -> LaunchedEffect(errorMSg) { snackBarHostState.showSnackbar(errorMSg)}
 
                 else -> {

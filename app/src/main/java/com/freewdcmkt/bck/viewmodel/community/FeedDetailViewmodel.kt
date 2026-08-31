@@ -43,7 +43,7 @@ class FeedDetailViewmodel : ViewModel() {
     private val _isAuthor = MutableStateFlow(false)
     val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
     private val _errorMsg = MutableStateFlow("")
-    val errorMsg : StateFlow<String> = _errorMsg.asStateFlow()
+    val errorMsg: StateFlow<String> = _errorMsg.asStateFlow()
     fun fetchData(id: Int, refresh: Boolean = false) {
         if (currentId == id && !refresh && _feedDetailUiState.value is FeedDetailUiState.Success) return
         _feedDetailUiState.value = FeedDetailUiState.Loading
@@ -62,7 +62,7 @@ class FeedDetailViewmodel : ViewModel() {
                 } else {
                     val errorData = response.errorBody()?.string() ?: ""
                     val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
-                    _errorMsg.value = errorMsg.msg?:""
+                    _errorMsg.value = errorMsg.msg ?: ""
                     _feedDetailUiState.value = FeedDetailUiState.Error
                     Log.d("FEED DETAIL VIEWMODEL", errorData)
                 }
@@ -94,13 +94,14 @@ class FeedDetailViewmodel : ViewModel() {
             try {
                 val response = RetroClient.apiService.replyFeed(LikeFeedRequestData((id)))
                 val data = response.body()
-                if (response.isSuccessful&&data?.data == null) {
-                    _feedDetailData.value = oldData
+                Log.d("FEED DETAIL LIKE DATA", data.toString())
+                if (response.isSuccessful && data?.data != null) {
+                    _feedDetailData.value = oldData.copy(isLiked = data.data.isLiked, likeCount = data.data.likeCount)
                     _feedDetailUiState.value = FeedDetailUiState.Success
                 } else {
                     val errorData = response.errorBody()?.string() ?: ""
                     val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
-                    _errorMsg.value = errorMsg.msg?:""
+                    _errorMsg.value = errorMsg.msg ?: ""
                     _feedDetailUiState.value = FeedDetailUiState.Error
                 }
             } catch (e: Exception) {
