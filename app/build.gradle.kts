@@ -1,3 +1,7 @@
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.Date
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -14,8 +18,8 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 164
-        versionName = "3.5.3.13"
+        versionCode = SimpleDateFormat("yyMMddHH",Locale.getDefault()).format(Date()).toInt()
+        versionName = "${SimpleDateFormat("yy.MM.dd.HH",Locale.getDefault()).format(Date())}"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
