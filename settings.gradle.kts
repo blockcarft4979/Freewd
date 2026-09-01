@@ -1,11 +1,6 @@
 pluginManagement {
     repositories {
-        maven {
-            url = uri("https://maven.aliyun.com/repository/gradle-plugin")
-        }
-        maven {
-            url = uri("https://maven.aliyun.com/repository/google")
-        }
+        maven { url = uri("https://mirrors.cloud.tencent.com/nexus/repository/gradle-plugins/") }
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
