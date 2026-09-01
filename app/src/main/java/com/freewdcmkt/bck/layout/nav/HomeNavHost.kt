@@ -69,8 +69,7 @@ fun HomeLayout(
     viewmodel: HomeViewmodel = viewModel(),
     onToFeed: (zone: Int) -> Unit,
     onToBrowser: (link: String) -> Unit,
-    onToNotification: () -> Unit,
-    onToUserCenter: () -> Unit
+    onToNotification: () -> Unit
 ) {
     val username by UserInfoData.username.collectAsState()
     val qq by UserInfoData.account.collectAsState()
@@ -174,9 +173,7 @@ fun HomeLayout(
 
                 }
                 composable(NavData.Me.route) {
-                    Me(
-                        onToUserCenter = onToUserCenter
-                    )
+                    Me()
                 }
             }
         }

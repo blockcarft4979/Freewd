@@ -24,13 +24,12 @@ import com.freewdcmkt.bck.data.screen.HomeScreenData
 import com.freewdcmkt.bck.data.screen.NotificationScreen
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
 import com.freewdcmkt.bck.data.screen.PreviewImgScreenData
-import com.freewdcmkt.bck.data.screen.UserCenterScreenData
 import com.freewdcmkt.bck.data.values.StringValues.REFRESH
-import com.freewdcmkt.bck.layout.ui.other.BrowserLayout
-import com.freewdcmkt.bck.layout.ui.community.PreviewImgUi
 import com.freewdcmkt.bck.layout.ui.community.FeedDetailLayout
 import com.freewdcmkt.bck.layout.ui.community.FeedLayout
 import com.freewdcmkt.bck.layout.ui.community.PostFeedLayout
+import com.freewdcmkt.bck.layout.ui.community.PreviewImgUi
+import com.freewdcmkt.bck.layout.ui.other.BrowserLayout
 import com.freewdcmkt.bck.layout.ui.user.Notification
 
 
@@ -74,7 +73,6 @@ fun FreewdAppNavHost(navController: NavHostController) {
                 },
                 onToBrowser = { url -> navController.navigate(BrowserScreenData(url)) },
                 onToNotification = { navController.navigate(NotificationScreen) },
-                onToUserCenter = { navController.navigate(UserCenterScreenData(0)) }
             )
         }
         composable<FeedScreenData> { backStack ->

@@ -1,28 +1,17 @@
 package com.freewdcmkt.bck.layout.ui.user
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.ExpCard
@@ -37,7 +26,7 @@ import com.freewdcmkt.bck.viewmodel.user.MeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Me(viewmodel: MeViewModel = viewModel(), onToUserCenter: () -> Unit) {
+fun Me(viewmodel: MeViewModel = viewModel()) {
 
     val isShowChenInDialog by viewmodel.isShowChenInDialog.collectAsState()
     val isChecked by UserInfoData.isChecked.collectAsState()
@@ -48,10 +37,11 @@ fun Me(viewmodel: MeViewModel = viewModel(), onToUserCenter: () -> Unit) {
     if (isShowLoadingDialog) FreewdLoadingDialog(stringResource(R.string.submitting_hint))
 
     if (isShowChenInDialog) FreewdLoadingDialog(stringResource(R.string.checking_hint))
+
     MeUiLayout(
         onConfirmUsername = { viewmodel.submitUsername(it) },
-        onToUserCenter = onToUserCenter,
-        exp = exp, checkInDays = checkInDays,
+        exp = exp,
+        checkInDays = checkInDays,
         isChecked = isChecked,
         onCheckIn = { viewmodel.checkIn() }
     )
@@ -65,7 +55,6 @@ private fun MeUiLayout(
     isChecked: Boolean,
     onConfirmUsername: (String) -> Unit,
     onCheckIn: () -> Unit,
-    onToUserCenter: () -> Unit
 ) {
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
     val isShowEditDialog = rememberSaveable() { mutableStateOf(false) }
@@ -90,7 +79,9 @@ private fun MeUiLayout(
             onDismiss = { isShowDialog.value = false },
             onConfirm = {
                 TokenManager.clearToken()
-                scope.launch { UserInfoManager.saveLogin(false) }
+                scope.launch {
+                    UserInfoManager.clearAllData()
+                }
             },
             title = stringResource(R.string.logout_hint),
             msg = stringResource(R.string.logout_account_hint),
@@ -143,39 +134,4 @@ private fun MeUiLayout(
             )
         }
     }
-}
-
-@Composable
-private fun IconText(
-    modifier: Modifier = Modifier,
-    icon: Int,
-    description: String? = null,
-    text: String,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .padding(5.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painter = painterResource(icon),
-            tint = MaterialTheme.colorScheme.primary,
-            contentDescription = description,
-            modifier = Modifier
-                .size(22.dp)
-                .animateContentSize()
-        )
-        Text(text = text, fontSize = 14.sp)
-    }
-
-}
-
-sealed class MeUiState() {
-    object NoAction : MeUiState()
-    object SubmittingUsername : MeUiState()
-    object SubmitFinish : MeUiState()
-
-    class LoadError(val msg: String? = null, val isNoNetWork: Boolean = false) : MeUiState()
 }
