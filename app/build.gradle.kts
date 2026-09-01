@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.Date
-
+import java.util.Base64
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -13,6 +13,33 @@ plugins {
 android {
     namespace = "com.freewdcmkt.bck"
     compileSdk = 37
+
+    signingConfigs {
+        create("release") {
+
+            val isCI = System.getenv("CI") == "true"
+
+            if (isCI) {
+
+                val base64 = System.getenv("KEYSTORE_BASE64")
+                    ?: error("❌ KEYSTORE_BASE64 is missing in CI environment!")
+                val decoded = Base64.getDecoder().decode(base64)
+                val keystoreFile = file("keystore.jks")
+                keystoreFile.writeBytes(decoded)
+                storeFile = keystoreFile
+
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                    ?: error("❌ KEYSTORE_PASSWORD is missing!")
+                keyAlias = System.getenv("KEY_ALIAS")
+                    ?: error("❌ KEY_ALIAS is missing!")
+                keyPassword = System.getenv("KEY_PASSWORD")
+                    ?: error("❌ KEY_PASSWORD is missing!")
+            } else {
+               
+                println("🔧 Local build: using debug signing (no keystore needed)")
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.freewdcmkt.bck"
@@ -30,6 +57,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             versionNameSuffix = " TEST VERSION"

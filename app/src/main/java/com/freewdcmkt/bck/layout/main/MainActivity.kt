@@ -18,6 +18,7 @@ import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
 import com.freewdcmkt.bck.layout.ui.auth.LoginLayout
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
+import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.viewmodel.main.LoginState
 import com.freewdcmkt.bck.viewmodel.main.MainViewmodel
 
