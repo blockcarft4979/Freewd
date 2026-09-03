@@ -5,7 +5,8 @@
 
 [官方网站](https://community.freewd.top)
 
-是一款小小的社区类app，现在正在使用 Compose 进行重构，计划于2026年8月13日前发布最新版本，Freewd 社区由BLOCKCARFT(BCK)一人开发运营，如果您也想加入记得联系我
+是一款小小的社区类app，现在正在使用 Compose 进行重构，计划于2026年8月13日前发布最新版本（已完成，本人因高三学业原因，以后更新速度会变慢），Freewd 社区由BLOCKCARFT(BCK)一人开发运营，如果您也想加入记得联系我
+
 联系方式：2216368705@qq.com
 
 Copyright 2025-2026 Freewd Studio
