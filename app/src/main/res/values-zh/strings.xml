@@ -69,6 +69,7 @@
     <string name="no_notifications_hint">无通知</string>
     <string name="clear_all_notifications_hint">清理通知</string>
     <string name="loading_hint">加载中</string>
+    <string name="code_sent_successfully">验证码发送成功，请等待</string>
     <string name="image_hint">图片</string>
     <string name="upload_image">上传图片</string>
     <string name="preview_image">预览图片</string>
@@ -83,7 +84,8 @@
     <string name="policy_privacy">隐私政策</string>
     <string name="add_picture_hint">添加图片</string>
     <string name="check_in_hint">签到</string>
-    <string name="unchenked_hint">今天还没签到哦</string>
+    <string name="unchecked_hint">今日还未签到</string>
     <string name="checked_hint">已签到 %d 天</string>
     <string name="checking_hint">签到中......</string>
+    <string name="logging_in_hint">正在登录......</string>
 </resources>

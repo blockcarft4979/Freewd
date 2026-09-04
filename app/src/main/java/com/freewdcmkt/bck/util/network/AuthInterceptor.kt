@@ -1,6 +1,7 @@
 package com.freewdcmkt.bck.util.network
 
 import android.content.Context
+import com.freewdcmkt.bck.api.RetroApi
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import kotlinx.coroutines.runBlocking
@@ -35,7 +36,10 @@ class AuthInterceptor() : Interceptor {
             }
 
             return Response.Builder()
+                .request(originalRequest)
+                .protocol(Protocol.HTTP_1_1)
                 .code(401)
+                .message("Unauthorized")
                 .build()
         }
 

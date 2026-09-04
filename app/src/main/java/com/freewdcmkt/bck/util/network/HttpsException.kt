@@ -10,7 +10,7 @@ fun HttpException.getErrorMsg(): String? {
         val body = this.response()?.errorBody()?.string()
         if (body.isNullOrEmpty()) return null
         // 用你已有的 JsonParser 或 Json
-        val base = JsonParser.json.decodeFromString<BaseData<Any>>(body)
+        val base = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
         base.msg
     } catch (e: Exception) {
         null // 解析失败就返回 null

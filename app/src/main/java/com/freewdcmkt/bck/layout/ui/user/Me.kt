@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +13,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.ExpCard
@@ -37,6 +41,19 @@ fun Me(viewmodel: MeViewModel = viewModel()) {
     if (isShowLoadingDialog) FreewdLoadingDialog(stringResource(R.string.submitting_hint))
 
     if (isShowChenInDialog) FreewdLoadingDialog(stringResource(R.string.checking_hint))
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                UserInfoData.refreshCheckStatus()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     MeUiLayout(
         onConfirmUsername = { viewmodel.submitUsername(it) },
@@ -112,7 +129,7 @@ private fun MeUiLayout(
                 description = if (isChecked) stringResource(
                     R.string.checked_hint,
                     checkInDays
-                ) else stringResource(R.string.unchenked_hint),
+                ) else stringResource(R.string.unchecked_hint),
                 onClick = {
                     if (!isChecked) {
                         onCheckIn()

@@ -35,37 +35,33 @@ import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.viewmodel.auth.RegisterUiState
 import com.freewdcmkt.bck.viewmodel.auth.RegisterViewmodel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterLayout(
     onToPolicyPrivacy: (String) -> Unit,
-    onToUserAgreement: (String) -> Unit, viewmodel: RegisterViewmodel = viewModel()
+    onToUserAgreement: (String) -> Unit,
+    viewmodel: RegisterViewmodel = viewModel()
 ) {
 
     val uiState by viewmodel.registerUiState.collectAsState()
     val countdown by viewmodel.countdown.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    val scope = rememberCoroutineScope()
-    val noNetWorkHint = stringResource(R.string.no_internet_hint)
+    val unknownError = stringResource(R.string.unknown_error)
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
-    if (isShowDialog.value) FreewdLoadingDialog(stringResource(R.string.loading_hint))
+    if (isShowDialog.value) FreewdLoadingDialog(stringResource(R.string.code_sent_successfully))
 
     LaunchedEffect(uiState) {
-        if (uiState is RegisterUiState.Error) {
-            scope.launch {
-                if ((uiState as RegisterUiState.Error).isNoNetWork) {
-                    snackBarHostState.showSnackbar(noNetWorkHint)
-                } else {
-                    (uiState as RegisterUiState.Error).msg?.let {
-                        snackBarHostState.showSnackbar(it)
-                    }
-                }
+        (uiState as? RegisterUiState.Error)?.let { error ->
+            if (error.isNoNetWork) {
+                snackBarHostState.showSnackbar(unknownError)
+            } else {
+                error.msg?.let { snackBarHostState.showSnackbar(it) }
             }
         }
     }
+
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = { TopAppBar({ Text(stringResource(R.string.register_hint)) }) },

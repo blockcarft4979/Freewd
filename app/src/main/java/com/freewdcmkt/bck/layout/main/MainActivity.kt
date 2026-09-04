@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
 import com.freewdcmkt.bck.layout.ui.auth.LoginLayout
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

@@ -57,24 +57,17 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
     val uiState by viewModel.loginUiState.collectAsState()
     val navCollection = rememberNavController()
     val navToRegister = { navCollection.navigate(RegisterScreenData) }
-    val navToAbout = { navCollection.navigate(AboutScreenData) }
     val noAccountOrPasswordHint = stringResource(R.string.login_password_or_account_needed)
-    val noNetworkHint = stringResource(R.string.no_internet_hint)
+    val unknownError = stringResource(R.string.unknown_error)
     val scope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
-    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
-    if (isShowDialog.value) {
-        FreewdLoadingDialog(stringResource(R.string.loading_hint))
-    }
+
     LaunchedEffect(uiState) {
-        if (uiState is LoginUiState.Error) {
-            val error = (uiState as LoginUiState.Error)
+        (uiState as? LoginUiState.Error)?.let { error ->
             if (error.isNoNetWork) {
-                snackBarHostState.showSnackbar(noNetworkHint)
+                snackBarHostState.showSnackbar(unknownError)
             } else {
-                error.msg?.let {
-                    snackBarHostState.showSnackbar(it)
-                }
+                error.msg?.let { snackBarHostState.showSnackbar(it) }
             }
         }
     }
@@ -106,20 +99,22 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
                                 }
                             }
                         },
-                        onToUserAgreement = {navCollection.navigate(AboutScreenData(it))},
-                        onToPolicyPrivacy =  {navCollection.navigate(AboutScreenData(it))  }
+                        onToUserAgreement = { navCollection.navigate(AboutScreenData(it)) },
+                        onToPolicyPrivacy = { navCollection.navigate(AboutScreenData(it)) }
                     )
                     when (uiState) {
-                        is LoginUiState.Loading -> isShowDialog.value = true
-                        else -> isShowDialog.value = false
+                        is LoginUiState.Loading -> FreewdLoadingDialog(stringResource(R.string.logging_in_hint))
+                        else -> {}
                     }
                 }
             }
         }
-        composable<RegisterScreenData> { RegisterLayout(
-            onToUserAgreement = {navCollection.navigate(AboutScreenData(it))},
-            onToPolicyPrivacy =  {navCollection.navigate(AboutScreenData(it))  }
-        ) }
+        composable<RegisterScreenData> {
+            RegisterLayout(
+                onToUserAgreement = { navCollection.navigate(AboutScreenData(it)) },
+                onToPolicyPrivacy = { navCollection.navigate(AboutScreenData(it)) }
+            )
+        }
         composable<AboutScreenData> { backStack ->
             val arg = backStack.toRoute<AboutScreenData>()
             Document(
@@ -132,7 +127,12 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
 }
 
 @Composable
-fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: String) -> Unit, onToUserAgreement:(String)-> Unit, onToPolicyPrivacy:(String)-> Unit) {
+fun LoginLayout(
+    onRegister: () -> Unit,
+    onLogin: (account: String, password: String) -> Unit,
+    onToUserAgreement: (String) -> Unit,
+    onToPolicyPrivacy: (String) -> Unit
+) {
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     val userIcon = rememberSaveable() { mutableStateOf("") }
@@ -183,7 +183,13 @@ fun LoginLayout(onRegister: () -> Unit, onLogin: (account: String, password: Str
             ) {
                 Text(stringResource(R.string.login_login_btn))
             }
-            TextButton(onClick = onRegister, modifier = Modifier.fillMaxWidth()) {Text(stringResource(R.string.login_register_btn), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface) }
+            TextButton(onClick = onRegister, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    stringResource(R.string.login_register_btn),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
 
         }
     }

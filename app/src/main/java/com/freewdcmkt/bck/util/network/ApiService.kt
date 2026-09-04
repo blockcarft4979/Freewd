@@ -11,7 +11,6 @@ import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.data.screen.LikeFeedResultData
 import com.freewdcmkt.bck.data.screen.LoginData
-import com.freewdcmkt.bck.data.screen.UserData
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.data.screen.VerifyTokenData
 import com.freewdcmkt.bck.util.JsonParser
@@ -51,7 +50,7 @@ interface ApiService {
     suspend fun checkIn(): Response<BaseData<CheckInData>>
 
     @POST(RetroApi.User.SUBMIT_USERNAME)
-    suspend fun submitUsername(@Body request: UsernameData): Response< BaseData<UsernameData>>
+    suspend fun submitUsername(@Body request: UsernameData): Response<BaseData<UsernameData>>
 
     @GET(RetroApi.Other.HOME_DATA)
     suspend fun getHomeData(): Response<BaseData<HomeData>>

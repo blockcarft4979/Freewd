@@ -65,4 +65,8 @@ object UserInfoData {
     fun clearUnreadCount() {
         _unreadNotificationCount.value = 0
     }
+    fun refreshCheckStatus() {
+        val savedDate = lastCheckInDate.value
+        _isChecked.value = savedDate == getSystemDate()
+    }
 }

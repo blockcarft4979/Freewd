@@ -85,11 +85,11 @@ fun HomeLayout(
 
     val snackBarHostState = remember() { SnackbarHostState() }
 
-    val noNetWorkHint = stringResource(R.string.no_internet_hint)
+    val unknownError = stringResource(R.string.unknown_error)
     LaunchedEffect(isShowNoNetwork) {
         if (isShowNoNetwork) {
             val result = snackBarHostState.showSnackbar(
-                message = noNetWorkHint,
+                message = unknownError,
                 actionLabel = retryHint,
                 duration = SnackbarDuration.Short
             )

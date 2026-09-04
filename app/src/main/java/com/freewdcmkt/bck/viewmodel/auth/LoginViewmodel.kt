@@ -6,15 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.request.LoginRequestData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.initUserInfo
 import com.freewdcmkt.bck.util.network.RetroClient
+import com.freewdcmkt.bck.util.network.getErrorMsg
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 
 class LogInViewModel() : ViewModel() {
@@ -25,27 +26,26 @@ class LogInViewModel() : ViewModel() {
 
         viewModelScope.launch {
             _loginUiState.value = LoginUiState.Loading
+            val response = RetroClient.apiService.login(LoginRequestData(qq, password))
             try {
-                val response = RetroClient.apiService.login(LoginRequestData(qq, password))
                 val data = response.body()
-
+                Log.d("LOGIN DATA", data.toString())
                 if (data?.data != null) {
                     val loginData = data.data
-                    initUserInfo(loginData,qq)
+                    initUserInfo(loginData, qq)
                     _loginUiState.value = LoginUiState.NoAction
                     UserInfoManager.isLoginFlow().first()
-                } else {
+                }
+                else {
                     val errorData = response.errorBody()?.string() ?: ""
                     val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
                     _loginUiState.value = LoginUiState.Error(errorMsg.msg)
                 }
-            } catch (e: Exception) {
-                Log.d("LOGIN Exception", e.toString())
+            } catch (_: Exception) {
                 _loginUiState.value = LoginUiState.Error(isNoNetWork = true)
             }
         }
     }
-
 }
 
 
