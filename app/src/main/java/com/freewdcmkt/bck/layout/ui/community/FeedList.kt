@@ -16,8 +16,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -25,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +42,6 @@ import com.freewdcmkt.bck.data.screen.Feed
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,8 +62,9 @@ fun FeedLayout(
     val errorMsg by viewmodel.errorMsg.collectAsState()
     val isNoNetwork by viewmodel.isNoNetwork.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
-    val noNetworkHint = stringResource(R.string.no_internet_hint)
-    val scope = rememberCoroutineScope()
+    val retryHint = stringResource(R.string.retry_hint)
+    val unknownError = stringResource(R.string.unknown_error)
+
     LaunchedEffect(zone) { viewmodel.fetchData(zone) }
 
     LaunchedEffect(uiState, feedListData) {
@@ -121,12 +122,19 @@ fun FeedLayout(
 
                 else -> {
                     if (uiState is FeedUiState.Error) {
-                       LaunchedEffect(errorMsg) {
-                           if (isNoNetwork) snackBarHostState.showSnackbar(
-                               noNetworkHint
-                           ) else snackBarHostState.showSnackbar(errorMsg)
-                       }
+                        LaunchedEffect(errorMsg) {
+                            val result = snackBarHostState.showSnackbar(
+                                if (isNoNetwork) unknownError else errorMsg,
+                                duration = SnackbarDuration.Indefinite,
+                                actionLabel = retryHint
+                            )
+                            when(result){
+                                SnackbarResult.ActionPerformed->{viewmodel.fetchData(zone)}
+                                else -> {}
+                            }
+                        }
                     }
+
                     FeedUiLayout(
                         feed = feedListData?.feed ?: emptyList(),
                         onClick = { onToFeedDetail(it, zone) },

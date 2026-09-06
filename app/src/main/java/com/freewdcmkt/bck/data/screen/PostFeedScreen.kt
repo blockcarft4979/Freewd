@@ -12,4 +12,14 @@ data class PostFeedData(
 )
 
 @Serializable
-data class UploadImgData(val url: String)
+data class PostFeedRequestData(
+    val zone: Int,
+    val message: String,
+    val title: String?,
+    val img: String?
+)
+
+@Serializable
+data class UploadImgData(
+    val url: String
+)

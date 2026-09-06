@@ -64,11 +64,7 @@ fun LoginLayout(viewModel: LogInViewModel = viewModel()) {
 
     LaunchedEffect(uiState) {
         (uiState as? LoginUiState.Error)?.let { error ->
-            if (error.isNoNetWork) {
-                snackBarHostState.showSnackbar(unknownError)
-            } else {
-                error.msg?.let { snackBarHostState.showSnackbar(it) }
-            }
+            if (error.isNoNetWork) snackBarHostState.showSnackbar(unknownError)else error.msg?.let { snackBarHostState.showSnackbar(it) }
         }
     }
 

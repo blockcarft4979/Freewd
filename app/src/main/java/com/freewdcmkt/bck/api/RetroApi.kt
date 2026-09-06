@@ -9,12 +9,17 @@ object RetroApi {
         const val LOGIN = "auth/login"
         const val REGISTER = "auth/register"
         const val VERIFY_TOKEN = "auth/verify_token"
+        const val SEND_AUTH_CODE = "auth/send_auth_code"
     }
 
     object Community {
         const val GET_FEED = "community/get_feed"
         const val GET_FEED_DETAIL = "community/get_feed_detail"
         const val LIKE_FEED = "community/like_feed"
+        const val REPLY_FEED = "community/reply_feed"
+        const val DELETE_FEED = "community/delete_feed"
+        const val UPLOAD = "community/upload"
+        const val IMG_UPLOAD = "community/img_upload"
     }
 
     object User {
@@ -25,6 +30,7 @@ object RetroApi {
 
     object Other {
         const val HOME_DATA = "community/home_data.json"
+        const val FEED_ERROR_HINT = "community/feed_error_hint.json"
     }
 
     object Document {

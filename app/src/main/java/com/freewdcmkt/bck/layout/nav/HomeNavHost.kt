@@ -97,7 +97,6 @@ fun HomeLayout(
                 SnackbarResult.ActionPerformed -> {
                     viewmodel.fetchData(true)
                 }
-
                 else -> {}
             }
         }

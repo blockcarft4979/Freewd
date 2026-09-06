@@ -3,18 +3,13 @@ package com.freewdcmkt.bck.viewmodel.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.request.RegisterRequestData
 import com.freewdcmkt.bck.data.request.SendAuthCodeRequestData
 import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.initUserInfo
-import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.network.RetroClient
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,11 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.encodeToJsonElement
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 
 class RegisterViewmodel : ViewModel() {
     private val _countdown = MutableStateFlow(0)
@@ -57,27 +47,19 @@ class RegisterViewmodel : ViewModel() {
         _registerUiState.value = RegisterUiState.Loading
         viewModelScope.launch {
             try {
-                val requestBody =
-                    JsonParser.json.encodeToJsonElement(SendAuthCodeRequestData(qq)).toString()
-                        .toRequestBody("application/json".toMediaType())
+                val response = RetroClient.apiService.sendAuthCode(SendAuthCodeRequestData(qq))
 
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Auth.SEND_AUTH_CODE_URL).post(requestBody)
-                            .build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                Log.d("REGISTER VIEWMODEL", body + response.code)
                 if (response.isSuccessful) {
                     startCountdown()
                     _registerUiState.value = RegisterUiState.SendAuthCodeSuccess
                 } else {
+                    val errorData = response.errorBody()?.string() ?: ""
+                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
                     resetCountdown()
-                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                    _registerUiState.value = RegisterUiState.Error(errorData.msg)
+                    _registerUiState.value = RegisterUiState.Error(errorMsg.msg)
                 }
             } catch (e: Exception) {
+                Log.d("SEND CODE ERROR",e.message.toString())
                 resetCountdown()
                 _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
             }
@@ -93,9 +75,9 @@ class RegisterViewmodel : ViewModel() {
                 val data = response.body()
                 if (data?.data != null) {
                     val loginData = data.data
-                    initUserInfo(loginData,qq)
+                    initUserInfo(loginData, qq)
                     UserInfoManager.isLoginFlow().first()
-                } else  {
+                } else {
                     val errorData = response.errorBody()?.string() ?: ""
                     val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
                     _registerUiState.value = RegisterUiState.Error(errorMsg.msg)

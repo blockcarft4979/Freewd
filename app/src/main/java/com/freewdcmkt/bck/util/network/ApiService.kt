@@ -5,23 +5,33 @@ import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.request.LikeFeedRequestData
 import com.freewdcmkt.bck.data.request.LoginRequestData
 import com.freewdcmkt.bck.data.request.RegisterRequestData
+import com.freewdcmkt.bck.data.request.SendAuthCodeRequestData
 import com.freewdcmkt.bck.data.screen.CheckInData
 import com.freewdcmkt.bck.data.screen.FeedData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.data.screen.LikeFeedResultData
 import com.freewdcmkt.bck.data.screen.LoginData
+import com.freewdcmkt.bck.data.screen.PostFeedData
+import com.freewdcmkt.bck.data.screen.PostFeedRequestData
+import com.freewdcmkt.bck.data.screen.ReplyFeedData
+import com.freewdcmkt.bck.data.screen.UploadImgData
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.data.screen.VerifyTokenData
 import com.freewdcmkt.bck.util.JsonParser
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Query
+import java.io.File
 
 interface ApiService {
     @POST(RetroApi.Auth.LOGIN)
@@ -33,6 +43,9 @@ interface ApiService {
     @GET(RetroApi.Auth.VERIFY_TOKEN)
     suspend fun verifyToken(): Response<BaseData<VerifyTokenData>>
 
+    @POST(RetroApi.Auth.SEND_AUTH_CODE)
+    suspend fun sendAuthCode(@Body requestData: SendAuthCodeRequestData): Response<BaseData<Unit>>
+
     @GET(RetroApi.Community.GET_FEED)
     suspend fun getFeed(
         @Query("zone") zone: Int,
@@ -41,6 +54,18 @@ interface ApiService {
 
     @GET(RetroApi.Community.GET_FEED_DETAIL)
     suspend fun getFeedDetail(@Query("id") id: Int): Response<BaseData<FeedDetailData>>
+
+    @POST(RetroApi.Community.UPLOAD)
+    suspend fun upload(@Body requestData: PostFeedRequestData): Response<BaseData<PostFeedData>>
+    @Multipart
+    @POST(RetroApi.Community.IMG_UPLOAD)
+    suspend fun uploadImg(@Part file: MultipartBody.Part): Response<BaseData<UploadImgData>>
+
+    @DELETE(RetroApi.Community.DELETE_FEED)
+    suspend fun deleteFeed(@Query("id") id: Int): Response<BaseData<Unit>>
+
+    @POST(RetroApi.Community.REPLY_FEED)
+    suspend fun replyFeed(@Body replyData: ReplyFeedData): Response<BaseData<Unit>>
 
     @POST(RetroApi.Community.LIKE_FEED)
     suspend fun replyFeed(@Body request: LikeFeedRequestData): Response<BaseData<LikeFeedResultData>>
@@ -54,6 +79,8 @@ interface ApiService {
 
     @GET(RetroApi.Other.HOME_DATA)
     suspend fun getHomeData(): Response<BaseData<HomeData>>
+    @GET(RetroApi.Other.FEED_ERROR_HINT)
+    suspend fun getFeedErrorHint(): Response<BaseData<FeedDetailData>>
 
 }
 

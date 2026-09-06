@@ -14,9 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-//你妈的傻逼 FEED LIST VIEWMODEL
-// 看我今天下午不把你给杀了
-// TODO()
 class FeedListViewmodel() : ViewModel() {
     private var currentPage = 0
     private var totalPages = 0
@@ -104,17 +101,19 @@ class FeedListViewmodel() : ViewModel() {
                 val errorData = response.errorBody()?.string()?:""
                 val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
                 val current = _feedUiState.value
+                _errorMsg.value = errorMsg.msg.toString()
+                _isNoNetwork.value = true
+
                 if (current is FeedUiState.Success) {
                     _isLoadingMore.value = false
                 } else {
-                    _errorMsg.value = errorMsg.msg.toString()
-                    _isNoNetwork.value = true
                     _feedUiState.value = FeedUiState.Error
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
             val current = _feedUiState.value
+
             if (current is FeedUiState.Success) {
                 _isLoadingMore.value = false
             } else {

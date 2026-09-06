@@ -11,6 +11,7 @@ data class FeedDetailScreenData(
 
 @Serializable
 data class FeedDetailData(
+    val isError: Boolean? = false,
     val title: String? = null,
     val msg: String? = null,
     val qq: String,
@@ -30,6 +31,13 @@ data class FeedReplyData(
     val msg: String,
     val qq: String,
     val username: String
+)
+
+@Serializable
+data class ReplyFeedData(
+    val id: Int,
+    val content: String,
+    val replay: String? = null
 )
 
 @Serializable

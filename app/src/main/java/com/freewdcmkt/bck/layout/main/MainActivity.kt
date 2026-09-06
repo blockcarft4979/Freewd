@@ -3,6 +3,7 @@ package com.freewdcmkt.bck.layout.main
 import android.app.ComponentCaller
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,6 +27,9 @@ import com.freewdcmkt.bck.viewmodel.main.MainViewmodel
 class MainActivity : ComponentActivity() {
     private val intentState = mutableStateOf<Intent?>(null)
     override fun onCreate(savedInstanceState: Bundle?) {
+        Thread.setDefaultUncaughtExceptionHandler { _, e ->
+            Log.d("MAIN ERROR",e.message.toString())
+        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 

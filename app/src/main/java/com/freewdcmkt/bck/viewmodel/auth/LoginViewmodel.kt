@@ -26,8 +26,9 @@ class LogInViewModel() : ViewModel() {
 
         viewModelScope.launch {
             _loginUiState.value = LoginUiState.Loading
-            val response = RetroClient.apiService.login(LoginRequestData(qq, password))
+
             try {
+                val response = RetroClient.apiService.login(LoginRequestData(qq, password))
                 val data = response.body()
                 Log.d("LOGIN DATA", data.toString())
                 if (data?.data != null) {

@@ -54,12 +54,14 @@ import com.freewdcmkt.bck.components.ReplyInputBar
 import com.freewdcmkt.bck.components.freewd.ContentMarkdown
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
+import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailUiState
@@ -79,6 +81,8 @@ fun FeedDetailLayout(
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
     val errorMSg by viewmodel.errorMsg.collectAsState()
+    val isNoNetwork by viewmodel.isNoNetwork.collectAsState()
+
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -133,7 +137,7 @@ fun FeedDetailLayout(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            UserIcon(userAvatarUrl(feedDetailData.qq))
+                           if (feedDetailData.isError == true) FreewdIcon() else UserIcon(userAvatarUrl(feedDetailData.qq))
                             Column(
                                 verticalArrangement = Arrangement.Center
                             ) {
@@ -215,8 +219,11 @@ fun FeedDetailLayout(
         ) {
             when (uiState) {
                 is FeedDetailUiState.Loading -> LoadingCard()
-                is  FeedDetailUiState.DeleteSuccess ->onDeleteFeed()
-                is FeedDetailUiState.Error -> LaunchedEffect(errorMSg) { snackBarHostState.showSnackbar(errorMSg)}
+                is FeedDetailUiState.DeleteSuccess -> onDeleteFeed()
+
+                is FeedDetailUiState.Error -> {
+                    FreewdHint(hint = if (isNoNetwork) stringResource(R.string.unknown_error) else errorMSg)
+                }
 
                 else -> {
                     replyUsername.value = feedDetailData.username
@@ -294,7 +301,7 @@ private fun FeedUiLayout(
                             .fillMaxWidth()
                             .padding(top = 4.dp)
                     ) {
-                        IconTextButton(
+                       if (feedDetailData.isError == false) IconTextButton(
                             icon = if (feedDetailData.isLiked)
                                 R.drawable.baseline_favorite_24
                             else
