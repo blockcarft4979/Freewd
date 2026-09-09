@@ -39,7 +39,7 @@
     <string name="content_hint">Content</string>
     <string name="delete_hint">Delete</string>
     <string name="confirm_password_hint">Confirm password</string>
-    <string name="wait_send_auth_code">Please wait %s seconds and try again</string>
+    <string name="wait_send_auth_code">Please wait %s s and try again</string>
     <string name="register_hint">Register</string>
     <string name="auth_code">Verification code</string>
     <string name="send_auth_code">Send code</string>

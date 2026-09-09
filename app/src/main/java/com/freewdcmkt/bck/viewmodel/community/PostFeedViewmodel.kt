@@ -43,7 +43,7 @@ class PostFeedViewmodel : ViewModel() {
                     val data = response.body()
                     Log.d("POST RESULT DATA",data.toString())
                     _postFeedUiState.value = PostFeedUiState.Success
-                    if (data?.data?.xp != null) UserInfoManager.saveExp(data?.data?.xp)
+                    if (data?.data?.xp != null) UserInfoManager.saveExp(data.data.xp)
                 } else {
                     val errorData = response.errorBody()?.string()?:""
                     _postFeedUiState.value =

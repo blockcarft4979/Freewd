@@ -5,7 +5,6 @@
     <string name="clear_all_notifications_hint">Clear all</string>
     <string name="loading_hint">Loading</string>
     <string name="logging_in_hint">Logging in…</string>
-    <string name="code_sent_successfully">Verification code sent successfully, please wait.</string>
     <string name="image_hint">Image</string>
     <string name="upload_image">Upload image</string>
     <string name="preview_image">Preview image</string>
@@ -23,5 +22,6 @@
     <string name="unchecked_hint">You haven\'t checked in today yet.</string>
     <string name="checked_hint">Checked in for %d days.</string>
     <string name="unknown_error">An unknown error, perhaps a network problem?</string>
+    <string name="wait_hint">Please wait…</string>
     <string name="post_feed_content_hint">Share news – Markdown supported!</string>
 </resources>

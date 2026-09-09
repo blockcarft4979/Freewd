@@ -1,6 +1,8 @@
 package com.freewdcmkt.bck.layout.ui.auth
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -24,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,8 +52,6 @@ fun RegisterLayout(
     val snackBarHostState = remember { SnackbarHostState() }
 
     val unknownError = stringResource(R.string.unknown_error)
-    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
-    if (isShowDialog.value) FreewdLoadingDialog(stringResource(R.string.code_sent_successfully))
 
     LaunchedEffect(uiState) {
         (uiState as? RegisterUiState.Error)?.let { error ->
@@ -77,8 +78,8 @@ fun RegisterLayout(
                 onToUserAgreement = onToUserAgreement,
             )
             when (uiState) {
-                is RegisterUiState.Loading -> isShowDialog.value = true
-                else -> isShowDialog.value = false
+                is RegisterUiState.Loading -> FreewdLoadingDialog(stringResource(R.string.wait_hint))
+                else ->{}
             }
         }
     }
@@ -134,22 +135,26 @@ private fun RegisterUiLayout(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
-            value = authCode,
-            onValueChange = { authCode = it },
-            label = { Text(stringResource(R.string.auth_code)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Button(
-            onClick = { onSendCode(account) },
-            enabled = countdown == 0 && account != "",
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (countdown == 0) Text(stringResource(R.string.send_auth_code)) else Text(
-                stringResource(R.string.wait_send_auth_code, countdown)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+            OutlinedTextField(
+                value = authCode,
+                onValueChange = { authCode = it },
+                label = { Text(stringResource(R.string.auth_code)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth().weight(1f)
             )
+            Button(
+                onClick = { onSendCode(account) },
+                enabled = countdown == 0 && account != "",
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            ) {
+                if (countdown == 0) Text(stringResource(R.string.send_auth_code)) else Text(
+                    stringResource(R.string.wait_send_auth_code, countdown)
+                )
+            }
         }
+
+
         Button(
             enabled = password == confirmPassword && password.length >= 8 && authCode.length == 6,
             onClick = {
