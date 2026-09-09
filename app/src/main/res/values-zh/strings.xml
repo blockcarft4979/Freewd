@@ -25,7 +25,7 @@
     <string name="home_hint">首页</string>
     <string name="uid_hint">UID：%s</string>
     <string name="post_hint">帖子</string>
-    <string name="post_new_feed_hint">发布新的内容</string>
+    <string name="post_new_feed_hint">发布</string>
     <string name="add_post_hint">发新帖</string>
     <string name="browser_hint">浏览</string>
     <string name="feed_detail_hint">帖子详情</string>
@@ -88,4 +88,6 @@
     <string name="checked_hint">已签到 %d 天</string>
     <string name="checking_hint">签到中......</string>
     <string name="logging_in_hint">正在登录......</string>
+    <string name="unknown_error">未知错误，也许是网络问题？</string>
+    <string name="post_feed_content_hint">分享新鲜事（支持Markdown）</string>
 </resources>

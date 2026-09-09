@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.api.userAvatarUrl

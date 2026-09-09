@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,18 +44,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.freewd.HomeZoneItemCard
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
+import com.freewdcmkt.bck.components.freewd.HomeZoneItemCard
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.HomeData
@@ -71,6 +75,8 @@ fun HomeLayout(
     onToBrowser: (link: String) -> Unit,
     onToNotification: () -> Unit
 ) {
+    val lifecycleOwner= LocalLifecycleOwner.current
+
     val username by UserInfoData.username.collectAsState()
     val qq by UserInfoData.account.collectAsState()
     val uid by UserInfoData.uid.collectAsState()
@@ -97,8 +103,21 @@ fun HomeLayout(
                 SnackbarResult.ActionPerformed -> {
                     viewmodel.fetchData(true)
                 }
+
                 else -> {}
             }
+        }
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewmodel.verifyToken()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

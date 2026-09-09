@@ -14,39 +14,12 @@ android {
     namespace = "com.freewdcmkt.bck"
     compileSdk = 37
 
-    signingConfigs {
-        create("release") {
-
-            val isCI = System.getenv("CI") == "true"
-
-            if (isCI) {
-
-                val base64 = System.getenv("KEYSTORE_BASE64")
-                    ?: error("❌ KEYSTORE_BASE64 is missing in CI environment!")
-                val decoded = Base64.getDecoder().decode(base64)
-                val keystoreFile = file("keystore.jks")
-                keystoreFile.writeBytes(decoded)
-                storeFile = keystoreFile
-
-                storePassword = System.getenv("KEYSTORE_PASSWORD")
-                    ?: error("❌ KEYSTORE_PASSWORD is missing!")
-                keyAlias = System.getenv("KEY_ALIAS")
-                    ?: error("❌ KEY_ALIAS is missing!")
-                keyPassword = System.getenv("KEY_PASSWORD")
-                    ?: error("❌ KEY_PASSWORD is missing!")
-            } else {
-
-                println("🔧 Local build: using debug signing (no keystore needed)")
-            }
-        }
-    }
-
     defaultConfig {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = SimpleDateFormat("yyMMddHH",Locale.getDefault()).format(Date()).toInt()
-        versionName = "${SimpleDateFormat("yy.MM.dd.HH",Locale.getDefault()).format(Date())}"
+        versionCode = 165
+        versionName = "3.6.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -57,7 +30,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             versionNameSuffix = " TEST VERSION"
@@ -75,6 +47,7 @@ android {
 }
 
 dependencies {
+    implementation("net.engawapg.lib:zoomable:2.13.0")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")

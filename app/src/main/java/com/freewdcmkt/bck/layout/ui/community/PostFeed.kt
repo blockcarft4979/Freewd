@@ -66,48 +66,17 @@ fun PostFeedLayout(
 ) {
     val uiState by viewmodel.postFeedUiState.collectAsState()
     val qq by UserInfoData.account.collectAsState()
-    val noNetworkHint = stringResource(R.string.no_internet_hint)
+    val unknownError = stringResource(R.string.unknown_error)
     val imgUrl = rememberSaveable { mutableStateOf("") }
     val snackBarHostState = remember { SnackbarHostState() }
     val isUploadingImg = rememberSaveable { mutableStateOf(false) }
-    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
-    if (isShowDialog.value) {
-        FreewdLoadingDialog(stringResource(R.string.uploading_hint))
-    }
+
     LaunchedEffect(uiState) {
-        when (uiState) {
-            is PostFeedUiState.Error -> {
-                isShowDialog.value = false
-                isUploadingImg.value = false
-                imgUrl.value = ""
-                if ((uiState as PostFeedUiState.Error).isNoNetwork) snackBarHostState.showSnackbar(
-                    noNetworkHint,
-                    duration = SnackbarDuration.Short
-                ) else {
-                    (uiState as PostFeedUiState.Error).msg?.let {
-                        snackBarHostState.showSnackbar(
-                            it,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                }
-            }
-
-            is PostFeedUiState.Upload -> isShowDialog.value = true
-
-            is PostFeedUiState.Success -> onUploaded()
-
-            is PostFeedUiState.ImageUploaded -> {
-                isUploadingImg.value = false
-                isShowDialog.value = false
-                imgUrl.value = (uiState as PostFeedUiState.ImageUploaded).url
-            }
-
-            else -> {
-                isUploadingImg.value = false
-            }
+        (uiState as? PostFeedUiState.Error)?.let { error ->
+            if (error.isNoNetwork) snackBarHostState.showSnackbar(unknownError)else error.msg?.let { snackBarHostState.showSnackbar(it) }
         }
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -131,10 +100,9 @@ fun PostFeedLayout(
                 .fillMaxSize()
         ) {
             PostFeedUiLayout(
-                onPostFeed = { title, message ->
+                onPostFeed = { message ->
                     viewmodel.postFeed(
                         zone = zone,
-                        title = title,
                         message = message,
                         imgUrl = imgUrl.value
                     )
@@ -145,20 +113,34 @@ fun PostFeedLayout(
                 onToPreviewImg = onToPreviewImg,
                 qq = qq
             )
+            when(uiState){
+
+                is PostFeedUiState.Success -> onUploaded()
+
+                is PostFeedUiState.ImageUploaded -> {
+                    isUploadingImg.value = false
+                    imgUrl.value = (uiState as PostFeedUiState.ImageUploaded).url
+                }
+
+                is PostFeedUiState.Upload -> FreewdLoadingDialog(stringResource(R.string.uploading_hint))
+                else->{
+                    isUploadingImg.value = false
+                }
+            }
         }
     }
 }
 
 @Composable
 fun PostFeedUiLayout(
-    onPostFeed: (title: String?, message: String) -> Unit,
+    onPostFeed: (message: String) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onUploadImg: (file: File) -> Unit,
     isUploadedImg: Boolean,
     imgUrl: String?,
     qq: String,
 ) {
-    var title by rememberSaveable { mutableStateOf("") }
+
     var message by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
@@ -194,20 +176,20 @@ fun PostFeedUiLayout(
             UserIcon(userAvatarUrl(qq))
 
             Column() {
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text(stringResource(R.string.title_hint)) },
-                    maxLines = 1
-                )
+//                TextField(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    value = title,
+//                    onValueChange = { title = it },
+//                    label = { Text(stringResource(R.string.title_hint)) },
+//                    maxLines = 1
+//                )
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     value = message,
                     onValueChange = { message = it },
-                    label = { Text(stringResource(R.string.content_hint)) }
+                    label = { Text(stringResource(R.string.post_feed_content_hint)) }
                 )
                 if (!imgUrl.isNullOrEmpty()) {
                     Card(
@@ -249,7 +231,7 @@ fun PostFeedUiLayout(
                 modifier = Modifier
                     .padding(top = 8.dp),
                 onClick = {
-                    onPostFeed(title, message)
+                    onPostFeed(message)
                 },
                 enabled = message.isNotEmpty() && message.isNotBlank()
             ) {
