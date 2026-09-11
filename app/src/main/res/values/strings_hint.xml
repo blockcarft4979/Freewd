@@ -24,4 +24,5 @@
     <string name="unknown_error">An unknown error, perhaps a network problem?</string>
     <string name="wait_hint">Please wait…</string>
     <string name="post_feed_content_hint">Share news – Markdown supported!</string>
+    <string name="anonymous_post_hint">Anonymous post</string>
 </resources>

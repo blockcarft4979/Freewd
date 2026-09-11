@@ -1,9 +1,10 @@
 package com.freewdcmkt.bck.data.screen
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-object NotificationScreen
+object NotificationScreen: NavKey
 @Serializable
 data class NotificationDataList(
     val list: List<NotificationData>

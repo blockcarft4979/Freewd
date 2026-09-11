@@ -25,8 +25,10 @@ import coil3.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.TitleText
+import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.Feed
 
@@ -39,20 +41,7 @@ fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit,onToPreviewImg:(String)-> Un
                 .padding(10.dp),
             verticalAlignment = Alignment.Top
         ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = userAvatarUrl(feed.qq),
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            if (feed.qq == "0") FreewdIcon() else UserIcon(userAvatarUrl(feed.qq))
 
             Spacer(modifier = Modifier.width(8.dp))
 

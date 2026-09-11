@@ -1,9 +1,10 @@
 package com.freewdcmkt.bck.data.screen
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object LoginScreenData
+data object LoginScreenData: NavKey
 @Serializable
 data class LoginData(
     val xp: Int? = 0,

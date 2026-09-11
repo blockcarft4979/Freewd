@@ -3,25 +3,17 @@ package com.freewdcmkt.bck.viewmodel.community
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.ErrorData
-import com.freewdcmkt.bck.data.screen.PostFeedData
 import com.freewdcmkt.bck.data.screen.PostFeedRequestData
-import com.freewdcmkt.bck.data.screen.UploadImgData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.network.RetroClient
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
@@ -32,25 +24,31 @@ class PostFeedViewmodel : ViewModel() {
     fun postFeed(
         zone: Int,
         message: String,
+        isAnonymous: Boolean = false,
         title: String? = null,
         imgUrl: String? = null
     ) {
         _postFeedUiState.value = PostFeedUiState.Upload
         viewModelScope.launch {
             try {
-                val response = RetroClient.apiService.upload(PostFeedRequestData(zone, message, title, imgUrl))
+                val response =
+                    RetroClient.apiService.upload(PostFeedRequestData(zone,isAnonymous, message, title, imgUrl))
                 if (response.isSuccessful) {
                     val data = response.body()
-                    Log.d("POST RESULT DATA",data.toString())
+                    Log.d("POST RESULT DATA", data.toString())
                     _postFeedUiState.value = PostFeedUiState.Success
                     if (data?.data?.xp != null) UserInfoManager.saveExp(data.data.xp)
                 } else {
-                    val errorData = response.errorBody()?.string()?:""
+                    val errorData = response.errorBody()?.string() ?: ""
                     _postFeedUiState.value =
-                        PostFeedUiState.Error(JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData).msg)
+                        PostFeedUiState.Error(
+                            JsonParser.json.decodeFromString<BaseData<Nothing>>(
+                                errorData
+                            ).msg
+                        )
                 }
             } catch (e: Exception) {
-                Log.d("POST FEED ERROR",e.message.toString())
+                Log.d("POST FEED ERROR", e.message.toString())
                 _postFeedUiState.value = PostFeedUiState.Error(isNoNetwork = true)
             }
         }
@@ -70,12 +68,12 @@ class PostFeedViewmodel : ViewModel() {
                         _postFeedUiState.value = PostFeedUiState.ImageUploaded(baseData.data.url)
                     }
                 } else {
-                    val errorData = response.errorBody()?.string()?:""
+                    val errorData = response.errorBody()?.string() ?: ""
                     val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
                     _postFeedUiState.value = PostFeedUiState.Error(errorMsg.msg)
                 }
             } catch (e: Exception) {
-                Log.d("UPLOAD IMG ERROR",e.message.toString())
+                Log.d("UPLOAD IMG ERROR", e.message.toString())
                 _postFeedUiState.value = PostFeedUiState.Error(isNoNetwork = true)
             }
         }

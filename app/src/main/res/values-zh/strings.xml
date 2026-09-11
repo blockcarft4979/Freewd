@@ -90,4 +90,5 @@
     <string name="unknown_error">未知错误，也许是网络问题？</string>
     <string name="wait_hint">请等待......</string>
     <string name="post_feed_content_hint">分享新鲜事（支持Markdown）</string>
+    <string name="anonymous_post_hint">匿名贴</string>
 </resources>

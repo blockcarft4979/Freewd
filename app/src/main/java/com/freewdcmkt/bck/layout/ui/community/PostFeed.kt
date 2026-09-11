@@ -3,6 +3,13 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +27,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -45,10 +51,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
+import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
+import com.freewdcmkt.bck.components.freewd.FreewdSwitch
 import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.UserIcon
-import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.file.uriToFile
 import com.freewdcmkt.bck.viewmodel.community.PostFeedUiState
@@ -73,7 +80,11 @@ fun PostFeedLayout(
 
     LaunchedEffect(uiState) {
         (uiState as? PostFeedUiState.Error)?.let { error ->
-            if (error.isNoNetwork) snackBarHostState.showSnackbar(unknownError)else error.msg?.let { snackBarHostState.showSnackbar(it) }
+            if (error.isNoNetwork) snackBarHostState.showSnackbar(unknownError) else error.msg?.let {
+                snackBarHostState.showSnackbar(
+                    it
+                )
+            }
         }
     }
 
@@ -100,10 +111,11 @@ fun PostFeedLayout(
                 .fillMaxSize()
         ) {
             PostFeedUiLayout(
-                onPostFeed = { message ->
+                onPostFeed = { message, isAnonymous ->
                     viewmodel.postFeed(
                         zone = zone,
                         message = message,
+                        isAnonymous = isAnonymous,
                         imgUrl = imgUrl.value
                     )
                 },
@@ -113,7 +125,7 @@ fun PostFeedLayout(
                 onToPreviewImg = onToPreviewImg,
                 qq = qq
             )
-            when(uiState){
+            when (uiState) {
 
                 is PostFeedUiState.Success -> onUploaded()
 
@@ -123,7 +135,7 @@ fun PostFeedLayout(
                 }
 
                 is PostFeedUiState.Upload -> FreewdLoadingDialog(stringResource(R.string.uploading_hint))
-                else->{
+                else -> {
                     isUploadingImg.value = false
                 }
             }
@@ -133,7 +145,7 @@ fun PostFeedLayout(
 
 @Composable
 fun PostFeedUiLayout(
-    onPostFeed: (message: String) -> Unit,
+    onPostFeed: (message: String, isAnonymous: Boolean) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onUploadImg: (file: File) -> Unit,
     isUploadedImg: Boolean,
@@ -142,6 +154,7 @@ fun PostFeedUiLayout(
 ) {
 
     var message by rememberSaveable { mutableStateOf("") }
+    var isAnonymous by rememberSaveable() { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
     val context = LocalContext.current
@@ -173,16 +186,24 @@ fun PostFeedUiLayout(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            UserIcon(userAvatarUrl(qq))
+            AnimatedContent(
+                targetState = isAnonymous,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(220)) + scaleIn(
+                        initialScale = 0.8f,
+                        animationSpec = tween(220)
+                    )) togetherWith
+                            (fadeOut(animationSpec = tween(160)) + scaleOut(
+                                targetScale = 0.8f,
+                                animationSpec = tween(160)
+                            ))
+                },
+            ) { anonymous ->
+                if (anonymous) FreewdIcon() else UserIcon(userAvatarUrl(qq))
+            }
 
             Column() {
-//                TextField(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    value = title,
-//                    onValueChange = { title = it },
-//                    label = { Text(stringResource(R.string.title_hint)) },
-//                    maxLines = 1
-//                )
+
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -224,14 +245,17 @@ fun PostFeedUiLayout(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
+            FreewdSwitch(
+                stringResource(R.string.anonymous_post_hint),
+                checked = isAnonymous,
+                onCheckedChange = { isAnonymous = it },
+            )
             Button(
-                modifier = Modifier
-                    .padding(top = 8.dp),
                 onClick = {
-                    onPostFeed(message)
+                    onPostFeed(message, isAnonymous)
                 },
                 enabled = message.isNotEmpty() && message.isNotBlank()
             ) {

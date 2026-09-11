@@ -1,8 +1,8 @@
 package com.freewdcmkt.bck.layout.ui.other
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -31,7 +31,7 @@ import com.freewdcmkt.bck.viewmodel.other.DocumentViewModel
 fun Document(onBack: () -> Unit, url: String, viewmodel: DocumentViewModel = viewModel()) {
     val uiState by viewmodel.uiState.collectAsState()
     val documentContent by viewmodel.documentContent.collectAsState()
-    LaunchedEffect(url){
+    LaunchedEffect(url) {
         viewmodel.fetchData(url)
     }
     Scaffold(topBar = {
@@ -47,10 +47,12 @@ fun Document(onBack: () -> Unit, url: String, viewmodel: DocumentViewModel = vie
             })
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 15.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center
         ) {
             when (uiState) {
                 is DocumentUiState.Loading -> LoadingCard()

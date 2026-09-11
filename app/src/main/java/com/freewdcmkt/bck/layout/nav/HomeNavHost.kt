@@ -1,11 +1,6 @@
 package com.freewdcmkt.bck.layout.nav
 
 import android.widget.Toast
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -36,7 +31,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -48,11 +46,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
@@ -65,17 +58,16 @@ import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.layout.ui.user.Me
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
-import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeLayout(
+fun HomeNavHost(
     viewmodel: HomeViewmodel = viewModel(),
     onToFeed: (zone: Int) -> Unit,
     onToBrowser: (link: String) -> Unit,
     onToNotification: () -> Unit
 ) {
-    val lifecycleOwner= LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val username by UserInfoData.username.collectAsState()
     val qq by UserInfoData.account.collectAsState()
@@ -87,11 +79,11 @@ fun HomeLayout(
     val homeData by viewmodel.homeData.collectAsState()
 
     val retryHint = stringResource(R.string.retry_hint)
-    val navController = rememberNavController()
-
-    val snackBarHostState = remember() { SnackbarHostState() }
-
+    val snackBarHostState = remember { SnackbarHostState() }
     val unknownError = stringResource(R.string.unknown_error)
+
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+
     LaunchedEffect(isShowNoNetwork) {
         if (isShowNoNetwork) {
             val result = snackBarHostState.showSnackbar(
@@ -99,12 +91,8 @@ fun HomeLayout(
                 actionLabel = retryHint,
                 duration = SnackbarDuration.Short
             )
-            when (result) {
-                SnackbarResult.ActionPerformed -> {
-                    viewmodel.fetchData(true)
-                }
-
-                else -> {}
+            if (result == SnackbarResult.ActionPerformed) {
+                viewmodel.fetchData(true)
             }
         }
     }
@@ -116,83 +104,61 @@ fun HomeLayout(
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    UserCard(userAvatarUrl(qq), username, uid)
-                },
-                actions = { IconButton(onClick = onToNotification) { NotificationIcon(unreadCount) } })
+                title = { UserCard(userAvatarUrl(qq), username, uid) },
+                actions = {
+                    IconButton(onClick = onToNotification) {
+                        NotificationIcon(unreadCount)
+                    }
+                }
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-        bottomBar = { NavigationBar() { NavBar(navController) } }) { innerPadding ->
+        bottomBar = {
+            NavigationBar {
+                NavBar(
+                    selectedTab = selectedTab,
+                    onTabSelected = { selectedTab = it }
+                )
+            }
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 15.dp)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            NavHost(
-                // modifier = Modifier.padding(horizontal = 15.dp).fillMaxSize(),
-                navController = navController,
-                startDestination = NavData.Home.route,
-                popEnterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { -it * 180 / 100 },
-                        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
-                },
-                popExitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
-                    )
-                },
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    ) + fadeIn(animationSpec = tween(350, delayMillis = 50))
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { -it * 180 / 100 },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
-                }
-            ) {
-                composable(NavData.Home.route) {
-                    UiLayout(
+            when (selectedTab) {
+                0 -> {
+                    HomeLayout(
                         homeData = homeData,
                         onToFeed = onToFeed,
                         onToBrowser = onToBrowser,
                         uiState = homeUiState,
-                        onRefresh = { viewmodel.fetchData(true) })
+                        onRefresh = { viewmodel.fetchData(true) }
+                    )
                     if (homeUiState is HomeUiState.Finish && isShowNotification) {
                         val notificationData = homeData.notification
                         FreewdModalBottomSheet(
                             onDismiss = { viewmodel.dismissNotification(null) },
                             onConfirm = {
-                                viewmodel.dismissNotification(
-                                    notificationData?.id ?: 0
-                                )
+                                viewmodel.dismissNotification(notificationData?.id ?: 0)
                             },
-                            title = if (notificationData?.title != null) notificationData.title else "",
-                            msg = if (notificationData?.msg != null) notificationData.msg else "",
+                            title = notificationData?.title ?: "",
+                            msg = notificationData?.msg ?: "",
                             stringResource(R.string.cancel_hint),
                             stringResource(R.string.yes_hint)
                         )
                     }
+                }
 
-                }
-                composable(NavData.Me.route) {
-                    Me()
-                }
+                1 -> Me()
             }
         }
     }
@@ -200,7 +166,7 @@ fun HomeLayout(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UiLayout(
+private fun HomeLayout(
     homeData: HomeData,
     uiState: HomeUiState,
     onToFeed: (Int) -> Unit,
@@ -246,25 +212,17 @@ private fun UiLayout(
 }
 
 @Composable
-private fun NavBar(navController: NavController) {
-    val items = listOf(NavData.Home, NavData.Me)
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+private fun NavBar(
+    selectedTab: Int,
+    onTabSelected: (Int) -> Unit
+) {
+    val items = NavTab.entries
 
-    val currentRoute = navBackStackEntry?.destination?.route ?: NavData.Home.route
-    NavigationBar() {
-
-        items.forEachIndexed { _, data ->
-
+    NavigationBar {
+        items.forEachIndexed { index, data ->
             NavigationBarItem(
-                selected = currentRoute == data.route,
-                onClick = {
-                    // selectedIndex = index
-                    navController.navigate(data.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
+                selected = selectedTab == index,
+                onClick = { onTabSelected(index) },
                 icon = {
                     Icon(
                         painter = painterResource(data.icon),
@@ -279,8 +237,7 @@ private fun NavBar(navController: NavController) {
     }
 }
 
-@Serializable
-sealed class NavData(val route: String, val label: Int, val icon: Int) {
-    object Home : NavData("Home", R.string.home_hint, R.drawable.home)
-    object Me : NavData("Me", R.string.me_hint, R.drawable.personal_center)
+enum class NavTab(val label: Int, val icon: Int) {
+    Home(R.string.home_hint, R.drawable.home),
+    Me(R.string.me_hint, R.drawable.personal_center)
 }

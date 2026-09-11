@@ -3,6 +3,7 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -137,7 +138,7 @@ fun FeedDetailLayout(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                           if (feedDetailData.isError == true) FreewdIcon() else UserIcon(userAvatarUrl(feedDetailData.qq))
+                           if (feedDetailData.isError == true || feedDetailData.qq == "0") FreewdIcon() else UserIcon(userAvatarUrl(feedDetailData.qq))
                             Column(
                                 verticalArrangement = Arrangement.Center
                             ) {
@@ -204,9 +205,11 @@ fun FeedDetailLayout(
                     username = replyUsername.value,
                     onSend = {
                         val targetQq = replyQq.value
+                        Log.d("INPUT BAR DATA(BEFORE)",targetQq)
                         viewmodel.replyFeed(id, it, targetQq.ifEmpty { null })
                         focusRequester.requestFocus()
                         replyQq.value = ""
+                        Log.d("INPUT BAR DATA",replyQq.value)
                     },
                     modifier = Modifier.imePadding(),
                     focusRequester = focusRequester
@@ -239,6 +242,7 @@ fun FeedDetailLayout(
                             focusRequester.requestFocus()
                             replyQq.value = qq
                             replyUsername.value = username
+                            Log.d("ON REPLY USER",replyQq.value)
                         }, onToPreviewImg = onToPreviewImg
                     )
                 }

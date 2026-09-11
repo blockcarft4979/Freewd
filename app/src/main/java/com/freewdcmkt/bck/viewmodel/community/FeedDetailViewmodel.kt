@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.common.UserInfoData
-import com.freewdcmkt.bck.data.request.LikeFeedRequestData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
+import com.freewdcmkt.bck.data.screen.LikeFeedRequestData
 import com.freewdcmkt.bck.data.screen.ReplyFeedData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.network.CommunityClient
@@ -71,12 +71,12 @@ class FeedDetailViewmodel : ViewModel() {
             try {
                 val response = CommunityClient.apiService.getFeedErrorHint()
                 val data = response.body()
-                Log.d("ERROR HINT",data.toString())
+                Log.d("ERROR HINT", data.toString())
                 if (response.isSuccessful && data?.data != null) {
                     val data = data.data
                     _feedDetailData.value = data
                     _feedDetailUiState.value = FeedDetailUiState.OnFeedErrorHint
-                }else{
+                } else {
                     _isNoNetwork.value = true
                     _feedDetailUiState.value = FeedDetailUiState.Error
                 }
@@ -106,7 +106,8 @@ class FeedDetailViewmodel : ViewModel() {
             _feedDetailUiState.value = FeedDetailUiState.Success
 
             try {
-                val response = RetroClient.apiService.replyFeed(LikeFeedRequestData((id)))
+                val body = LikeFeedRequestData((id))
+                val response = RetroClient.apiService.likeFeed(body)
                 val data = response.body()
                 Log.d("FEED DETAIL LIKE DATA", data.toString())
                 if (response.isSuccessful && data?.data != null) {
@@ -130,9 +131,11 @@ class FeedDetailViewmodel : ViewModel() {
 
     fun replyFeed(id: Int, content: String, reply: String? = null) {
         _feedDetailUiState.value = FeedDetailUiState.Loading
-
+        Log.d("REPLY QQ ", reply ?: "is empty")
         viewModelScope.launch {
-            val response = RetroClient.apiService.replyFeed(ReplyFeedData(id, content, reply))
+            val body = ReplyFeedData(id, content, reply)
+            Log.d("REPLY BODY", JsonParser.json.encodeToString(body))
+            val response = RetroClient.apiService.replyFeed(body)
 
             if (response.isSuccessful) {
                 fetchData(id, true)

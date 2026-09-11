@@ -1,11 +1,12 @@
 package com.freewdcmkt.bck.data.screen
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class FeedScreenData(
     val zone: Int
-)
+): NavKey
 
 @Serializable
 data class FeedData(

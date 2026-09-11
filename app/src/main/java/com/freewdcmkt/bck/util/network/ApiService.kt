@@ -2,7 +2,6 @@ package com.freewdcmkt.bck.util.network
 
 import com.freewdcmkt.bck.api.RetroApi
 import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.request.LikeFeedRequestData
 import com.freewdcmkt.bck.data.request.LoginRequestData
 import com.freewdcmkt.bck.data.request.RegisterRequestData
 import com.freewdcmkt.bck.data.request.SendAuthCodeRequestData
@@ -10,6 +9,7 @@ import com.freewdcmkt.bck.data.screen.CheckInData
 import com.freewdcmkt.bck.data.screen.FeedData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.data.screen.HomeData
+import com.freewdcmkt.bck.data.screen.LikeFeedRequestData
 import com.freewdcmkt.bck.data.screen.LikeFeedResultData
 import com.freewdcmkt.bck.data.screen.LoginData
 import com.freewdcmkt.bck.data.screen.PostFeedData
@@ -31,7 +31,6 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
-import java.io.File
 
 interface ApiService {
     @POST(RetroApi.Auth.LOGIN)
@@ -57,6 +56,7 @@ interface ApiService {
 
     @POST(RetroApi.Community.UPLOAD)
     suspend fun upload(@Body requestData: PostFeedRequestData): Response<BaseData<PostFeedData>>
+
     @Multipart
     @POST(RetroApi.Community.IMG_UPLOAD)
     suspend fun uploadImg(@Part file: MultipartBody.Part): Response<BaseData<UploadImgData>>
@@ -68,7 +68,7 @@ interface ApiService {
     suspend fun replyFeed(@Body replyData: ReplyFeedData): Response<BaseData<Unit>>
 
     @POST(RetroApi.Community.LIKE_FEED)
-    suspend fun replyFeed(@Body request: LikeFeedRequestData): Response<BaseData<LikeFeedResultData>>
+    suspend fun likeFeed(@Body request: LikeFeedRequestData): Response<BaseData<LikeFeedResultData>>
 
 
     @GET(RetroApi.User.CHECK_IN)
@@ -79,6 +79,7 @@ interface ApiService {
 
     @GET(RetroApi.Other.HOME_DATA)
     suspend fun getHomeData(): Response<BaseData<HomeData>>
+
     @GET(RetroApi.Other.FEED_ERROR_HINT)
     suspend fun getFeedErrorHint(): Response<BaseData<FeedDetailData>>
 

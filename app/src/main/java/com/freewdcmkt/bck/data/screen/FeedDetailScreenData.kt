@@ -1,12 +1,14 @@
 package com.freewdcmkt.bck.data.screen
 
 import androidx.annotation.Keep
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class FeedDetailScreenData(
     val id: Int, val zone: Int? = null
-) {
+): NavKey {
 }
 
 @Serializable
@@ -37,9 +39,12 @@ data class FeedReplyData(
 data class ReplyFeedData(
     val id: Int,
     val content: String,
-    val replay: String? = null
+    @SerialName("reply")
+    val reply: String? = null
 )
-
+@Keep
+@Serializable
+data class LikeFeedRequestData(val id: Int)
 @Serializable
 @Keep
 data class LikeFeedResultData(
