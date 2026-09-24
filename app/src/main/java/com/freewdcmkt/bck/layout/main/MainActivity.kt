@@ -85,8 +85,8 @@ fun MainLayout(viewmodel: MainViewmodel = viewModel(), intent: Intent) {
                 backStack = backStack
             )
             LaunchedEffect(pendingDeepLink.value) {
-                pendingDeepLink.value?.let { (id, zone) ->
-                    backStack.add(FeedDetailScreenData(id, zone))
+                pendingDeepLink.value?.let { (id, _) ->
+                    backStack.add(FeedDetailScreenData(id))
                     pendingDeepLink.value = null
                 }
             }

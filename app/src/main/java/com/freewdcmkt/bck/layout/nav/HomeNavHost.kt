@@ -2,20 +2,22 @@ package com.freewdcmkt.bck.layout.nav
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DismissibleDrawerSheet
+import androidx.compose.material3.DismissibleNavigationDrawer
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -26,14 +28,14 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,7 +57,11 @@ import com.freewdcmkt.bck.components.freewd.HomeZoneItemCard
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.HomeData
+import com.freewdcmkt.bck.layout.ui.community.FeedLayout
+import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.layout.ui.user.Me
+import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
+import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
 
@@ -63,8 +69,8 @@ import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
 @Composable
 fun HomeNavHost(
     viewmodel: HomeViewmodel = viewModel(),
-    onToFeed: (zone: Int) -> Unit,
-    onToBrowser: (link: String) -> Unit,
+    onToFeedDetail: (id: Int) -> Unit,
+    onToPostFeed: () -> Unit,
     onToNotification: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -80,9 +86,9 @@ fun HomeNavHost(
 
     val retryHint = stringResource(R.string.retry_hint)
     val snackBarHostState = remember { SnackbarHostState() }
-    val unknownError = stringResource(R.string.unknown_error)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    val unknownError = stringResource(R.string.unknown_error)
 
     LaunchedEffect(isShowNoNetwork) {
         if (isShowNoNetwork) {
@@ -107,61 +113,57 @@ fun HomeNavHost(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { UserCard(userAvatarUrl(qq), username, uid) },
-                actions = {
-                    IconButton(onClick = onToNotification) {
-                        NotificationIcon(unreadCount)
+
+    DismissibleNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            DismissibleDrawerSheet(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .width(300.dp)
+            ) { Me() }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { UserCard(userAvatarUrl(qq), username, uid) },
+                    actions = {
+                        IconButton(onClick = onToNotification) {
+                            NotificationIcon(unreadCount)
+                        }
                     }
-                }
-            )
-        },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-        bottomBar = {
-            NavigationBar {
-                NavBar(
-                    selectedTab = selectedTab,
-                    onTabSelected = { selectedTab = it }
+                )
+            },
+            snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+
+            ) { innerPadding ->
+            Column(modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 15.dp)) {
+                HomeUI(
+                    onToPostFeed = onToPostFeed,
+                    onToFeedDetail = onToFeedDetail
                 )
             }
         }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 15.dp)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            when (selectedTab) {
-                0 -> {
-                    HomeLayout(
-                        homeData = homeData,
-                        onToFeed = onToFeed,
-                        onToBrowser = onToBrowser,
-                        uiState = homeUiState,
-                        onRefresh = { viewmodel.fetchData(true) }
-                    )
-                    if (homeUiState is HomeUiState.Finish && isShowNotification) {
-                        val notificationData = homeData.notification
-                        FreewdModalBottomSheet(
-                            onDismiss = { viewmodel.dismissNotification(null) },
-                            onConfirm = {
-                                viewmodel.dismissNotification(notificationData?.id ?: 0)
-                            },
-                            title = notificationData?.title ?: "",
-                            msg = notificationData?.msg ?: "",
-                            stringResource(R.string.cancel_hint),
-                            stringResource(R.string.yes_hint)
-                        )
-                    }
-                }
 
-                1 -> Me()
-            }
-        }
     }
+
+    if (homeUiState is HomeUiState.Finish && isShowNotification) {
+        val notificationData = homeData.notification
+        FreewdModalBottomSheet(
+            onDismiss = { viewmodel.dismissNotification(null) },
+            onConfirm = {
+                viewmodel.dismissNotification(notificationData?.id ?: 0)
+            },
+            title = notificationData?.title ?: "",
+            msg = notificationData?.msg ?: "",
+            stringResource(R.string.cancel_hint),
+            stringResource(R.string.yes_hint)
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -208,6 +210,44 @@ private fun HomeLayout(
             }
 
         }
+    }
+}
+
+@Composable
+private fun HomeUI(
+    onToFeedDetail: (id: Int) -> Unit,
+    onToPostFeed: () -> Unit,
+    homeViewmodel: HomeViewmodel = viewModel(),
+    feedListViewmodel: FeedListViewmodel = viewModel(),
+
+    ) {
+    val refreshViewmodel: RefreshStateViewModel = viewModel()
+    val isRefresh = refreshViewmodel.feedRefresh
+    val homeUiState by homeViewmodel.homeUiState.collectAsState()
+    val feedUiState by feedListViewmodel.feedUiState.collectAsState()
+
+    var imgUrl by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(isRefresh) {
+        if (isRefresh) {
+            feedListViewmodel.fetchData(true)
+            refreshViewmodel.feedRefresh = false
+        }
+    }
+
+    PullToRefreshBox(
+        isRefreshing = homeUiState is HomeUiState.Loading,
+        onRefresh = {
+            homeViewmodel.fetchData(true)
+            feedListViewmodel.fetchData(true)
+        }) {
+        FeedLayout(
+            isRefresh = feedUiState is FeedUiState.Loading,
+            onToFeedDetail = onToFeedDetail,
+            onToPostFeed = onToPostFeed,
+            onToPreviewImg = {url ->imgUrl = url}
+        )
+        PreviewImgUi(url = imgUrl?:"", onDismiss = {imgUrl = null})
     }
 }
 

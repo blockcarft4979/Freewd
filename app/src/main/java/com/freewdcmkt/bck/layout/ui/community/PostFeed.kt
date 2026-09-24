@@ -55,6 +55,7 @@ import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdSwitch
 import com.freewdcmkt.bck.components.freewd.ImageCard
+import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.file.uriToFile
@@ -65,12 +66,11 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostFeedLayout(
-    zone: Int,
     onUploaded: () -> Unit,
     onBack: () -> Unit,
-    onToPreviewImg: (String) -> Unit,
     viewmodel: PostFeedViewmodel = viewModel()
 ) {
+    var previewImgUrl by remember { mutableStateOf<String?>(null) }
     val uiState by viewmodel.postFeedUiState.collectAsState()
     val qq by UserInfoData.account.collectAsState()
     val unknownError = stringResource(R.string.unknown_error)
@@ -85,6 +85,10 @@ fun PostFeedLayout(
                     it
                 )
             }
+        }
+        if (uiState is PostFeedUiState.Success) {
+            viewmodel.resetUi()
+            onUploaded()
         }
     }
 
@@ -113,7 +117,6 @@ fun PostFeedLayout(
             PostFeedUiLayout(
                 onPostFeed = { message, isAnonymous ->
                     viewmodel.postFeed(
-                        zone = zone,
                         message = message,
                         isAnonymous = isAnonymous,
                         imgUrl = imgUrl.value
@@ -122,12 +125,10 @@ fun PostFeedLayout(
                 onUploadImg = { imgFile -> viewmodel.uploadImg(imgFile) },
                 isUploadedImg = isUploadingImg.value,
                 imgUrl = imgUrl.value,
-                onToPreviewImg = onToPreviewImg,
+                onToPreviewImg = { url -> previewImgUrl = url },
                 qq = qq
             )
             when (uiState) {
-
-                is PostFeedUiState.Success -> onUploaded()
 
                 is PostFeedUiState.ImageUploaded -> {
                     isUploadingImg.value = false
@@ -140,6 +141,7 @@ fun PostFeedLayout(
                 }
             }
         }
+        PreviewImgUi(url = previewImgUrl ?: "", onDismiss = { previewImgUrl = null })
     }
 }
 

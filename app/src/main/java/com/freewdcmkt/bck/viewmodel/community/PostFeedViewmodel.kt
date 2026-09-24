@@ -22,7 +22,6 @@ class PostFeedViewmodel : ViewModel() {
     private val _postFeedUiState = MutableStateFlow<PostFeedUiState>(PostFeedUiState.NoAction)
     val postFeedUiState: StateFlow<PostFeedUiState> = _postFeedUiState.asStateFlow()
     fun postFeed(
-        zone: Int,
         message: String,
         isAnonymous: Boolean = false,
         title: String? = null,
@@ -32,7 +31,7 @@ class PostFeedViewmodel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response =
-                    RetroClient.apiService.upload(PostFeedRequestData(zone,isAnonymous, message, title, imgUrl))
+                    RetroClient.apiService.upload(PostFeedRequestData(isAnonymous, message, title, imgUrl))
                 if (response.isSuccessful) {
                     val data = response.body()
                     Log.d("POST RESULT DATA", data.toString())
@@ -78,7 +77,9 @@ class PostFeedViewmodel : ViewModel() {
             }
         }
     }
-
+    fun resetUi(){
+        _postFeedUiState.value = PostFeedUiState.NoAction
+    }
 
 }
 

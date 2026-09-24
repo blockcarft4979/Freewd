@@ -1,9 +1,9 @@
 package com.freewdcmkt.bck.layout.ui.community
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,20 +13,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,34 +39,26 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun FeedLayout(
     viewmodel: FeedListViewmodel = viewModel(),
     isRefresh: Boolean,
-    zone: Int,
-    onToFeedDetail: (id: Int, zone: Int) -> Unit,
-    onToPostFeed: (id: Int?, zone: Int) -> Unit,
+    onToFeedDetail: (id: Int) -> Unit,
+    onToPostFeed: () -> Unit,
     onToPreviewImg: (String) -> Unit,
-    onBack: () -> Unit,
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val feedListData by viewmodel.feedListData.collectAsState()
     val isLoadingMore by viewmodel.isLoadingMore.collectAsState()
     val hasMore by viewmodel.hasMore.collectAsState()
     val listState = viewmodel.listState
-    val errorMsg by viewmodel.errorMsg.collectAsState()
-    val isNoNetwork by viewmodel.isNoNetwork.collectAsState()
-    val snackBarHostState = remember { SnackbarHostState() }
-    val retryHint = stringResource(R.string.retry_hint)
-    val unknownError = stringResource(R.string.unknown_error)
 
-    LaunchedEffect(zone) { viewmodel.fetchData(zone) }
 
-    LaunchedEffect(uiState, feedListData) {
-        Log.d("FEED_UI", "uiState=$uiState, feedSize=${feedListData?.feed?.size ?: 0}")
-    }
+    val feedList = feedListData?.feed ?: emptyList()
+
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
             listState.scrollToItem(0)
-            viewmodel.fetchData(zone, forceRefresh = true)
+            viewmodel.fetchData(forceRefresh = true)
         }
     }
+   // LaunchedEffect(isNoNetwork) { if (isNoNetwork) onNoNetWork() }
     LaunchedEffect(listState) {
         snapshotFlow {
             val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()
@@ -89,55 +72,31 @@ fun FeedLayout(
         }
     }
 
-    Scaffold(topBar = {
-        //TopAppBar()
-        TopAppBar(title = {
-            Text(stringResource(R.string.post_hint))
-        }, navigationIcon = {
-            IconButton(onClick = onBack) {
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onToPostFeed,
+            ) {
                 Icon(
-                    painterResource(R.drawable.baseline_arrow_back_24),
-                    contentDescription = stringResource(R.string.back_hint)
+                    painter = painterResource(R.drawable.baseline_add_24),
+                    contentDescription = stringResource(R.string.add_post_hint)
                 )
             }
-        })
-    }, floatingActionButton = {
-        FloatingActionButton(
-            onClick = { onToPostFeed(null, zone) },
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_add_24),
-                contentDescription = stringResource(R.string.add_post_hint)
-            )
-        }
-    }, snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
+        }) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 15.dp)
-                .background(MaterialTheme.colorScheme.surface)
         ) {
-            when (uiState) {
-                is FeedUiState.Loading -> LoadingCard()
+            when {
+
+                uiState is FeedUiState.Loading && feedList.isEmpty() -> LoadingCard()
 
                 else -> {
-                    if (uiState is FeedUiState.Error) {
-                        LaunchedEffect(errorMsg) {
-                            val result = snackBarHostState.showSnackbar(
-                                if (isNoNetwork) unknownError else errorMsg,
-                                duration = SnackbarDuration.Indefinite,
-                                actionLabel = retryHint
-                            )
-                            when(result){
-                                SnackbarResult.ActionPerformed->{viewmodel.fetchData(zone)}
-                                else -> {}
-                            }
-                        }
-                    }
 
                     FeedUiLayout(
-                        feed = feedListData?.feed ?: emptyList(),
-                        onClick = { onToFeedDetail(it, zone) },
+                        feed = feedList,
+                        onClick = { onToFeedDetail(it) },
                         listState = listState,
                         isLoadingMore = isLoadingMore,
                         hasMore = hasMore,

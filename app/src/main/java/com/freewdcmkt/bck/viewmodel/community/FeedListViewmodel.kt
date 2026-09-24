@@ -19,7 +19,7 @@ class FeedListViewmodel() : ViewModel() {
     private var totalPages = 0
     private var _hasMore = MutableStateFlow(true)
     val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
-    private var currentZone: Int? = null
+
     private var _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
     private val _isNoNetwork = MutableStateFlow(false)
@@ -32,34 +32,26 @@ class FeedListViewmodel() : ViewModel() {
     val errorMsg: StateFlow<String> = _errorMsg.asStateFlow()
     val listState = LazyListState()
 
-    // 首次加载或下拉刷新
-    fun fetchData(zone: Int, forceRefresh: Boolean = false) {
+    init {
+        fetchData(true)
+    }
 
-        Log.d(
-            "FeedVM",
-            "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone"
-        )
-        if (!forceRefresh && currentZone == zone && _feedUiState.value is FeedUiState.Success) return
+    fun fetchData(forceRefresh: Boolean = false) {
 
-        currentZone = zone
+        if (!forceRefresh && _feedUiState.value is FeedUiState.Success) return
+
         currentPage = 0
         totalPages = 0
         _hasMore.value = true
         _isLoadingMore.value = false
         _feedUiState.value = FeedUiState.Loading
         viewModelScope.launch {
-            loadPage(zone, page = 1, isAppend = false)
+            loadPage(page = 1, isAppend = false)
         }
-        Log.d(
-            "FeedVM",
-            "fetchData called, forceRefresh=$forceRefresh $currentZone ${_feedUiState.value} $zone"
-        )
 
     }
 
-    // 加载更多（追加）
     fun loadMore() {
-        val zone = currentZone ?: return
 
         if (!hasMore.value || _isLoadingMore.value) {
             return
@@ -72,13 +64,13 @@ class FeedListViewmodel() : ViewModel() {
         _hasMore.value = hasMore.value
 
         viewModelScope.launch {
-            loadPage(zone, page = currentPage + 1, isAppend = true)
+            loadPage(page = currentPage + 1, isAppend = true)
         }
     }
 
-    private suspend fun loadPage(zone: Int, page: Int, isAppend: Boolean) {
+    private suspend fun loadPage(page: Int, isAppend: Boolean) {
         try {
-            val response = RetroClient.apiService.getFeed(zone, page)
+            val response = RetroClient.apiService.getFeed(page)
             val data = response.body()
             if (data?.data != null) {
                 val feedData = data.data

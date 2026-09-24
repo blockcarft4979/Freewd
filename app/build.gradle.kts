@@ -18,8 +18,8 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 165
-        versionName = "3.6.0"
+        versionCode = 167
+        versionName = "3.7.0-Beta"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

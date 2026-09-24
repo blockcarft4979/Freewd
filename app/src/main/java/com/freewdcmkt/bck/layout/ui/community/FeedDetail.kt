@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -59,6 +60,7 @@ import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
+import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
@@ -76,8 +78,8 @@ fun FeedDetailLayout(
     viewmodel: FeedDetailViewmodel = viewModel(),
     onDeleteFeed: () -> Unit,
     onBack: () -> Unit,
-    onToPreviewImg: (String) -> Unit
 ) {
+
     val feedDetailData by viewmodel.feedDetailData.collectAsState()
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
@@ -87,6 +89,7 @@ fun FeedDetailLayout(
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    var imgUrl by remember { mutableStateOf<String?>(null) }
     val copiedHint = stringResource(R.string.copied_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
@@ -101,7 +104,15 @@ fun FeedDetailLayout(
     }
 
     LaunchedEffect(id) { viewmodel.fetchData(id, false) }
-
+    LaunchedEffect(feedDetailData.username) {
+        replyUsername.value = feedDetailData.username
+    }
+    LaunchedEffect(uiState) {
+        if (uiState is FeedDetailUiState.DeleteSuccess) {
+            viewmodel.resetUi()
+            onDeleteFeed()
+        }
+    }
     if (isShowDialog.value) {
         FreewdModalBottomSheet(
             onDismiss = { isShowDialog.value = false },
@@ -138,7 +149,9 @@ fun FeedDetailLayout(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                           if (feedDetailData.isError == true || feedDetailData.qq == "0") FreewdIcon() else UserIcon(userAvatarUrl(feedDetailData.qq))
+                            if (feedDetailData.isError == true || feedDetailData.qq == "0") FreewdIcon() else UserIcon(
+                                userAvatarUrl(feedDetailData.qq)
+                            )
                             Column(
                                 verticalArrangement = Arrangement.Center
                             ) {
@@ -205,11 +218,11 @@ fun FeedDetailLayout(
                     username = replyUsername.value,
                     onSend = {
                         val targetQq = replyQq.value
-                        Log.d("INPUT BAR DATA(BEFORE)",targetQq)
+                        Log.d("INPUT BAR DATA(BEFORE)", targetQq)
                         viewmodel.replyFeed(id, it, targetQq.ifEmpty { null })
                         focusRequester.requestFocus()
                         replyQq.value = ""
-                        Log.d("INPUT BAR DATA",replyQq.value)
+                        Log.d("INPUT BAR DATA", replyQq.value)
                     },
                     modifier = Modifier.imePadding(),
                     focusRequester = focusRequester
@@ -222,14 +235,12 @@ fun FeedDetailLayout(
         ) {
             when (uiState) {
                 is FeedDetailUiState.Loading -> LoadingCard()
-                is FeedDetailUiState.DeleteSuccess -> onDeleteFeed()
 
                 is FeedDetailUiState.Error -> {
                     FreewdHint(hint = if (isNoNetwork) stringResource(R.string.unknown_error) else errorMSg)
                 }
 
                 else -> {
-                    replyUsername.value = feedDetailData.username
 
                     FeedUiLayout(
                         feedDetailData,
@@ -242,13 +253,17 @@ fun FeedDetailLayout(
                             focusRequester.requestFocus()
                             replyQq.value = qq
                             replyUsername.value = username
-                            Log.d("ON REPLY USER",replyQq.value)
-                        }, onToPreviewImg = onToPreviewImg
+                            Log.d("ON REPLY USER", replyQq.value)
+                        }, onToPreviewImg = { url -> imgUrl = url }
                     )
                 }
             }
         }
+        PreviewImgUi(
+            url = imgUrl ?: "", onDismiss = { imgUrl = null }
+        )
     }
+
 }
 
 @Composable
@@ -305,7 +320,7 @@ private fun FeedUiLayout(
                             .fillMaxWidth()
                             .padding(top = 4.dp)
                     ) {
-                       if (feedDetailData.isError == false) IconTextButton(
+                        if (feedDetailData.isError == false) IconTextButton(
                             icon = if (feedDetailData.isLiked)
                                 R.drawable.baseline_favorite_24
                             else

@@ -162,6 +162,7 @@ class FeedDetailViewmodel : ViewModel() {
                     _feedDetailUiState.value = FeedDetailUiState.Error
                 }
             } catch (e: Exception) {
+                Log.d("DELETE FEED ERROR",e.message.toString())
                 e.printStackTrace()
                 _isNoNetwork.value = true
                 _errorMsg.value = e.message.toString()
@@ -169,6 +170,9 @@ class FeedDetailViewmodel : ViewModel() {
             }
         }
 
+    }
+    fun resetUi(){
+        _feedDetailUiState.value = FeedDetailUiState.Loading
     }
 }
 

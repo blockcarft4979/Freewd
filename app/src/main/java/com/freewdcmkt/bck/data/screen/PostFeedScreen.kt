@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PostFeedScreen(val id: Int? = null, val zone: Int) : NavKey
+data class PostFeedScreen(val id: Int? = null) : NavKey
 
 @Serializable
 data class PostFeedData(
@@ -15,7 +15,6 @@ data class PostFeedData(
 
 @Serializable
 data class PostFeedRequestData(
-    val zone: Int,
     @SerialName("is_anonymous")
     val isAnonymous: Boolean? = false,
     val message: String,

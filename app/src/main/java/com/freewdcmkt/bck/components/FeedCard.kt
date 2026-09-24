@@ -1,27 +1,23 @@
 package com.freewdcmkt.bck.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
@@ -33,7 +29,9 @@ import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.Feed
 
 @Composable
-fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit,onToPreviewImg:(String)-> Unit) {
+fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit,onToPreviewImg:(url: String)-> Unit) {
+    var imgUrl by rememberSaveable() { mutableStateOf<String?>(null) }
+
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.padding(vertical = 4.dp)) {
         Row(
             modifier = Modifier
@@ -59,11 +57,12 @@ fun FeedCard(feed: Feed, onClick: (id: Int) -> Unit,onToPreviewImg:(String)-> Un
 
                 if (feed.title != null) TitleText(feed.title)
                 if (feed.msg != null) ContentText(feed.msg)
-                if (feed.img!= null) ImageCard(
+                if (feed.img != null) ImageCard(
                     feed.img,
-                    onClick = onToPreviewImg
+                    onClick = { onToPreviewImg(feed.img) }
                 )
             }
+
         }
     }
 
@@ -82,7 +81,6 @@ fun ShowCard() {
     )
     FeedCard(
         feed,
-        onClick = {  }
-        , onToPreviewImg = {}
+        onClick = { }, onToPreviewImg = {}
     )
 }

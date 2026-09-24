@@ -47,7 +47,6 @@ interface ApiService {
 
     @GET(RetroApi.Community.GET_FEED)
     suspend fun getFeed(
-        @Query("zone") zone: Int,
         @Query("page") page: Int
     ): Response<BaseData<FeedData>>
 

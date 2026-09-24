@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FeedDetailScreenData(
-    val id: Int, val zone: Int? = null
+    val id: Int
 ): NavKey {
 }
 
