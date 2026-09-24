@@ -27,7 +27,7 @@ import net.engawapg.lib.zoomable.zoomable
 @Composable
 fun PreviewImgUi(url: String, onDismiss: () -> Unit) {
     val zoomState = rememberZoomState()
-    // 获取当前缩放比例，用于判断是否允许点击关闭
+
     val scale = zoomState.scale
     if (url.isEmpty()) return
     Dialog(
@@ -39,10 +39,9 @@ fun PreviewImgUi(url: String, onDismiss: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize() // 全屏
-                .background(Color.Black) // 黑底
+                .fillMaxSize()
+                .background(Color.Black)
                 .pointerInput(Unit) {
-                    // 点击图片本身关闭，但如果放大了就不关（体验更好）
                     detectTapGestures(
                         onTap = {
                             if (scale <= 1f) {
