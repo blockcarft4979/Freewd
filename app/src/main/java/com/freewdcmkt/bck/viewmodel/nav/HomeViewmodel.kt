@@ -4,35 +4,21 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.file.FilePath
 import com.freewdcmkt.bck.data.screen.HomeData
-import com.freewdcmkt.bck.data.screen.UsernameData
-import com.freewdcmkt.bck.data.screen.VerifyTokenData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.JsonParser.json
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.network.CommunityClient
-import com.freewdcmkt.bck.util.network.NetworkClient
 import com.freewdcmkt.bck.util.network.RetroClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class HomeViewmodel(application: Application) : AndroidViewModel(application) {
@@ -126,7 +112,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
                     _homeUiState.value = HomeUiState.Error(null)
                 }
             } catch (e: Exception) {
-                Log.d("HOME VIEWMODEL",e.message.toString())
+                Log.d("HOME VIEWMODEL", e.message.toString())
                 e.printStackTrace()
             }
         }

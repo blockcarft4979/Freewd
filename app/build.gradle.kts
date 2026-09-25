@@ -18,11 +18,22 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 167
-        versionName = "3.7.0-Beta"
+        versionCode = 168
+        versionName = "3.7.0-Beta@2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    signingConfigs {
+        create("release") {
+            // 本地开发时从环境变量读，CI 时也走这里
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            if (keystorePath != null && keystorePath.isNotEmpty()) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+                keyAlias = System.getenv("KEY_ALIAS") ?: ""
+                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            }
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = true

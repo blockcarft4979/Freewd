@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.api.RequestApi
 import com.freewdcmkt.bck.data.BaseData
-import com.freewdcmkt.bck.data.ErrorData
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.data.screen.NotificationDataList
@@ -48,14 +47,14 @@ class NotificationViewmodel : ViewModel() {
                     UserInfoData.clearUnreadCount()
                     _uiStates.value = NotificationUiStates.Finish(data.data.list)
                 } else {
-                    val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
+                    val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
                     _uiStates.value = NotificationUiStates.LoadError(errorData.msg)
                 }
             } catch (e: Exception) {
                 _uiStates.value = NotificationUiStates.LoadError(isNoNetwork = true)
             }
         }
-        Log.d("NOTIFICATION VIEWMODEL" ,_uiStates.value.toString())
+        Log.d("NOTIFICATION VIEWMODEL", _uiStates.value.toString())
     }
 
 
@@ -72,34 +71,35 @@ class NotificationViewmodel : ViewModel() {
                 }
             }.toString().toRequestBody("application/json".toMediaType())
 
-            viewModelScope.launch {
+        viewModelScope.launch {
 
-                try {
-                    val response = withContext(Dispatchers.IO) {
-                        NetworkClient.client.newCall(
-                            Request.Builder().url(RequestApi.Notification.CLEAR_ALL_NOTIFICATIONS)
-                                .post(requestBody).build()
-                        ).execute()
-                    }
-                    val body = response.body.string()
-                    if (response.isSuccessful) {
-                        _uiStates.value = NotificationUiStates.Finish(emptyList())
-                    } else {
-                        val errorData = JsonParser.json.decodeFromString<ErrorData>(body)
-                        _uiStates.value = NotificationUiStates.LoadError(errorData.msg)
-                    }
-                } catch (e: Exception) {
-                    _uiStates.value = NotificationUiStates.LoadError(isNoNetwork = true)
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    NetworkClient.client.newCall(
+                        Request.Builder().url(RequestApi.Notification.CLEAR_ALL_NOTIFICATIONS)
+                            .post(requestBody).build()
+                    ).execute()
                 }
-
+                val body = response.body.string()
+                if (response.isSuccessful) {
+                    _uiStates.value = NotificationUiStates.Finish(emptyList())
+                } else {
+                    val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
+                    _uiStates.value = NotificationUiStates.LoadError(errorData.msg)
+                }
+            } catch (e: Exception) {
+                _uiStates.value = NotificationUiStates.LoadError(isNoNetwork = true)
             }
+
+        }
 
     }
 }
 
 sealed class NotificationUiStates() {
     object Loading : NotificationUiStates()
-    class LoadError(val msg: String? = null, val isNoNetwork: Boolean = false) : NotificationUiStates()
+    class LoadError(val msg: String? = null, val isNoNetwork: Boolean = false) :
+        NotificationUiStates()
 
     class Finish(val notificationData: List<NotificationData>) : NotificationUiStates()
 }

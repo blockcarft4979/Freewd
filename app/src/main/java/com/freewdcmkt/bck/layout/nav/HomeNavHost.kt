@@ -113,7 +113,6 @@ fun HomeNavHost(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-
     DismissibleNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -147,7 +146,6 @@ fun HomeNavHost(
                 )
             }
         }
-
     }
 
     if (homeUiState is HomeUiState.Finish && isShowNotification) {
@@ -166,52 +164,52 @@ fun HomeNavHost(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun HomeLayout(
-    homeData: HomeData,
-    uiState: HomeUiState,
-    onToFeed: (Int) -> Unit,
-    onToBrowser: (String) -> Unit,
-    onRefresh: () -> Unit
-) {
-    val context = LocalContext.current
-    PullToRefreshBox(
-        isRefreshing = uiState is HomeUiState.Loading,
-        onRefresh = onRefresh,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item {
-                if (homeData.notification?.imageUrl != null) Image(
-                    painter = rememberAsyncImagePainter(homeData.notification.imageUrl),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .aspectRatio(16f / 9f),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            items(
-                items = homeData.zone,
-                key = { "${it.description}_${it.name}_${it.icon}" }) { zone ->
-
-                HomeZoneItemCard(zone, onClick = {
-                    if (zone.msg != null) Toast.makeText(
-                        context,
-                        zone.msg,
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    if (zone.zone != null) onToFeed(zone.zone)
-                    if (zone.link != null) onToBrowser(zone.link)
-                })
-            }
-
-        }
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//private fun HomeLayout(
+//    homeData: HomeData,
+//    uiState: HomeUiState,
+//    onToFeed: (Int) -> Unit,
+//    onToBrowser: (String) -> Unit,
+//    onRefresh: () -> Unit
+//) {
+//    val context = LocalContext.current
+//    PullToRefreshBox(
+//        isRefreshing = uiState is HomeUiState.Loading,
+//        onRefresh = onRefresh,
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        LazyColumn(modifier = Modifier.fillMaxSize()) {
+//            item {
+//                if (homeData.notification?.imageUrl != null) Image(
+//                    painter = rememberAsyncImagePainter(homeData.notification.imageUrl),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .clip(RoundedCornerShape(16.dp))
+//                        .aspectRatio(16f / 9f),
+//                    contentScale = ContentScale.Crop
+//                )
+//            }
+//            items(
+//                items = homeData.zone,
+//                key = { "${it.description}_${it.name}_${it.icon}" }) { zone ->
+//
+//                HomeZoneItemCard(zone, onClick = {
+//                    if (zone.msg != null) Toast.makeText(
+//                        context,
+//                        zone.msg,
+//                        Toast.LENGTH_SHORT
+//                    )
+//                        .show()
+//                    if (zone.zone != null) onToFeed(zone.zone)
+//                    if (zone.link != null) onToBrowser(zone.link)
+//                })
+//            }
+//
+//        }
+//    }
+//}
 
 @Composable
 private fun HomeUI(

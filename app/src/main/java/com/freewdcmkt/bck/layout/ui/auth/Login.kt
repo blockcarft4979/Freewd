@@ -1,14 +1,21 @@
 package com.freewdcmkt.bck.layout.ui.auth
 
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -33,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.RequestApi
+import com.freewdcmkt.bck.components.freewd.FreewdCheckBox
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.viewmodel.auth.LogInViewModel
@@ -42,36 +51,29 @@ import com.freewdcmkt.bck.viewmodel.auth.LoginUiState
 @Composable
 fun LoginLayout(
     onRegister: () -> Unit,
+    onChangePassword: () -> Unit,
     onLogin: (account: String, password: String) -> Unit,
     onToUserAgreement: (String) -> Unit,
-    onToPolicyPrivacy: (String) -> Unit,
     viewModel: LogInViewModel = viewModel()
 ) {
     val uiState by viewModel.loginUiState.collectAsState()
+    var isChecked by rememberSaveable() { mutableStateOf(false) }
     val unknownError = stringResource(R.string.unknown_error)
     val snackBarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(uiState) {
-        (uiState as? LoginUiState.Error)?.let { error ->
-            if (error.isNoNetWork) snackBarHostState.showSnackbar(unknownError) else error.msg?.let {
-                snackBarHostState.showSnackbar(
-                    it
-                )
-            }
-        }
-    }
-    LaunchedEffect(uiState) {
-        (uiState as? LoginUiState.Error)?.let { error ->
-            if (error.isNoNetWork) snackBarHostState.showSnackbar(unknownError) else error.msg?.let {
-                snackBarHostState.showSnackbar(
-                    it
-                )
-            }
-        }
-    }
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     val userIcon = rememberSaveable() { mutableStateOf("") }
+    LaunchedEffect(uiState) {
+        Log.d("LOGIN UI STATE",uiState.toString())
+        (uiState as? LoginUiState.Error)?.let { error ->
+            if (error.isNoNetWork) snackBarHostState.showSnackbar(unknownError) else error.msg?.let {
+                snackBarHostState.showSnackbar(
+                    it
+                )
+            }
+        }
+    }
+
     LaunchedEffect(account) {
         userIcon.value = account
     }
@@ -90,11 +92,8 @@ fun LoginLayout(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            FreewdTopComponent(
-                userIcon.value,
-                onToUserAgreement = onToUserAgreement,
-                onToPolicyPrivacy = onToPolicyPrivacy
-            )
+            FreewdTopComponent(userIcon.value)
+            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = account,
                 onValueChange = { account = it },
@@ -119,17 +118,43 @@ fun LoginLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp),
-                enabled = password.isNotEmpty() && account.isNotEmpty()
+                enabled = password.isNotEmpty() && account.isNotEmpty() && isChecked
             ) {
                 Text(stringResource(R.string.login_login_btn))
             }
-            TextButton(onClick = onRegister, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    stringResource(R.string.login_register_btn),
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            FreewdCheckBox(
+                checked = isChecked,
+                text = stringResource(R.string.agree_agreement_part),
+                onCheckBoxChanged = {
+                    isChecked = it
+                    if (it) onToUserAgreement(RequestApi.Document.USER_AGREEMENT)
+                })
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1.5f),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.8f)),
+                    onClick = onRegister,
+                ) {
+                    Text(
+                        stringResource(R.string.register_hint),
+                    )
+                }
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.7f),
+                    onClick = onChangePassword,
+                ) {
+                    Text(
+                        stringResource(R.string.forget_password_hint), fontSize = 12.sp,
+                    )
+                }
+
+
             }
+
             when (uiState) {
                 is LoginUiState.Loading -> FreewdLoadingDialog(stringResource(R.string.logging_in_hint))
                 else -> {}

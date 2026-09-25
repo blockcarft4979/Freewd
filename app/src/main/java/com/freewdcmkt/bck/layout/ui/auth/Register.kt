@@ -23,7 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,6 +33,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.RequestApi
+import com.freewdcmkt.bck.components.freewd.FreewdCheckBox
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.viewmodel.auth.RegisterUiState
@@ -42,7 +43,6 @@ import com.freewdcmkt.bck.viewmodel.auth.RegisterViewmodel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterLayout(
-    onToPolicyPrivacy: (String) -> Unit,
     onToUserAgreement: (String) -> Unit,
     viewmodel: RegisterViewmodel = viewModel()
 ) {
@@ -74,12 +74,11 @@ fun RegisterLayout(
                     viewmodel.register(account, password, code)
                 },
                 countdown = countdown,
-                onToPolicyPrivacy = onToPolicyPrivacy,
                 onToUserAgreement = onToUserAgreement,
             )
             when (uiState) {
                 is RegisterUiState.Loading -> FreewdLoadingDialog(stringResource(R.string.wait_hint))
-                else ->{}
+                else -> {}
             }
         }
     }
@@ -89,10 +88,10 @@ fun RegisterLayout(
 private fun RegisterUiLayout(
     onSendCode: (String) -> Unit,
     onRegister: (String, String, String) -> Unit,
-    onToPolicyPrivacy: (String) -> Unit,
     onToUserAgreement: (String) -> Unit,
     countdown: Int
 ) {
+    var isChecked by rememberSaveable() { mutableStateOf(false) }
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -109,8 +108,6 @@ private fun RegisterUiLayout(
     ) {
         FreewdTopComponent(
             userIcon.value,
-            onToUserAgreement = onToUserAgreement,
-            onToPolicyPrivacy = onToPolicyPrivacy
         )
         OutlinedTextField(
             value = account,
@@ -125,6 +122,7 @@ private fun RegisterUiLayout(
             label = { Text(stringResource(R.string.login_password_hint)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
+            maxLines = 1,
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
@@ -133,30 +131,47 @@ private fun RegisterUiLayout(
             label = { Text(stringResource(R.string.confirm_password_hint)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
+            maxLines = 1,
             modifier = Modifier.fillMaxWidth()
         )
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center){
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             OutlinedTextField(
                 value = authCode,
-                onValueChange = { authCode = it },
+                onValueChange = { input ->
+                    authCode = input.filter { it.isDigit() }.take(6)
+                },
                 label = { Text(stringResource(R.string.auth_code)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                maxLines = 1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
+
             Button(
                 onClick = { onSendCode(account) },
                 enabled = countdown == 0 && account != "",
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
                 if (countdown == 0) Text(stringResource(R.string.send_auth_code)) else Text(
                     stringResource(R.string.wait_send_auth_code, countdown)
                 )
             }
         }
-
+        FreewdCheckBox(
+            checked = isChecked, stringResource(R.string.agree_agreement_part),
+            onCheckBoxChanged = {
+                isChecked = it
+                if (it) onToUserAgreement(RequestApi.Document.USER_AGREEMENT)
+            })
 
         Button(
-            enabled = password == confirmPassword && password.length >= 8 && authCode.length == 6,
+            enabled = password == confirmPassword && password.length >= 8 && authCode.length == 6 && isChecked,
             onClick = {
                 onRegister(
                     account,

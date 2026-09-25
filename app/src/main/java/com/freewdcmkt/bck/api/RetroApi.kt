@@ -2,6 +2,7 @@ package com.freewdcmkt.bck.api
 
 object RetroApi {
     const val BASE_URL = "https://app.freewd.top/api/v1/"
+    const val V2_BASE_URL = "https://app.freewd.top/api/v2/index.php/"
 
     const val COMMUNITY_BASE_URL = "https://community.freewd.top/app/api/v1/"
 
@@ -10,6 +11,8 @@ object RetroApi {
         const val REGISTER = "auth/register"
         const val VERIFY_TOKEN = "auth/verify_token"
         const val SEND_AUTH_CODE = "auth/send_auth_code"
+        const val SEND_RESET_CODE = "auth/send_reset_code"
+        const val RESET_PASSWORD = "auth/reset_password"
     }
 
     object Community {

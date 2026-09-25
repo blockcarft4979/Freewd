@@ -5,9 +5,9 @@ package com.freewdcmkt.bck.api
  */
 object RequestApi {
     const val BASE_URL = "https://app.freewd.top/api/v1/"
-    private const val COMMUNITY_BASE = "${BASE_URL}community/"
+
     private const val NOTIFICATION_BASE = "${BASE_URL}notification/"
-    private const val USER_BASE = "${BASE_URL}user/"
+
     private const val OTHER_BASE = "https://community.freewd.top/app/api/v1/"
 
 

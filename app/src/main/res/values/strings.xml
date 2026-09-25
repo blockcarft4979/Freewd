@@ -16,7 +16,7 @@
     <string name="content_desc_app_icon">App icon</string>
     <string name="logout_hint">Logout</string>
     <string name="logout_description_hint">Log out of the current account.</string>
-    <string name="logout_account_hint">Do you want to logout the current account?</string>
+    <string name="logout_account_hint">Do you want to log out the current account?</string>
 
     <!-- 网络部分 -->
     <string name="no_internet_hint">No internet connection. Please check your network settings.</string>

@@ -14,7 +14,7 @@
     <string name="submitting_hint">Submitting…</string>
     <string name="uploading_hint">Uploading…</string>
     <string name="about_hint">About</string>
-    <string name="agree_agreement_part">Logging in indicates that you have read and agreed to the terms of service and privacy policy</string>
+    <string name="agree_agreement_part">I have read the User Agreement and Privacy Policy</string>
     <string name="user_agreement">User Agreement</string>
     <string name="policy_privacy">Policy Privacy</string>
     <string name="add_picture_hint">Add picture</string>
@@ -25,4 +25,8 @@
     <string name="wait_hint">Please wait…</string>
     <string name="post_feed_content_hint">Share news – Markdown supported!</string>
     <string name="anonymous_post_hint">Anonymous post</string>
+    <string name="change_password_hint">Change Password</string>
+    <string name="new_password_hint">Enter your new password</string>
+    <string name="forget_password_hint">Forget password?</string>
+    <string name="submit_password_hint">Submit password</string>
 </resources>

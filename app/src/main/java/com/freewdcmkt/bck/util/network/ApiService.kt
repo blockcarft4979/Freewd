@@ -1,10 +1,12 @@
 package com.freewdcmkt.bck.util.network
 
 import com.freewdcmkt.bck.api.RetroApi
+import com.freewdcmkt.bck.data.ApiResponse
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.request.LoginRequestData
 import com.freewdcmkt.bck.data.request.RegisterRequestData
 import com.freewdcmkt.bck.data.request.SendAuthCodeRequestData
+import com.freewdcmkt.bck.data.screen.ChangePasswordRequestData
 import com.freewdcmkt.bck.data.screen.CheckInData
 import com.freewdcmkt.bck.data.screen.FeedData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
@@ -15,6 +17,7 @@ import com.freewdcmkt.bck.data.screen.LoginData
 import com.freewdcmkt.bck.data.screen.PostFeedData
 import com.freewdcmkt.bck.data.screen.PostFeedRequestData
 import com.freewdcmkt.bck.data.screen.ReplyFeedData
+import com.freewdcmkt.bck.data.screen.SubmitPasswordRequestData
 import com.freewdcmkt.bck.data.screen.UploadImgData
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.data.screen.VerifyTokenData
@@ -33,17 +36,12 @@ import retrofit2.http.Part
 import retrofit2.http.Query
 
 interface ApiService {
-    @POST(RetroApi.Auth.LOGIN)
-    suspend fun login(@Body request: LoginRequestData): Response<BaseData<LoginData>>
 
     @POST(RetroApi.Auth.REGISTER)
     suspend fun register(@Body request: RegisterRequestData): Response<BaseData<LoginData>>
 
     @GET(RetroApi.Auth.VERIFY_TOKEN)
     suspend fun verifyToken(): Response<BaseData<VerifyTokenData>>
-
-    @POST(RetroApi.Auth.SEND_AUTH_CODE)
-    suspend fun sendAuthCode(@Body requestData: SendAuthCodeRequestData): Response<BaseData<Unit>>
 
     @GET(RetroApi.Community.GET_FEED)
     suspend fun getFeed(
@@ -84,6 +82,18 @@ interface ApiService {
 
 }
 
+interface V2ApiService {
+    @POST(RetroApi.Auth.LOGIN)
+    suspend fun login(@Body request: LoginRequestData): Response<ApiResponse<LoginData>>
+    @POST(RetroApi.Auth.SEND_AUTH_CODE)
+    suspend fun sendAuthCode(@Body requestData: SendAuthCodeRequestData): Response<ApiResponse<Unit>>
+    @POST(RetroApi.Auth.REGISTER)
+    suspend fun register(@Body request: RegisterRequestData): Response<ApiResponse<LoginData>>
+    @POST(value = RetroApi.Auth.SEND_RESET_CODE )
+    suspend fun sendResetCode(@Body request: ChangePasswordRequestData): Response<ApiResponse<Unit>>
+    @POST(value = RetroApi.Auth.RESET_PASSWORD )
+    suspend fun submitPassword(@Body request: SubmitPasswordRequestData): Response<ApiResponse<Unit>>
+}
 object RetroClient {
     private val okHttpClient = NetworkClient.client
     private val retrofit = Retrofit.Builder().client(okHttpClient)
@@ -93,7 +103,15 @@ object RetroClient {
     val apiService: ApiService by lazy { retrofit.create(ApiService::class.java) }
 
 }
+object RetroV2Client{
+    private val okHttpClient = NetworkClient.client
+    private val retrofit = Retrofit.Builder().client(okHttpClient)
+        .baseUrl(RetroApi.V2_BASE_URL)
+        .addConverterFactory(JsonParser.json.asConverterFactory("application/json".toMediaType()))
+        .build()
+    val apiService: V2ApiService by lazy { retrofit.create(V2ApiService::class.java) }
 
+}
 object CommunityClient {
     private val okHttpClient = NetworkClient.client
     private val retrofit = Retrofit.Builder().client(okHttpClient)

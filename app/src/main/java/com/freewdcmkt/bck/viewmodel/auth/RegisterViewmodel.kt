@@ -1,15 +1,15 @@
 package com.freewdcmkt.bck.viewmodel.auth
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.request.RegisterRequestData
 import com.freewdcmkt.bck.data.request.SendAuthCodeRequestData
-import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.initUserInfo
-import com.freewdcmkt.bck.util.network.RetroClient
+import com.freewdcmkt.bck.util.network.ApiResult
+import com.freewdcmkt.bck.util.network.RetroV2Client
+import com.freewdcmkt.bck.util.network.safeApiCall
+import com.freewdcmkt.bck.util.network.toResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,22 +46,25 @@ class RegisterViewmodel : ViewModel() {
     fun sendCode(qq: String) {
         _registerUiState.value = RegisterUiState.Loading
         viewModelScope.launch {
-            try {
-                val response = RetroClient.apiService.sendAuthCode(SendAuthCodeRequestData(qq))
-
-                if (response.isSuccessful) {
+            val result = safeApiCall {
+                RetroV2Client.apiService.sendAuthCode(SendAuthCodeRequestData(qq))
+            }
+            when (result
+            ) {
+                is ApiResult.Success -> {
                     startCountdown()
                     _registerUiState.value = RegisterUiState.SendAuthCodeSuccess
-                } else {
-                    val errorData = response.errorBody()?.string() ?: ""
-                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
-                    resetCountdown()
-                    _registerUiState.value = RegisterUiState.Error(errorMsg.msg)
                 }
-            } catch (e: Exception) {
-                Log.d("SEND CODE ERROR",e.message.toString())
-                resetCountdown()
-                _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
+
+                is ApiResult.Error -> {
+                    resetCountdown()
+                    _registerUiState.value = RegisterUiState.Error(result.message)
+                }
+
+                is ApiResult.NetworkError -> {
+                    resetCountdown()
+                    _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
+                }
             }
         }
     }
@@ -69,21 +72,25 @@ class RegisterViewmodel : ViewModel() {
     fun register(qq: String, password: String, code: String) {
         _registerUiState.value = RegisterUiState.Loading
         viewModelScope.launch {
-            try {
-                val response =
-                    RetroClient.apiService.register(RegisterRequestData(qq, password, code))
-                val data = response.body()
-                if (data?.data != null) {
-                    val loginData = data.data
-                    initUserInfo(loginData, qq)
-                    UserInfoManager.isLoginFlow().first()
-                } else {
-                    val errorData = response.errorBody()?.string() ?: ""
-                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
-                    _registerUiState.value = RegisterUiState.Error(errorMsg.msg)
+            val result = safeApiCall {  RetroV2Client.apiService.register(RegisterRequestData(qq, password, code)) }
+            when (result) {
+                is ApiResult.Success -> {
+                    val loginData = result.data
+                    if (loginData != null) {
+                        initUserInfo(loginData, qq)
+                        UserInfoManager.isLoginFlow().first()
+                    } else {
+                        _registerUiState.value = RegisterUiState.Error("Data Error")
+                    }
                 }
-            } catch (e: Exception) {
-                _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
+
+                is ApiResult.Error -> {
+                    _registerUiState.value = RegisterUiState.Error(result.message)
+                }
+
+                is ApiResult.NetworkError -> {
+                    _registerUiState.value = RegisterUiState.Error(isNoNetWork = true)
+                }
             }
         }
     }
