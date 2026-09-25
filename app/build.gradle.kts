@@ -1,7 +1,11 @@
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.Date
-import java.util.Base64
+import java.util.Properties
+
+// 读取 local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -24,18 +28,24 @@ android {
     }
     signingConfigs {
         create("release") {
-            // 本地开发时从环境变量读，CI 时也走这里
-            val keystorePath = System.getenv("KEYSTORE_PATH")
-            if (keystorePath != null && keystorePath.isNotEmpty()) {
-                storeFile = file(keystorePath)
-                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-                keyAlias = System.getenv("KEY_ALIAS") ?: ""
-                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            val envKeystorePath = System.getenv("KEYSTORE_PATH")
+
+            if (envKeystorePath != null && envKeystorePath.isNotEmpty()) {
+                storeFile = file(envKeystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            } else {
+                storeFile = file(localProperties.getProperty("KEYSTORE_PATH") ?: "F:/AndroidProject/Key/BCKKey")
+                storePassword = localProperties.getProperty("KEYSTORE_PASSWORD") ?: ""
+                keyAlias = localProperties.getProperty("KEY_ALIAS") ?: ""
+                keyPassword = localProperties.getProperty("KEY_PASSWORD") ?: ""
             }
         }
     }
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
