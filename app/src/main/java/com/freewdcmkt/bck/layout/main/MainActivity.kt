@@ -2,24 +2,22 @@ package com.freewdcmkt.bck.layout.main
 
 import android.app.ComponentCaller
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
-import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
 import com.freewdcmkt.bck.layout.nav.AuthLayout
 import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
@@ -34,7 +32,9 @@ class MainActivity : ComponentActivity() {
             Log.d("MAIN ERROR", e.message.toString())
         }
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+           // statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
+        )
 
         intentState.value = intent
 

@@ -14,8 +14,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.freewdcmkt.bck.data.screen.AboutScreenData
 import com.freewdcmkt.bck.data.screen.ChangePasswordScreenData
+import com.freewdcmkt.bck.data.screen.DocumentScreenData
 import com.freewdcmkt.bck.data.screen.LoginScreenData
 import com.freewdcmkt.bck.data.screen.RegisterScreenData
 import com.freewdcmkt.bck.layout.ui.auth.ChangePasswordHost
@@ -78,7 +78,7 @@ fun AuthLayout(viewModel: LogInViewModel = viewModel()) {
                             )
                         }
                     },
-                    onToUserAgreement = { backStack.add(AboutScreenData(it)) },
+                    onToUserAgreement = { backStack.add(DocumentScreenData(it)) },
                     onChangePassword = {backStack.add(ChangePasswordScreenData)},
                 )
             }
@@ -87,10 +87,10 @@ fun AuthLayout(viewModel: LogInViewModel = viewModel()) {
             ) }
             entry<RegisterScreenData> {
                 RegisterLayout(
-                    onToUserAgreement = { backStack.add(AboutScreenData(it)) },
+                    onToUserAgreement = { backStack.add(DocumentScreenData(it)) },
                 )
             }
-            entry<AboutScreenData> { aboutScreenData ->
+            entry<DocumentScreenData> { aboutScreenData ->
                 Document(
                     onBack = { backStack.removeLastOrNull() },
                     aboutScreenData.url

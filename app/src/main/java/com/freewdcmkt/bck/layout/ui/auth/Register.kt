@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -143,12 +144,13 @@ private fun RegisterUiLayout(
                 onValueChange = { input ->
                     authCode = input.filter { it.isDigit() }.take(6)
                 },
-                label = { Text(stringResource(R.string.auth_code)) },
+                placeholder = { Text(stringResource(R.string.auth_code)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(0.8f)
+                    .padding(top = 4.dp),
             )
 
             Button(
@@ -156,7 +158,7 @@ private fun RegisterUiLayout(
                 enabled = countdown == 0 && account != "",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1.2f)
             ) {
                 if (countdown == 0) Text(stringResource(R.string.send_auth_code)) else Text(
                     stringResource(R.string.wait_send_auth_code, countdown)

@@ -28,6 +28,9 @@ class PostFeedViewmodel : ViewModel() {
         imgUrl: String? = null
     ) {
         _postFeedUiState.value = PostFeedUiState.Upload
+        val postContent = message.trimEnd()
+        if (postContent.isEmpty())return
+
         viewModelScope.launch {
             try {
                 val response =

@@ -1,10 +1,11 @@
 package com.freewdcmkt.bck.layout.ui.user
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -20,11 +21,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.ExpCard
 import com.freewdcmkt.bck.components.freewd.FreewdEditDialog
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.SettingCard
+import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
@@ -32,7 +35,7 @@ import com.freewdcmkt.bck.viewmodel.user.MeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Me(viewmodel: MeViewModel = viewModel()) {
+fun Me(viewmodel: MeViewModel = viewModel(), onToAboutApp: () -> Unit) {
 
     val isShowChenInDialog by viewmodel.isShowChenInDialog.collectAsState()
     val isChecked by UserInfoData.isChecked.collectAsState()
@@ -62,7 +65,8 @@ fun Me(viewmodel: MeViewModel = viewModel()) {
         exp = exp,
         checkInDays = checkInDays,
         isChecked = isChecked,
-        onCheckIn = { viewmodel.checkIn() }
+        onCheckIn = { viewmodel.checkIn() },
+        onToAboutApp = onToAboutApp
     )
 
 }
@@ -74,10 +78,15 @@ private fun MeUiLayout(
     isChecked: Boolean,
     onConfirmUsername: (String) -> Unit,
     onCheckIn: () -> Unit,
+    onToAboutApp: () -> Unit
 ) {
+
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
     val isShowEditDialog = rememberSaveable() { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val username by UserInfoData.username.collectAsState()
+    val qq by UserInfoData.account.collectAsState()
+    val uid by UserInfoData.uid.collectAsState()
 
     if (isShowEditDialog.value) {
         FreewdEditDialog(
@@ -108,15 +117,26 @@ private fun MeUiLayout(
             confirmHint = stringResource(R.string.yes_hint)
         )
     }
-
-    LazyColumn() {
-        item {
-            ExpCard(
-                exp = exp
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            UserCard(
+                userAvatarUrl(qq),
+                username,
+                uid
             )
-        }
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
+        })
+    }) { innerPadding ->
+        LazyColumn(modifier = Modifier
+            .padding(innerPadding)
+            .padding(horizontal = 15.dp)) {
+
+            item {
+                ExpCard(
+                    exp = exp
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
 
 //            SettingCard(
 //                R.drawable.personal_center,
@@ -124,33 +144,40 @@ private fun MeUiLayout(
 //                stringResource(R.string.user_center_description_hint),
 //                onClick = onToUserCenter
 //            )
-            SettingCard(
-                icon = if (isChecked) R.drawable.calendarchecked else
-                    R.drawable.calendaruncheck,
-                name = stringResource(R.string.check_in_hint),
-                description = if (isChecked) stringResource(
-                    R.string.checked_hint,
-                    checkInDays
-                ) else stringResource(R.string.unchecked_hint),
-                onClick = {
-                    if (!isChecked) {
-                        onCheckIn()
+                SettingCard(
+                    icon = if (isChecked) R.drawable.calendarchecked else
+                        R.drawable.calendaruncheck,
+                    name = stringResource(R.string.check_in_hint),
+                    description = if (isChecked) stringResource(
+                        R.string.checked_hint,
+                        checkInDays
+                    ) else stringResource(R.string.unchecked_hint),
+                    onClick = {
+                        if (!isChecked) {
+                            onCheckIn()
+                        }
                     }
-                }
-            )
-            SettingCard(
-                icon = R.drawable.fa6solidpen,
-                name = stringResource(R.string.change_username_hint),
-                description = stringResource(R.string.change_username_description_hint),
-                onClick = { isShowEditDialog.value = true }
-            )
-            SettingCard(
-                R.drawable.logout,
-                stringResource(R.string.logout_hint),
-                stringResource(R.string.logout_description_hint),
-                isRed = true,
-                onClick = { isShowDialog.value = true }
-            )
+                )
+                SettingCard(
+                    icon = R.drawable.fa6solidpen,
+                    name = stringResource(R.string.change_username_hint),
+                    description = stringResource(R.string.change_username_description_hint),
+                    onClick = { isShowEditDialog.value = true }
+                )
+                SettingCard(
+                    icon = R.mipmap.ic_launcher_monochrome,
+                    name = stringResource(R.string.about_app_hint),
+                    onClick = onToAboutApp
+                )
+                SettingCard(
+                    R.drawable.logout,
+                    stringResource(R.string.logout_hint),
+                    stringResource(R.string.logout_description_hint),
+                    isRed = true,
+                    onClick = { isShowDialog.value = true }
+                )
+            }
         }
     }
+
 }

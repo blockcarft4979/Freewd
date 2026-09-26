@@ -253,7 +253,6 @@ fun FeedDetailLayout(
                             focusRequester.requestFocus()
                             replyQq.value = qq
                             replyUsername.value = username
-                            Log.d("ON REPLY USER", replyQq.value)
                         }, onToPreviewImg = { url -> imgUrl = url }
                     )
                 }
@@ -327,6 +326,7 @@ private fun FeedUiLayout(
                                 R.drawable.baseline_favorite_border_24,
                             description = stringResource(R.string.favorite_hint),
                             text = feedDetailData.likeCount.toString(),
+                            pulseOnClick = true,
                             onClick = onClickLike,
                         )
                     }

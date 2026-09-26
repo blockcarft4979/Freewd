@@ -4,6 +4,7 @@
     <string name="app_name">Freewd 社区</string>
 
     <!-- ========== 登录界面 ========== -->
+    <string name="app_introduction">Freewd 因爱而生</string>
     <string name="login_welcome_title">欢迎来到 Freewd 社区</string>
     <string name="login_account_hint">请输入您的 QQ 号</string>
     <string name="login_password_hint">请输入您的密码</string>
@@ -78,6 +79,7 @@
     <string name="user_center_description_hint">查看你的信息</string>
     <string name="uploading_hint">上传中......</string>
     <string name="about_hint">关于</string>
+    <string name="about_app_hint">关于 Freewd</string>
     <string name="agree_agreement_part">我已阅读《用户协议》和《隐私政策》</string>
     <string name="user_agreement">用户协议</string>
     <string name="policy_privacy">隐私政策</string>
@@ -95,4 +97,5 @@
     <string name="new_password_hint">输入新的密码</string>
     <string name="forget_password_hint">忘记密码了？</string>
     <string name="submit_password_hint">提交密码</string>
+    <string name="follow_me">关注我</string>
 </resources>

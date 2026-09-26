@@ -20,6 +20,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.freewdcmkt.bck.data.screen.AboutAppScreenData
 import com.freewdcmkt.bck.data.screen.BrowserScreenData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
@@ -27,6 +28,7 @@ import com.freewdcmkt.bck.data.screen.NotificationScreen
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
 import com.freewdcmkt.bck.layout.ui.community.FeedDetailLayout
 import com.freewdcmkt.bck.layout.ui.community.PostFeedLayout
+import com.freewdcmkt.bck.layout.ui.other.About
 import com.freewdcmkt.bck.layout.ui.other.BrowserLayout
 import com.freewdcmkt.bck.layout.ui.user.Notification
 
@@ -85,24 +87,9 @@ fun FreewdAppNavHost(
                     onToFeedDetail = { backStack.add(FeedDetailScreenData(it)) },
                     onToPostFeed = { backStack.add(PostFeedScreen()) },
                     onToNotification = { backStack.add(NotificationScreen) },
+                    onToAboutApp = {backStack.add(AboutAppScreenData)}
                 )
             }
-
-//            entry<FeedScreenData> {
-//
-//                val isRefresh = refreshViewModel.feedRefresh
-//                LaunchedEffect(isRefresh) {
-//                    if (isRefresh) refreshViewModel.feedRefresh = false
-//                }
-//                FeedLayout(
-//                    onToFeedDetail = { id ->
-//                        backStack.add(FeedDetailScreenData(id))
-//                    },
-//                    onToPostFeed = { backStack.add(PostFeedScreen()) },
-//                    onToPreviewImg = { url -> backStack.add(PreviewImgScreenData(url)) },
-//                    isRefresh = isRefresh
-//                )
-//            }
 
             entry<FeedDetailScreenData> { args ->
                 FeedDetailLayout(
@@ -138,7 +125,7 @@ fun FreewdAppNavHost(
                 )
             }
 
-
+            entry<AboutAppScreenData> { About() }
         }
     )
 }

@@ -29,8 +29,6 @@ class FeedListViewmodel() : ViewModel() {
     private val _feedListData = MutableStateFlow<FeedData?>(null)
     val feedListData: StateFlow<FeedData?> = _feedListData.asStateFlow()
     private val _errorMsg = MutableStateFlow("")
-    val errorMsg: StateFlow<String> = _errorMsg.asStateFlow()
-    val listState = LazyListState()
 
     init {
         fetchData(true)
@@ -52,17 +50,8 @@ class FeedListViewmodel() : ViewModel() {
     }
 
     fun loadMore() {
-
-        if (!hasMore.value || _isLoadingMore.value) {
-            return
-        }
-
+        if (!hasMore.value || _isLoadingMore.value) return
         _isLoadingMore.value = true
-
-        _feedUiState.value = FeedUiState.Success
-        _isLoadingMore.value = true
-        _hasMore.value = hasMore.value
-
         viewModelScope.launch {
             loadPage(page = currentPage + 1, isAppend = true)
         }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -55,6 +56,7 @@ fun ChangePasswordHost(
         }
     }
     Scaffold(
+        modifier = Modifier.imePadding(),
         topBar = { TopAppBar(title = { Text(stringResource(R.string.change_password_hint)) }) },
         snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
         Column(
@@ -90,27 +92,37 @@ fun ChangePasswordUi(
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmedPassword by rememberSaveable() { mutableStateOf("") }
     var code by rememberSaveable() { mutableStateOf("") }
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         Log.d("CHANGE PASSWORD", TokenManager.getToken() ?: "NULL!!")
 
         if (TokenManager.getToken().isNullOrEmpty()) OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
             value = qq,
-            onValueChange = { qq = it },
             maxLines = 1,
+            onValueChange = { input ->
+                val filteredInput = input.filter { it.isDigit() }
+                if (filteredInput.length <= 12) {
+                    qq = filteredInput
+                }
+            },
+            label = { Text(stringResource(R.string.login_account_hint)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            label = { Text(stringResource(R.string.login_account_hint)) }
+            modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
+            maxLines = 1,
             visualTransformation = PasswordVisualTransformation(),
             value = newPassword,
-            onValueChange = { newPassword = it },
+            onValueChange = { input -> if (input.length < 16) newPassword = input },
             label = { Text(stringResource(R.string.new_password_hint)) })
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
+            maxLines = 1,
             visualTransformation = PasswordVisualTransformation(),
             value = confirmedPassword,
             onValueChange = { confirmedPassword = it },
@@ -126,20 +138,23 @@ fun ChangePasswordUi(
                 onValueChange = { input ->
                     code = input.filter { it.isDigit() }.take(6)
                 },
-                label = { Text(stringResource(R.string.auth_code)) },
+                placeholder = { Text(stringResource(R.string.auth_code)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(0.8f)
+                    .padding(top = 4.dp),
             )
             Button(
                 onClick = { onSendCode(qq) },
                 enabled = newPassword == confirmedPassword && newPassword.length >= 8 && countdown == 0,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1.2f)
             ) {
                 Text(
-                    stringResource(R.string.auth_code)
+                    if (countdown == 0) stringResource(R.string.send_auth_code)
+                    else stringResource(R.string.wait_send_auth_code, countdown)
                 )
             }
         }
@@ -149,7 +164,7 @@ fun ChangePasswordUi(
             enabled = code.length == 6 && newPassword == confirmedPassword
         ) {
             Text(
-                if (countdown == 0) stringResource(R.string.submit_password_hint) else stringResource(R.string.wait_send_auth_code,countdown)
+                stringResource(R.string.submit_password_hint)
             )
         }
     }

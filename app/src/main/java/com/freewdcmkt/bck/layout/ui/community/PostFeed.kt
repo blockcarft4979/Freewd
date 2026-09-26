@@ -44,10 +44,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
@@ -211,7 +213,7 @@ fun PostFeedUiLayout(
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     value = message,
-                    onValueChange = { message = it },
+                    onValueChange = {input->message = input.take(1500) },
                     label = { Text(stringResource(R.string.post_feed_content_hint)) }
                 )
                 if (!imgUrl.isNullOrEmpty()) {
@@ -224,6 +226,7 @@ fun PostFeedUiLayout(
                         )
                     }
                 }
+                Text("${message.length} / 1500", color = Color.Gray, fontSize = 12.sp)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)

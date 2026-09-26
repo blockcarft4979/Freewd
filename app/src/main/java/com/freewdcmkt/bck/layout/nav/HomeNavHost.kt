@@ -1,23 +1,19 @@
 package com.freewdcmkt.bck.layout.nav
 
-import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -27,6 +23,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -38,9 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,17 +44,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
-import com.freewdcmkt.bck.components.freewd.HomeZoneItemCard
 import com.freewdcmkt.bck.components.freewd.UserCard
-import com.freewdcmkt.bck.data.common.UserInfoData
-import com.freewdcmkt.bck.data.screen.HomeData
-import com.freewdcmkt.bck.layout.ui.community.FeedLayout
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
+import com.freewdcmkt.bck.data.common.UserInfoData
+import com.freewdcmkt.bck.layout.ui.community.FeedListHost
 import com.freewdcmkt.bck.layout.ui.user.Me
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
@@ -71,7 +64,8 @@ fun HomeNavHost(
     viewmodel: HomeViewmodel = viewModel(),
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
-    onToNotification: () -> Unit
+    onToNotification: () -> Unit,
+    onToAboutApp:()-> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -86,6 +80,7 @@ fun HomeNavHost(
 
     val retryHint = stringResource(R.string.retry_hint)
     val snackBarHostState = remember { SnackbarHostState() }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val unknownError = stringResource(R.string.unknown_error)
@@ -117,13 +112,14 @@ fun HomeNavHost(
         drawerState = drawerState,
         drawerContent = {
             DismissibleDrawerSheet(
-                modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .width(300.dp)
-            ) { Me() }
+//                modifier = Modifier
+//                    .padding(horizontal = 15.dp)
+//                    .width(300.dp)
+            ) { Me(onToAboutApp = onToAboutApp) }
         }
     ) {
         Scaffold(
+//            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             topBar = {
                 TopAppBar(
                     title = { UserCard(userAvatarUrl(qq), username, uid) },
@@ -131,18 +127,27 @@ fun HomeNavHost(
                         IconButton(onClick = onToNotification) {
                             NotificationIcon(unreadCount)
                         }
-                    }
+                    },
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
             },
             snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
 
             ) { innerPadding ->
-            Column(modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 15.dp)) {
+
+            Column(
+                modifier = Modifier.padding(innerPadding)
+                   // .consumeWindowInsets(innerPadding)
+                    .padding(horizontal = 15.dp)
+            ) {
                 HomeUI(
                     onToPostFeed = onToPostFeed,
-                    onToFeedDetail = onToFeedDetail
+                    onToFeedDetail = onToFeedDetail,
+                    scrollBehavior = scrollBehavior
                 )
             }
         }
@@ -164,60 +169,13 @@ fun HomeNavHost(
 
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//private fun HomeLayout(
-//    homeData: HomeData,
-//    uiState: HomeUiState,
-//    onToFeed: (Int) -> Unit,
-//    onToBrowser: (String) -> Unit,
-//    onRefresh: () -> Unit
-//) {
-//    val context = LocalContext.current
-//    PullToRefreshBox(
-//        isRefreshing = uiState is HomeUiState.Loading,
-//        onRefresh = onRefresh,
-//        modifier = Modifier.fillMaxSize()
-//    ) {
-//        LazyColumn(modifier = Modifier.fillMaxSize()) {
-//            item {
-//                if (homeData.notification?.imageUrl != null) Image(
-//                    painter = rememberAsyncImagePainter(homeData.notification.imageUrl),
-//                    contentDescription = null,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .clip(RoundedCornerShape(16.dp))
-//                        .aspectRatio(16f / 9f),
-//                    contentScale = ContentScale.Crop
-//                )
-//            }
-//            items(
-//                items = homeData.zone,
-//                key = { "${it.description}_${it.name}_${it.icon}" }) { zone ->
-//
-//                HomeZoneItemCard(zone, onClick = {
-//                    if (zone.msg != null) Toast.makeText(
-//                        context,
-//                        zone.msg,
-//                        Toast.LENGTH_SHORT
-//                    )
-//                        .show()
-//                    if (zone.zone != null) onToFeed(zone.zone)
-//                    if (zone.link != null) onToBrowser(zone.link)
-//                })
-//            }
-//
-//        }
-//    }
-//}
-
 @Composable
 private fun HomeUI(
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
     homeViewmodel: HomeViewmodel = viewModel(),
     feedListViewmodel: FeedListViewmodel = viewModel(),
-
     ) {
     val refreshViewmodel: RefreshStateViewModel = viewModel()
     val isRefresh = refreshViewmodel.feedRefresh
@@ -239,13 +197,14 @@ private fun HomeUI(
             homeViewmodel.fetchData(true)
             feedListViewmodel.fetchData(true)
         }) {
-        FeedLayout(
+        FeedListHost(
             isRefresh = feedUiState is FeedUiState.Loading,
             onToFeedDetail = onToFeedDetail,
             onToPostFeed = onToPostFeed,
-            onToPreviewImg = {url ->imgUrl = url}
+            onToPreviewImg = { url -> imgUrl = url },
+            scrollBehavior = scrollBehavior
         )
-        PreviewImgUi(url = imgUrl?:"", onDismiss = {imgUrl = null})
+        PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
     }
 }
 

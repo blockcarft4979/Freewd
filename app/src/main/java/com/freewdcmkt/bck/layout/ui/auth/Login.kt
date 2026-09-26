@@ -93,16 +93,22 @@ fun LoginLayout(
                 .verticalScroll(rememberScrollState())
         ) {
             FreewdTopComponent(userIcon.value)
-            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = account,
-                onValueChange = { account = it },
+                maxLines = 1,
+                onValueChange = { input ->
+                    val filteredInput = input.filter { it.isDigit() }
+                    if (filteredInput.length <= 12) {
+                        account = filteredInput
+                    }
+                },
                 label = { Text(stringResource(R.string.login_account_hint)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = password,
+                maxLines = 1,
                 onValueChange = { password = it },
                 label = { Text(stringResource(R.string.login_password_hint)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -113,8 +119,7 @@ fun LoginLayout(
 
             Button(
                 onClick = {
-                    onLogin(account, password)
-                },
+                    onLogin(account, password) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp),
