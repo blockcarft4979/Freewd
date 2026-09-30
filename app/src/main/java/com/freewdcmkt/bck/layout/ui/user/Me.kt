@@ -126,9 +126,11 @@ private fun MeUiLayout(
             )
         })
     }) { innerPadding ->
-        LazyColumn(modifier = Modifier
-            .padding(innerPadding)
-            .padding(horizontal = 15.dp)) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 15.dp)
+        ) {
 
             item {
                 ExpCard(
@@ -165,7 +167,7 @@ private fun MeUiLayout(
                     onClick = { isShowEditDialog.value = true }
                 )
                 SettingCard(
-                    icon = R.mipmap.ic_launcher_monochrome,
+                    icon = R.drawable.frecat,
                     name = stringResource(R.string.about_app_hint),
                     onClick = onToAboutApp
                 )

@@ -87,7 +87,7 @@ fun FreewdAppNavHost(
                     onToFeedDetail = { backStack.add(FeedDetailScreenData(it)) },
                     onToPostFeed = { backStack.add(PostFeedScreen()) },
                     onToNotification = { backStack.add(NotificationScreen) },
-                    onToAboutApp = {backStack.add(AboutAppScreenData)}
+                    onToAboutApp = { backStack.add(AboutAppScreenData) },
                 )
             }
 
@@ -126,6 +126,7 @@ fun FreewdAppNavHost(
             }
 
             entry<AboutAppScreenData> { About() }
+
         }
     )
 }

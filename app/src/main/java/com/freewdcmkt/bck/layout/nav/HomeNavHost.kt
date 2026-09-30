@@ -1,12 +1,8 @@
 package com.freewdcmkt.bck.layout.nav
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerValue
@@ -65,7 +61,7 @@ fun HomeNavHost(
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onToNotification: () -> Unit,
-    onToAboutApp:()-> Unit
+    onToAboutApp: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -115,7 +111,7 @@ fun HomeNavHost(
 //                modifier = Modifier
 //                    .padding(horizontal = 15.dp)
 //                    .width(300.dp)
-            ) { Me(onToAboutApp = onToAboutApp) }
+            ) { Me(onToAboutApp = onToAboutApp)}
         }
     ) {
         Scaffold(
@@ -140,8 +136,9 @@ fun HomeNavHost(
             ) { innerPadding ->
 
             Column(
-                modifier = Modifier.padding(innerPadding)
-                   // .consumeWindowInsets(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
+                    // .consumeWindowInsets(innerPadding)
                     .padding(horizontal = 15.dp)
             ) {
                 HomeUI(
@@ -176,7 +173,7 @@ private fun HomeUI(
     scrollBehavior: TopAppBarScrollBehavior,
     homeViewmodel: HomeViewmodel = viewModel(),
     feedListViewmodel: FeedListViewmodel = viewModel(),
-    ) {
+) {
     val refreshViewmodel: RefreshStateViewModel = viewModel()
     val isRefresh = refreshViewmodel.feedRefresh
     val homeUiState by homeViewmodel.homeUiState.collectAsState()

@@ -213,7 +213,7 @@ fun PostFeedUiLayout(
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     value = message,
-                    onValueChange = {input->message = input.take(1500) },
+                    onValueChange = {input->message = input.take(3000) },
                     label = { Text(stringResource(R.string.post_feed_content_hint)) }
                 )
                 if (!imgUrl.isNullOrEmpty()) {
@@ -226,7 +226,7 @@ fun PostFeedUiLayout(
                         )
                     }
                 }
-                Text("${message.length} / 1500", color = Color.Gray, fontSize = 12.sp)
+                Text("${message.length} / 3000", color = Color.Gray, fontSize = 12.sp)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)

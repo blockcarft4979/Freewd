@@ -26,7 +26,7 @@ fun UserIcon(url: String) {
 @Composable
 fun FreewdIcon() {
     Icon(
-        painter = painterResource(R.mipmap.ic_launcher_monochrome), null, modifier = Modifier
+        painter = painterResource(R.drawable.frecat), null, modifier = Modifier
             .size(48.dp)
             .padding(5.dp)
             .clip(CircleShape)
