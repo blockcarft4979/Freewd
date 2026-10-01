@@ -13,15 +13,16 @@ data class FeedDetailScreenData(
 
 @Serializable
 data class FeedDetailData(
+    val id: Int = 0,
     val isError: Boolean? = false,
     val title: String? = null,
     val msg: String? = null,
-    val qq: String,
-    val username: String,
-    val date: String,
-    val likeCount: Int,
-    val isLiked: Boolean,
-    val isMarkdown: Boolean,
+    val qq: String = "",
+    val username: String = "",
+    val date: String = "",
+    val likeCount: Int = 0,
+    val isLiked: Boolean = false,
+    val isMarkdown: Boolean = false,
     val img: String? = null,
     val reply: List<FeedReplyData>? = null
 )
@@ -37,7 +38,6 @@ data class FeedReplyData(
 
 @Serializable
 data class ReplyFeedData(
-    val id: Int,
     val content: String,
     @SerialName("reply")
     val reply: String? = null

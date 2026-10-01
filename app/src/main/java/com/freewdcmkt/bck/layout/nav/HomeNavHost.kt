@@ -58,6 +58,7 @@ import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
 @Composable
 fun HomeNavHost(
     viewmodel: HomeViewmodel = viewModel(),
+    feedListViewmodel: FeedListViewmodel = viewModel(),
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onToNotification: () -> Unit,
@@ -111,11 +112,10 @@ fun HomeNavHost(
 //                modifier = Modifier
 //                    .padding(horizontal = 15.dp)
 //                    .width(300.dp)
-            ) { Me(onToAboutApp = onToAboutApp)}
+            ) { Me(onToAboutApp = onToAboutApp) }
         }
     ) {
         Scaffold(
-//            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             topBar = {
                 TopAppBar(
                     title = { UserCard(userAvatarUrl(qq), username, uid) },
@@ -142,9 +142,11 @@ fun HomeNavHost(
                     .padding(horizontal = 15.dp)
             ) {
                 HomeUI(
+                    feedListViewmodel = feedListViewmodel,
                     onToPostFeed = onToPostFeed,
                     onToFeedDetail = onToFeedDetail,
-                    scrollBehavior = scrollBehavior
+                    onLike = { id -> feedListViewmodel.toggleLike(id) },
+                    scrollBehavior = scrollBehavior,
                 )
             }
         }
@@ -170,9 +172,10 @@ fun HomeNavHost(
 private fun HomeUI(
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
+    onLike: (id: Int) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     homeViewmodel: HomeViewmodel = viewModel(),
-    feedListViewmodel: FeedListViewmodel = viewModel(),
+    feedListViewmodel: FeedListViewmodel,
 ) {
     val refreshViewmodel: RefreshStateViewModel = viewModel()
     val isRefresh = refreshViewmodel.feedRefresh
@@ -196,10 +199,11 @@ private fun HomeUI(
         }) {
         FeedListHost(
             isRefresh = feedUiState is FeedUiState.Loading,
+            scrollBehavior = scrollBehavior,
             onToFeedDetail = onToFeedDetail,
             onToPostFeed = onToPostFeed,
             onToPreviewImg = { url -> imgUrl = url },
-            scrollBehavior = scrollBehavior
+            onLike = onLike
         )
         PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
     }

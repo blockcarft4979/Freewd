@@ -3,8 +3,8 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +33,7 @@ import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
 import com.freewdcmkt.bck.components.ui.LoadingCard
-import com.freewdcmkt.bck.data.screen.Feed
+import com.freewdcmkt.bck.data.screen.PostsData
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -48,6 +47,7 @@ fun FeedListHost(
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onToPreviewImg: (String) -> Unit,
+    onLike: (id: Int) -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val feedListData by viewmodel.feedListData.collectAsState()
@@ -94,7 +94,7 @@ fun FeedListHost(
         }) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(innerPadding).fillMaxSize()
         ) {
             when {
 
@@ -103,13 +103,14 @@ fun FeedListHost(
                 else -> {
 
                     FeedListUi(
-                        feed = feedList,
-                        onClick = { onToFeedDetail(it) },
+                        postsData = feedList,
+                        onClick = onToFeedDetail,
                         listState = listState,
                         isLoadingMore = isLoadingMore,
                         hasMore = hasMore,
                         onToPreviewImg = onToPreviewImg,
-                        scrollBehavior = scrollBehavior
+                        scrollBehavior = scrollBehavior,
+                        onLike = onLike
                     )
                 }
             }
@@ -121,19 +122,26 @@ fun FeedListHost(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FeedListUi(
-    feed: List<Feed>,
+    postsData: List<PostsData>,
     listState: LazyListState,
     isLoadingMore: Boolean,
     hasMore: Boolean,
     scrollBehavior: TopAppBarScrollBehavior,
     onClick: (id: Int) -> Unit,
-    onToPreviewImg: (String) -> Unit
+    onToPreviewImg: (String) -> Unit,
+    onLike: (id: Int) -> Unit
 ) {
-    LazyColumn(state = listState, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
+    LazyColumn(
+        state = listState,
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) {
         items(
-            items = feed, key = { it.id }) { feed ->
+            items = postsData, key = { it.id }) { feed ->
             FeedCard(
-                feed, onClick = { onClick(feed.id) }, onToPreviewImg = onToPreviewImg
+                feed,
+                onClick = onClick,
+                onToPreviewImg = onToPreviewImg,
+                onLike = onLike
             )
         }
         if (isLoadingMore) {
@@ -144,7 +152,7 @@ private fun FeedListUi(
                         .height(64.dp)
                 ) { LoadingCard() }
             }
-        } else if (!hasMore && feed.isNotEmpty()) {
+        } else if (!hasMore && postsData.isNotEmpty()) {
             item {
                 Box(
                     Modifier

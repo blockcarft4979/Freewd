@@ -14,6 +14,14 @@ object RetroApi {
         const val SEND_RESET_CODE = "auth/send_reset_code"
         const val RESET_PASSWORD = "auth/reset_password"
     }
+    object Post{
+        const val GET_POSTS = "posts"
+        const val LIKE_POST = "posts/{id}/like"
+        const val GET_POST_DETAILS = "posts/{id}"
+        const val DELETE_POST = "posts/{id}"
+        const val REPLY_POST = "posts/{id}/replies"
+        const val DELETE_REPLY = "posts/{id}/replies/{rid}"
+    }
 
     object Community {
         const val GET_FEED = "community/get_feed"

@@ -11,8 +11,11 @@ import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.data.screen.LikeFeedRequestData
 import com.freewdcmkt.bck.data.screen.ReplyFeedData
 import com.freewdcmkt.bck.util.JsonParser
+import com.freewdcmkt.bck.util.network.ApiResult
 import com.freewdcmkt.bck.util.network.CommunityClient
 import com.freewdcmkt.bck.util.network.RetroClient
+import com.freewdcmkt.bck.util.network.RetroV2Client
+import com.freewdcmkt.bck.util.network.safeApiCall
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,26 +44,35 @@ class FeedDetailViewmodel : ViewModel() {
     val isNoNetwork: StateFlow<Boolean> = _isNoNetwork.asStateFlow()
 
     fun fetchData(id: Int, refresh: Boolean = false) {
+        Log.d("POST DETAIL ID", id.toString())
         if (currentId == id && !refresh && _feedDetailUiState.value is FeedDetailUiState.Success) return
         _feedDetailUiState.value = FeedDetailUiState.Loading
         viewModelScope.launch {
             currentId = id
-            try {
-                val response = RetroClient.apiService.getFeedDetail(id)
-                val data = response.body()
-                Log.d("FEED DETAIL VIEWMODEL", "$response ${response.code()}")
-                if (response.isSuccessful && data?.data != null) {
-                    val currentAccount = UserInfoData.account.value
-                    val data = data.data
-                    _isAuthor.value = (currentAccount == data.qq)
-                    _feedDetailData.value = data
-                    _feedDetailUiState.value = FeedDetailUiState.Success
-                } else {
+            val result = safeApiCall { RetroV2Client.apiService.getPostDetails(id = id) }
+
+            when (result) {
+                is ApiResult.Success -> {
+                    val data = result.data
+                    if (data != null) {
+                        val currentAccount = UserInfoData.account.value
+                        _isAuthor.value = (currentAccount == data.qq)
+                        _feedDetailData.value = data
+                        _feedDetailUiState.value = FeedDetailUiState.Success
+                    } else {
+                        getFeedErrorHint()
+                    }
+                }
+
+                is ApiResult.Error -> {
+                    Log.d("FEED DETAIL", "Error: ${result.message}")
                     getFeedErrorHint()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                getFeedErrorHint()
+
+                is ApiResult.NetworkError -> {
+                    _isNoNetwork.value = true
+                    _feedDetailUiState.value = FeedDetailUiState.Error
+                }
             }
         }
     }
@@ -131,19 +143,20 @@ class FeedDetailViewmodel : ViewModel() {
 
     fun replyFeed(id: Int, content: String, reply: String? = null) {
         _feedDetailUiState.value = FeedDetailUiState.Loading
-        Log.d("REPLY QQ ", reply ?: "is empty")
         viewModelScope.launch {
-            val body = ReplyFeedData(id, content, reply)
-            Log.d("REPLY BODY", JsonParser.json.encodeToString(body))
-            val response = RetroClient.apiService.replyFeed(body)
+            val body = ReplyFeedData(content, reply)
+            Log.d("reply feed function", body.toString())
+            when (val result = safeApiCall { RetroV2Client.apiService.replyPost(id, body) }) {
+                is ApiResult.Success -> fetchData(id, true)
+                is ApiResult.Error -> {
+                    _errorMsg.value = result.message
+                    _feedDetailUiState.value = FeedDetailUiState.Error
+                }
 
-            if (response.isSuccessful) {
-                fetchData(id, true)
-            } else {
-                val body = response.errorBody()?.string() ?: ""
-                val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
-                _errorMsg.value = errorData.msg ?: ""
-                _feedDetailUiState.value = FeedDetailUiState.Error
+                is ApiResult.NetworkError -> {
+                    _isNoNetwork.value = true
+                    _feedDetailUiState.value = FeedDetailUiState.Error
+                }
             }
         }
     }
@@ -151,27 +164,51 @@ class FeedDetailViewmodel : ViewModel() {
     fun deleteFeed(id: Int) {
         _feedDetailUiState.value = FeedDetailUiState.Loading
         viewModelScope.launch {
-            try {
-                val response = RetroClient.apiService.deleteFeed(id)
-                if (response.isSuccessful) {
+            when (val result = safeApiCall { RetroV2Client.apiService.deletePost(id) }) {
+                is ApiResult.Success -> {
                     _feedDetailUiState.value = FeedDetailUiState.DeleteSuccess
-                } else {
-                    val errorData = response.errorBody()?.string() ?: ""
-                    val msg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
-                    _errorMsg.value = msg.msg ?: ""
+                }
+
+                is ApiResult.Error -> {
+                    _errorMsg.value = result.message
                     _feedDetailUiState.value = FeedDetailUiState.Error
                 }
-            } catch (e: Exception) {
-                Log.d("DELETE FEED ERROR",e.message.toString())
-                e.printStackTrace()
-                _isNoNetwork.value = true
-                _errorMsg.value = e.message.toString()
-                _feedDetailUiState.value = FeedDetailUiState.Error
+
+                is ApiResult.NetworkError -> {
+                    _isNoNetwork.value = true
+                    _feedDetailUiState.value = FeedDetailUiState.Error
+                }
             }
         }
-
     }
-    fun resetUi(){
+
+    fun deleteReply(id: Int, rid: Int) {
+
+        val oldData = _feedDetailData.value
+        val oldReplies = oldData.reply ?: emptyList()
+
+        val newReplies = oldReplies.filter { it.commentId != rid }
+        _feedDetailData.value = oldData.copy(reply = newReplies)
+
+        viewModelScope.launch {
+            when (val result = safeApiCall { RetroV2Client.apiService.deleteReply(id, rid) }) {
+                is ApiResult.Success -> {
+                }
+
+                is ApiResult.Error -> {
+                    _feedDetailData.value = oldData
+                    _errorMsg.value = result.message
+                }
+
+                is ApiResult.NetworkError -> {
+                    _feedDetailData.value = oldData
+                    _isNoNetwork.value = true
+                }
+            }
+        }
+    }
+
+    fun resetUi() {
         _feedDetailUiState.value = FeedDetailUiState.Loading
     }
 }

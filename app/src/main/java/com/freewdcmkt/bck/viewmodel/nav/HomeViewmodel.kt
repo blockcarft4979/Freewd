@@ -26,7 +26,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
 
-    private val _homeData = MutableStateFlow(HomeData(null, emptyList()))
+   private val _homeData = MutableStateFlow(HomeData(null))
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _savedNotificationId = MutableStateFlow(0)
     private val _isShowNotification = MutableStateFlow(false)
@@ -95,7 +95,6 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
         }
 
     }
-
 
     fun verifyToken() {
         viewModelScope.launch {

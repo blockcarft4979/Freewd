@@ -31,9 +31,10 @@ fun <T> Response<ApiResponse<T>>.toResult(): ApiResult<T> {
             val errorBodyStr = errorBody()?.string()
             val errorData = try {
                 errorBodyStr?.takeIf { it.isNotBlank() }?.let {
-                    JsonParser.json.decodeFromString<ApiErrorResponse>(it)  // ← 用非泛型类
+                    JsonParser.json.decodeFromString<ApiErrorResponse>(it)
                 }
             } catch (e: Exception) {
+                Log.d("API RESPONSE",e.message.toString())
                 null
             }
             ApiResult.Error(
@@ -42,6 +43,7 @@ fun <T> Response<ApiResponse<T>>.toResult(): ApiResult<T> {
             )
         }
     } catch (e: Exception) {
+        Log.d("API RESPONSE",e.message.toString())
         ApiResult.NetworkError
     }
 
@@ -52,6 +54,7 @@ suspend fun <T> safeApiCall(
     return try {
         call().toResult()
     } catch (e: Exception) {
+        Log.d("API RESPONSE",e.message.toString())
         ApiResult.NetworkError
     }
 }

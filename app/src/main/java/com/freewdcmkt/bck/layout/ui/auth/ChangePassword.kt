@@ -28,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -38,44 +39,67 @@ import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.viewmodel.auth.ChangePasswordUiState
 import com.freewdcmkt.bck.viewmodel.auth.ChangePasswordViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun ChangePasswordHost(
     viewModel: ChangePasswordViewModel = viewModel(),
     onChangedPassword: () -> Unit
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
     val countdown by viewModel.countdown.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val unknownError = stringResource(R.string.unknown_error)
+    val changePasswordSucceed = stringResource(R.string.change_password_succeed_toast_hint)
+
     LaunchedEffect(uiState) {
-        (uiState as? ChangePasswordUiState.Error)?.let { error ->
-            if (error.isNoNetWork) snackBarHostState.showSnackbar(unknownError) else snackBarHostState.showSnackbar(
-                error.errorMsg ?: unknownError
-            )
+        when (uiState) {
+            is ChangePasswordUiState.Error -> {
+                val error = uiState as ChangePasswordUiState.Error
+                if (error.isNoNetWork) {
+                    snackBarHostState.showSnackbar(unknownError)
+                } else {
+                    snackBarHostState.showSnackbar(error.errorMsg ?: unknownError)
+                }
+            }
+
+            is ChangePasswordUiState.OnChangedPassword -> {
+                snackBarHostState.showSnackbar(changePasswordSucceed)
+                delay(800)
+                onChangedPassword()
+            }
+
+            else -> {}
         }
     }
+
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = { TopAppBar(title = { Text(stringResource(R.string.change_password_hint)) }) },
-        snackbarHost = { SnackbarHost(snackBarHostState) }) { innerPadding ->
+        snackbarHost = { SnackbarHost(snackBarHostState) }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 15.dp)
                 .fillMaxSize()
-                .verticalScroll(
-                    rememberScrollState()
-                )
+                .verticalScroll(rememberScrollState())
         ) {
             ChangePasswordUi(
                 onSendCode = { viewModel.sendCode(it) },
-                { qq, password, code -> viewModel.submitPassword(qq, password, code) },
+                onSubmitPassword = { qq, password, code ->
+                    viewModel.submitPassword(
+                        qq,
+                        password,
+                        code
+                    )
+                },
                 countdown = countdown
             )
+
             when (uiState) {
                 is ChangePasswordUiState.Loading -> FreewdLoadingDialog(stringResource(R.string.wait_hint))
-                is ChangePasswordUiState.OnChangedPassword -> onChangedPassword
                 else -> {}
             }
         }

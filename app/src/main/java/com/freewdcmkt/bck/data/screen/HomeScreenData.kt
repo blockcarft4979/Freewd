@@ -1,6 +1,7 @@
 package com.freewdcmkt.bck.data.screen
 
 import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -8,7 +9,6 @@ data object HomeScreenData: NavKey
 @Serializable
 data class HomeData(
     val notification: Notification? = null,
-    val zone: List<Zone>
 )
 
 @Serializable
@@ -19,14 +19,11 @@ data class Notification(
     val imageUrl: String? = null,
 )
 
+
 @Serializable
-data class Zone(
-    val icon: String,
-    val name: String,
-    val zone: Int? = null,
-    val description: String? = null,
-    val msg: String? = null,
-    val link: String? = null
+data class LikeResult(
+    @SerialName("is_liked") val isLiked: Boolean,
+    @SerialName("like_count") val likeCount: Int
 )
 
 @Serializable

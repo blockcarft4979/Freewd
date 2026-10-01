@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,15 +61,17 @@ import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
-import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.ui.PreviewImgUi
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailViewmodel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,7 +92,9 @@ fun FeedDetailLayout(
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    val deletingIds = remember { mutableStateListOf<Int>() }
     var imgUrl by remember { mutableStateOf<String?>(null) }
+    val pendingDeleteRid = rememberSaveable { mutableStateOf<Int?>(null) }
     val copiedHint = stringResource(R.string.copied_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
     val isShowDialog = rememberSaveable() { mutableStateOf(false) }
@@ -122,6 +127,28 @@ fun FeedDetailLayout(
             },
             title = stringResource(R.string.delete_post_title_hint),
             msg = stringResource(R.string.delete_post_message_hint),
+            stringResource(R.string.no_hint),
+            stringResource(R.string.yes_hint)
+        )
+    }
+    
+    if (pendingDeleteRid.value != null) {
+        FreewdModalBottomSheet(
+            onDismiss = { pendingDeleteRid.value = null },
+            onConfirm = {
+                pendingDeleteRid.value?.let { rid ->
+                    deletingIds.add(rid)
+                    scope.launch {
+                        delay(320)
+                        viewmodel.deleteReply(id, rid)
+                        deletingIds.remove(rid)
+                    }
+
+                }
+                pendingDeleteRid.value = null
+            },
+            title = stringResource(R.string.delete_comment_title_hint),
+            msg = stringResource(R.string.delete_comment_message_hint),
             stringResource(R.string.no_hint),
             stringResource(R.string.yes_hint)
         )
@@ -244,6 +271,7 @@ fun FeedDetailLayout(
 
                     FeedUiLayout(
                         feedDetailData,
+                        deletingIds = deletingIds,
                         onClickLike = {
                             viewmodel.seedLike(
                                 id,
@@ -252,8 +280,9 @@ fun FeedDetailLayout(
                         }, onReplyUser = { qq, username ->
                             focusRequester.requestFocus()
                             replyQq.value = qq
-                            replyUsername.value = username
-                        }, onToPreviewImg = { url -> imgUrl = url }
+                            replyUsername.value = username },
+                        onToPreviewImg = { url -> imgUrl = url },
+                        onDeleteReply = { pendingDeleteRid.value = it }
                     )
                 }
             }
@@ -268,9 +297,11 @@ fun FeedDetailLayout(
 @Composable
 private fun FeedUiLayout(
     feedDetailData: FeedDetailData,
+    deletingIds: List<Int>,
     onClickLike: () -> Unit,
     onReplyUser: (String, String) -> Unit,
-    onToPreviewImg: (String) -> Unit
+    onToPreviewImg: (String) -> Unit,
+    onDeleteReply: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -290,12 +321,12 @@ private fun FeedUiLayout(
                 ) {
                     SelectionContainer {
                         Column {
-                            if (feedDetailData.title != null) {
+                            if (!feedDetailData.title.isNullOrEmpty()) {
                                 TitleText(
                                     feedDetailData.title,
                                 )
                             }
-                            if (feedDetailData.isMarkdown && feedDetailData.msg != null) {
+                            if (feedDetailData.isMarkdown && !feedDetailData.msg.isNullOrEmpty()) {
                                 ContentMarkdown(
                                     feedDetailData.msg,
                                 )
@@ -326,7 +357,6 @@ private fun FeedUiLayout(
                                 R.drawable.baseline_favorite_border_24,
                             description = stringResource(R.string.favorite_hint),
                             text = feedDetailData.likeCount.toString(),
-                            pulseOnClick = true,
                             onClick = onClickLike,
                         )
                     }
@@ -338,8 +368,14 @@ private fun FeedUiLayout(
             key = { " ${it.commentId}_${it.date}" }
         ) { replyData ->
             ReplyCard(
-                replyData,
-                onReplyUser = onReplyUser
+                isDeleting = deletingIds.contains(replyData.commentId),
+                replyData = replyData,
+                onReplyUser = onReplyUser,
+                onLongClick = {
+                    if (replyData.qq == UserInfoData.account.value) {
+                        onDeleteReply(replyData.commentId)
+                    }
+                }
             )
         }
     }

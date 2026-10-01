@@ -30,7 +30,7 @@ fun IconTextButton(
     description: String? = null,
     text: String,
     onClick: () -> Unit,
-    pulseOnClick: Boolean = false,
+    pulseOnClick: Boolean = true,
 ) {
     val scale = remember { Animatable(1f) }
     val scope = rememberCoroutineScope()

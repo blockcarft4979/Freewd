@@ -94,8 +94,11 @@
     <string name="post_feed_content_hint">分享新鲜事（支持Markdown）</string>
     <string name="anonymous_post_hint">匿名贴</string>
     <string name="change_password_hint">修改密码</string>
+    <string name="change_password_succeed_toast_hint">修改密码成功，3秒后将会跳转登录</string>
     <string name="new_password_hint">输入新的密码</string>
     <string name="forget_password_hint">忘记密码了？</string>
     <string name="submit_password_hint">提交密码</string>
     <string name="follow_me">关注我</string>
+    <string name="delete_comment_title_hint">删除评论</string>
+    <string name="delete_comment_message_hint">确定要删除这条评论吗？此操作不可恢复。</string>
 </resources>

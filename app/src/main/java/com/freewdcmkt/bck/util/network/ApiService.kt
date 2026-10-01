@@ -13,6 +13,7 @@ import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.data.screen.HomeData
 import com.freewdcmkt.bck.data.screen.LikeFeedRequestData
 import com.freewdcmkt.bck.data.screen.LikeFeedResultData
+import com.freewdcmkt.bck.data.screen.LikeResult
 import com.freewdcmkt.bck.data.screen.LoginData
 import com.freewdcmkt.bck.data.screen.PostFeedData
 import com.freewdcmkt.bck.data.screen.PostFeedRequestData
@@ -33,6 +34,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -85,15 +87,39 @@ interface ApiService {
 interface V2ApiService {
     @POST(RetroApi.Auth.LOGIN)
     suspend fun login(@Body request: LoginRequestData): Response<ApiResponse<LoginData>>
+
     @POST(RetroApi.Auth.SEND_AUTH_CODE)
     suspend fun sendAuthCode(@Body requestData: SendAuthCodeRequestData): Response<ApiResponse<Unit>>
+
     @POST(RetroApi.Auth.REGISTER)
     suspend fun register(@Body request: RegisterRequestData): Response<ApiResponse<LoginData>>
-    @POST(value = RetroApi.Auth.SEND_RESET_CODE )
+
+    @POST(value = RetroApi.Auth.SEND_RESET_CODE)
     suspend fun sendResetCode(@Body request: ChangePasswordRequestData): Response<ApiResponse<Unit>>
-    @POST(value = RetroApi.Auth.RESET_PASSWORD )
+
+    @POST(value = RetroApi.Auth.RESET_PASSWORD)
     suspend fun submitPassword(@Body request: SubmitPasswordRequestData): Response<ApiResponse<Unit>>
+
+    @GET(value = RetroApi.Post.GET_POSTS)
+    suspend fun getPosts(@Query("page") id: Int): Response<ApiResponse<FeedData>>
+
+    @GET(value = RetroApi.Post.GET_POST_DETAILS)
+    suspend fun getPostDetails(@Path("id") id: Int): Response<ApiResponse<FeedDetailData>>
+
+    @POST(RetroApi.Post.LIKE_POST)
+    suspend fun likePost(@Path("id") id: Int): Response<ApiResponse<LikeResult>>
+
+    @DELETE(RetroApi.Post.DELETE_POST)
+    suspend fun deletePost(@Path("id") id: Int): Response<ApiResponse<Unit>>
+
+    @POST(RetroApi.Post.REPLY_POST)
+    suspend fun replyPost(@Path("id") id: Int, @Body request: ReplyFeedData): Response<ApiResponse<Unit>>
+
+    @DELETE(RetroApi.Post.DELETE_REPLY)
+    suspend fun deleteReply(@Path("id") id: Int, @Path("rid") rid: Int): Response<ApiResponse<Unit>>
+
 }
+
 object RetroClient {
     private val okHttpClient = NetworkClient.client
     private val retrofit = Retrofit.Builder().client(okHttpClient)
@@ -103,7 +129,8 @@ object RetroClient {
     val apiService: ApiService by lazy { retrofit.create(ApiService::class.java) }
 
 }
-object RetroV2Client{
+
+object RetroV2Client {
     private val okHttpClient = NetworkClient.client
     private val retrofit = Retrofit.Builder().client(okHttpClient)
         .baseUrl(RetroApi.V2_BASE_URL)
@@ -112,6 +139,7 @@ object RetroV2Client{
     val apiService: V2ApiService by lazy { retrofit.create(V2ApiService::class.java) }
 
 }
+
 object CommunityClient {
     private val okHttpClient = NetworkClient.client
     private val retrofit = Retrofit.Builder().client(okHttpClient)
