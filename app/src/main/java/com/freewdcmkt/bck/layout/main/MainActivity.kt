@@ -32,9 +32,7 @@ class MainActivity : ComponentActivity() {
             Log.d("MAIN ERROR", e.message.toString())
         }
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-           // statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
-        )
+        enableEdgeToEdge()
 
         intentState.value = intent
 

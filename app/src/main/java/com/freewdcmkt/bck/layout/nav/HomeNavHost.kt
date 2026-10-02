@@ -1,6 +1,8 @@
 package com.freewdcmkt.bck.layout.nav
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DismissibleDrawerSheet
@@ -20,7 +22,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -108,14 +110,11 @@ fun HomeNavHost(
     DismissibleNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DismissibleDrawerSheet(
-//                modifier = Modifier
-//                    .padding(horizontal = 15.dp)
-//                    .width(300.dp)
-            ) { Me(onToAboutApp = onToAboutApp) }
+            DismissibleDrawerSheet{ Me(onToAboutApp = onToAboutApp) }
         }
     ) {
         Scaffold(
+           // contentWindowInsets = WindowInsets(0, 0, 0, 0),
             topBar = {
                 TopAppBar(
                     title = { UserCard(userAvatarUrl(qq), username, uid) },
@@ -125,28 +124,26 @@ fun HomeNavHost(
                         }
                     },
                     scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = MaterialTheme.colorScheme.surface
-                    )
+//                    colors = TopAppBarDefaults.topAppBarColors(
+//                        containerColor = Color.Transparent,                    // 👈 透明
+//                        scrolledContainerColor = MaterialTheme.colorScheme.surface
+//                    )
                 )
             },
             snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-
-            ) { innerPadding ->
+        ) { innerPadding ->
 
             Column(
                 modifier = Modifier
+                    //.consumeWindowInsets(innerPadding)
                     .padding(innerPadding)
-                    // .consumeWindowInsets(innerPadding)
-                    .padding(horizontal = 15.dp)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
                 HomeUI(
                     feedListViewmodel = feedListViewmodel,
                     onToPostFeed = onToPostFeed,
                     onToFeedDetail = onToFeedDetail,
                     onLike = { id -> feedListViewmodel.toggleLike(id) },
-                    scrollBehavior = scrollBehavior,
                 )
             }
         }
@@ -173,9 +170,9 @@ private fun HomeUI(
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onLike: (id: Int) -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior,
     homeViewmodel: HomeViewmodel = viewModel(),
     feedListViewmodel: FeedListViewmodel,
+    modifier: Modifier = Modifier
 ) {
     val refreshViewmodel: RefreshStateViewModel = viewModel()
     val isRefresh = refreshViewmodel.feedRefresh
@@ -192,6 +189,7 @@ private fun HomeUI(
     }
 
     PullToRefreshBox(
+        modifier = modifier,
         isRefreshing = homeUiState is HomeUiState.Loading,
         onRefresh = {
             homeViewmodel.fetchData(true)
@@ -199,7 +197,6 @@ private fun HomeUI(
         }) {
         FeedListHost(
             isRefresh = feedUiState is FeedUiState.Loading,
-            scrollBehavior = scrollBehavior,
             onToFeedDetail = onToFeedDetail,
             onToPostFeed = onToPostFeed,
             onToPreviewImg = { url -> imgUrl = url },

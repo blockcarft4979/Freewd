@@ -131,7 +131,7 @@ fun FeedDetailLayout(
             stringResource(R.string.yes_hint)
         )
     }
-    
+
     if (pendingDeleteRid.value != null) {
         FreewdModalBottomSheet(
             onDismiss = { pendingDeleteRid.value = null },

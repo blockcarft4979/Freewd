@@ -37,7 +37,7 @@ fun FeedCard(
 
     // var imgUrl by rememberSaveable() { mutableStateOf<String?>(null) }
 
-    Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.padding(vertical = 4.dp)) {
+    Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.padding(vertical = 4.dp, horizontal = 15.dp)) {
         Row(
             modifier = Modifier
                 .clickable(onClick = { onClick(feed.id) })

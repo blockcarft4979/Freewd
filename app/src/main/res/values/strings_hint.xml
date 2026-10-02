@@ -24,11 +24,13 @@
     <string name="checked_hint">Checked in for %d days.</string>
     <string name="unknown_error">An unknown error, perhaps a network problem?</string>
     <string name="wait_hint">Please wait…</string>
-    <string name="post_feed_content_hint">Share news – Markdown supported!</string>
+    <string name="post_feed_content_hint">Share news</string>
     <string name="anonymous_post_hint">Anonymous post</string>
     <string name="change_password_hint">Change Password</string>
     <string name="change_password_succeed_toast_hint">After successfully changing your password, you will be redirected to log in after 3 seconds</string>
     <string name="new_password_hint">Enter your new password</string>
     <string name="forget_password_hint">Forget password?</string>
     <string name="submit_password_hint">Submit password</string>
+    <string name="enabled_markdown_hint">Enabled Markdown</string>
+    <string name="disabled_markdown_hint">Disabled Markdown</string>
 </resources>

@@ -24,6 +24,7 @@ class PostFeedViewmodel : ViewModel() {
     fun postFeed(
         message: String,
         isAnonymous: Boolean = false,
+        isMarkdown: Boolean = false,
         title: String? = null,
         imgUrl: String? = null
     ) {
@@ -34,7 +35,7 @@ class PostFeedViewmodel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response =
-                    RetroClient.apiService.upload(PostFeedRequestData(isAnonymous, postContent, title, imgUrl))
+                    RetroClient.apiService.upload(PostFeedRequestData(isAnonymous, isMarkdown,postContent, title, imgUrl))
                 if (response.isSuccessful) {
                     val data = response.body()
                     Log.d("POST RESULT DATA", data.toString())

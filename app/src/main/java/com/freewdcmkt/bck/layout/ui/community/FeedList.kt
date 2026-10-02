@@ -3,11 +3,14 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -16,7 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun FeedListHost(
     viewmodel: FeedListViewmodel = viewModel(),
     isRefresh: Boolean,
-    scrollBehavior: TopAppBarScrollBehavior,
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onToPreviewImg: (String) -> Unit,
@@ -94,7 +94,8 @@ fun FeedListHost(
         }) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding).fillMaxSize()
+                .padding(innerPadding)
+                .fillMaxSize()
         ) {
             when {
 
@@ -109,7 +110,6 @@ fun FeedListHost(
                         isLoadingMore = isLoadingMore,
                         hasMore = hasMore,
                         onToPreviewImg = onToPreviewImg,
-                        scrollBehavior = scrollBehavior,
                         onLike = onLike
                     )
                 }
@@ -126,14 +126,17 @@ private fun FeedListUi(
     listState: LazyListState,
     isLoadingMore: Boolean,
     hasMore: Boolean,
-    scrollBehavior: TopAppBarScrollBehavior,
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit
 ) {
+  //  val stateBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     LazyColumn(
         state = listState,
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+//        contentPadding = PaddingValues(
+//            top = stateBarHeight + 64.dp,   // 状态栏 + TopAppBar 高度
+//            bottom = 88.dp                    // 给 FAB 留位置
+//        )
     ) {
         items(
             items = postsData, key = { it.id }) { feed ->

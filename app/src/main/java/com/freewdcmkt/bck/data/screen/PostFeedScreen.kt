@@ -17,6 +17,7 @@ data class PostFeedData(
 data class PostFeedRequestData(
     @SerialName("is_anonymous")
     val isAnonymous: Boolean? = false,
+    val isMarkdown: Boolean? = false,
     val message: String,
     val title: String?,
     val img: String?
