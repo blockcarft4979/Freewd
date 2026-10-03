@@ -1,13 +1,15 @@
 package com.freewdcmkt.bck.viewmodel.community
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.screen.PostFeedRequestData
 import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.UserInfoManager
+import com.freewdcmkt.bck.util.network.ApiResult
 import com.freewdcmkt.bck.util.network.RetroClient
+import com.freewdcmkt.bck.util.network.RetroV2Client
+import com.freewdcmkt.bck.util.network.safeApiCall
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,58 +32,63 @@ class PostFeedViewmodel : ViewModel() {
     ) {
         _postFeedUiState.value = PostFeedUiState.Upload
         val postContent = message.trimEnd()
-        if (postContent.isEmpty())return
+        if (postContent.isEmpty()) return
 
         viewModelScope.launch {
-            try {
-                val response =
-                    RetroClient.apiService.upload(PostFeedRequestData(isAnonymous, isMarkdown,postContent, title, imgUrl))
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    Log.d("POST RESULT DATA", data.toString())
-                    _postFeedUiState.value = PostFeedUiState.Success
-                    if (data?.data?.xp != null) UserInfoManager.saveExp(data.data.xp)
-                } else {
-                    val errorData = response.errorBody()?.string() ?: ""
-                    _postFeedUiState.value =
-                        PostFeedUiState.Error(
-                            JsonParser.json.decodeFromString<BaseData<Nothing>>(
-                                errorData
-                            ).msg
-                        )
-                }
-            } catch (e: Exception) {
-                Log.d("POST FEED ERROR", e.message.toString())
-                _postFeedUiState.value = PostFeedUiState.Error(isNoNetwork = true)
+            val result = safeApiCall {
+                RetroV2Client.apiService.uploadPost(
+                    PostFeedRequestData(
+                        isAnonymous,
+                        isMarkdown,
+                        postContent,
+                        title,
+                        imgUrl
+                    )
+                )
             }
+            when (result) {
+                is ApiResult.Success -> {
+                    _postFeedUiState.value = PostFeedUiState.Success
+                    if (result.data?.xp != null) UserInfoManager.saveExp(result.data.xp)
+                }
+
+                is ApiResult.Error -> {
+                    _postFeedUiState.value = PostFeedUiState.Error(msg = result.message)
+                }
+
+                is ApiResult.NetworkError -> {
+                    _postFeedUiState.value = PostFeedUiState.Error(isNoNetwork = true)
+                }
+            }
+
         }
     }
 
     fun uploadImg(img: File) {
         _postFeedUiState.value = PostFeedUiState.Upload
         viewModelScope.launch {
-            try {
-                val file = img.asRequestBody("image/jpeg".toMediaType())
-                val part = MultipartBody.Part.createFormData("file", img.name, file)
-                val response = RetroClient.apiService.uploadImg(part)
 
-                if (response.isSuccessful) {
-                    val baseData = response.body()
-                    if (baseData?.data != null) {
-                        _postFeedUiState.value = PostFeedUiState.ImageUploaded(baseData.data.url)
-                    }
-                } else {
-                    val errorData = response.errorBody()?.string() ?: ""
-                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
-                    _postFeedUiState.value = PostFeedUiState.Error(errorMsg.msg)
+            val file = img.asRequestBody("image/jpeg".toMediaType())
+            val part = MultipartBody.Part.createFormData("file", img.name, file)
+            val result = safeApiCall { RetroV2Client.apiService.uploadImg(part) }
+            when (result) {
+                is ApiResult.Success -> {
+                    if (result.data?.url != null) _postFeedUiState.value = PostFeedUiState.ImageUploaded(result.data.url) else _postFeedUiState.value =
+                        PostFeedUiState.Error()
                 }
-            } catch (e: Exception) {
-                Log.d("UPLOAD IMG ERROR", e.message.toString())
-                _postFeedUiState.value = PostFeedUiState.Error(isNoNetwork = true)
+                is ApiResult.Error -> {
+                    _postFeedUiState.value = PostFeedUiState.Error(msg = result.message)
+                }
+
+                is ApiResult.NetworkError -> {
+                    _postFeedUiState.value = PostFeedUiState.Error(isNoNetwork = true)
+                }
+
             }
         }
     }
-    fun resetUi(){
+
+    fun resetUi() {
         _postFeedUiState.value = PostFeedUiState.NoAction
     }
 

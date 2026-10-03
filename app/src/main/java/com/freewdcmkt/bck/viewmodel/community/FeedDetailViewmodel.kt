@@ -110,33 +110,35 @@ class FeedDetailViewmodel : ViewModel() {
             val newLikeCount = if (isLiked) oldData.likeCount - 1 else oldData.likeCount + 1
             val newIsLiked = !isLiked
 
-            val updatedData = oldData.copy(
-                likeCount = newLikeCount,
+            // 1. 乐观更新：立即改本地
+            _feedDetailData.value = oldData.copy(
+                likeCount = newLikeCount.coerceAtLeast(0),
                 isLiked = newIsLiked
             )
-            _feedDetailData.value = updatedData
-            _feedDetailUiState.value = FeedDetailUiState.Success
 
-            try {
-                val body = LikeFeedRequestData((id))
-                val response = RetroClient.apiService.likeFeed(body)
-                val data = response.body()
-                Log.d("FEED DETAIL LIKE DATA", data.toString())
-                if (response.isSuccessful && data?.data != null) {
-                    _feedDetailData.value =
-                        oldData.copy(isLiked = data.data.isLiked, likeCount = data.data.likeCount)
-                    _feedDetailUiState.value = FeedDetailUiState.Success
-                } else {
-                    val errorData = response.errorBody()?.string() ?: ""
-                    val errorMsg = JsonParser.json.decodeFromString<BaseData<Nothing>>(errorData)
-                    _errorMsg.value = errorMsg.msg ?: ""
-                    _feedDetailUiState.value = FeedDetailUiState.Error
+            // 2. 发请求
+            when (val result = safeApiCall { RetroV2Client.apiService.likePost(id) }) {
+                is ApiResult.Success -> {
+                    // 用服务端返回的数据覆盖，保证一致
+                    result.data?.let { likeData ->
+                        _feedDetailData.value = oldData.copy(
+                            isLiked = likeData.isLiked,
+                            likeCount = likeData.likeCount
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _isNoNetwork.value = true
-                _feedDetailData.value = oldData
-                _feedDetailUiState.value = FeedDetailUiState.Success
-                Log.e("FEED DETAIL VIEWMODEL", "Exception: ${e.message}", e)
+
+                is ApiResult.Error -> {
+                    // 回滚
+                    _feedDetailData.value = oldData
+                    _errorMsg.value = result.message
+                }
+
+                is ApiResult.NetworkError -> {
+                    // 回滚
+                    _feedDetailData.value = oldData
+                    _isNoNetwork.value = true
+                }
             }
         }
     }

@@ -16,11 +16,13 @@ object RetroApi {
     }
     object Post{
         const val GET_POSTS = "posts"
+        const val UPLOAD_POST = "posts"
         const val LIKE_POST = "posts/{id}/like"
         const val GET_POST_DETAILS = "posts/{id}"
         const val DELETE_POST = "posts/{id}"
         const val REPLY_POST = "posts/{id}/replies"
         const val DELETE_REPLY = "posts/{id}/replies/{rid}"
+        const val IMG_UPLOAD = "uploads"
     }
 
     object Community {

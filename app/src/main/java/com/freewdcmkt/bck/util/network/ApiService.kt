@@ -115,6 +115,12 @@ interface V2ApiService {
     @POST(RetroApi.Post.REPLY_POST)
     suspend fun replyPost(@Path("id") id: Int, @Body request: ReplyFeedData): Response<ApiResponse<Unit>>
 
+    @POST(RetroApi.Post.UPLOAD_POST)
+    suspend fun uploadPost(@Body requestData: PostFeedRequestData): Response<ApiResponse<PostFeedData>>
+    @Multipart
+    @POST(RetroApi.Post.IMG_UPLOAD)
+    suspend fun uploadImg(@Part file: MultipartBody.Part): Response<ApiResponse<UploadImgData>>
+
     @DELETE(RetroApi.Post.DELETE_REPLY)
     suspend fun deleteReply(@Path("id") id: Int, @Path("rid") rid: Int): Response<ApiResponse<Unit>>
 
