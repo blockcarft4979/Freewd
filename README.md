@@ -131,4 +131,4 @@ Freewd/
 
 ---
 
-**Copyright 2025–2026 Freewd Studio**
+**© 2025–2026 Freewd Studio**
