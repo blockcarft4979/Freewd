@@ -13,14 +13,15 @@
 
 Freewd 社区于 **2025 年 8 月 13 日** 开始运营，起初以同名基岩版服务器社区的形式存在，官网：[community.freewd.top](https://community.freewd.top)。
 
-本仓库是 Freewd 社区的 Android 客户端，使用 **Jetpack Compose** 完全从零重构
+本仓库是 Freewd 社区的 Android 客户端，使用 **Jetpack Compose** 完全从零重构。
+
 Freewd 由 **BLOCKCARFT（BCK）** 一人开发与运营。这是一个纯粹“用爱发电”的个人项目：没有团队，没有融资，也没有买量推广。目前因高中学业原因，更新速度会有所放缓，但项目会持续维护。
 
-> 我们希望做一款干净、流畅、没有花里胡哨广告和多余弹窗的社区客户端，仅此而已。
+> 我们希望做一款干净、流畅、没有花里胡哨的广告、也没有多余弹窗的社区客户端，仅此而已。
 
 - 官方网站：[community.freewd.top](https://community.freewd.top)
-- 基岩版服务器官网(已关服, 寒假再见)：[freewd.top](https://www.freewd.top)
-- [下载 Freewd 社区](https://github.com/blockcarft4979/Freewd/releases]
+- 基岩版服务器官网（已关服，寒假再见）：[freewd.top](https://www.freewd.top)
+- [下载 Freewd 社区](https://github.com/blockcarft4979/Freewd/releases)
 - 联系邮箱：2216368705@qq.com
 
 ---
@@ -65,8 +66,9 @@ Freewd/
 │       ├── data/               # 数据模型与全局状态
 │       ├── layout/             # 页面级布局
 │       │   ├── nav/            # 导航与主框架
-│       │   ├── ui/community/   # 社区 Feed 流
-│       │   └── ui/user/        # 用户相关页面
+│       │   └── ui/             # 页面 UI
+│       │       ├── community/  # 社区 Feed 流
+│       │       └── user/       # 用户相关页面
 │       └── viewmodel/          # ViewModel 层
 ├── gradle/                     # Gradle 版本管理
 └── build.gradle.kts            # 根构建脚本
@@ -127,8 +129,8 @@ Freewd/
 - 感谢 Freewd 社区所有成员的支持
 - 感谢 Jetpack Compose、Coil、zoomable 等开源项目
 - 感谢每一个愿意下载并尝试这个“没人下”的小破 App 的你
-- 特别致谢D老师(DeepSeek)的指导
+- 特别致谢 D 老师（DeepSeek）的指导
 
 ---
 
-**© 2025–2026 Freewd Studio**
+© 2025–2026 Freewd Studio
