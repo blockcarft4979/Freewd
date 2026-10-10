@@ -9,7 +9,7 @@ object RetroApi {
     object Auth {
         const val LOGIN = "auth/login"
         const val REGISTER = "auth/register"
-        const val VERIFY_TOKEN = "auth/verify_token"
+        const val VERIFY_TOKEN = "auth/verify"
         const val SEND_AUTH_CODE = "auth/send_auth_code"
         const val SEND_RESET_CODE = "auth/send_reset_code"
         const val RESET_PASSWORD = "auth/reset_password"
@@ -35,10 +35,14 @@ object RetroApi {
         const val IMG_UPLOAD = "community/img_upload"
     }
 
+    /** v2 用户相关接口 */
     object User {
-        const val GET_USER_INFO = "user/get_user_info"
-        const val CHECK_IN = "user/check_in"
-        const val SUBMIT_USERNAME = "user/submit_username"
+        const val ME = "users/me"
+        const val CHECK_IN = "check_in"
+        const val SUBMIT_USERNAME = "users/me/username"
+        // 下面两个仅 v1 存在，已不再使用，保留以便对照
+        const val V1_GET_USER_INFO = "user/get_user_info"
+        const val V1_SUBMIT_USERNAME = "user/submit_username"
     }
 
     object Other {

@@ -1,9 +1,10 @@
 package com.freewdcmkt.bck.layout.nav
 
+import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
@@ -11,7 +12,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -20,10 +20,11 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -33,8 +34,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,11 +44,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.UserCard
+import com.freewdcmkt.bck.components.ui.OffscreenTopAppBar
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.layout.ui.community.FeedListHost
@@ -59,15 +64,22 @@ import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeNavHost(
-    viewmodel: HomeViewmodel = viewModel(),
     feedListViewmodel: FeedListViewmodel = viewModel(),
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onToNotification: () -> Unit,
-    onToAboutApp: () -> Unit
+    onToSearch: () -> Unit,
+    onToAboutApp: () -> Unit,
+    onToUserCenter: () -> Unit,
+    onToSettings: () -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-
+    val context = LocalContext.current
+    val viewmodel: HomeViewmodel = viewModel(
+        factory = viewModelFactory {
+            initializer { HomeViewmodel(context.applicationContext as Application) }
+        }
+    )
     val username by UserInfoData.username.collectAsState()
     val qq by UserInfoData.account.collectAsState()
     val uid by UserInfoData.uid.collectAsState()
@@ -79,7 +91,10 @@ fun HomeNavHost(
 
     val retryHint = stringResource(R.string.retry_hint)
     val snackBarHostState = remember { SnackbarHostState() }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    // 拿出来单独持有，是为了把顶栏的收起高度 heightOffset 传给列表，
+    // 让列表上内边距跟着顶栏一起收，不留空白
+    val topAppBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val unknownError = stringResource(R.string.unknown_error)
@@ -110,24 +125,34 @@ fun HomeNavHost(
     DismissibleNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DismissibleDrawerSheet{ Me(onToAboutApp = onToAboutApp) }
+            DismissibleDrawerSheet {
+                Me(
+                    onToAboutApp = onToAboutApp,
+                    onToUserCenter = onToUserCenter, onToSettings = onToSettings
+                )
+            }
         }
     ) {
         Scaffold(
-           // contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            // 内容铺满全屏：顶栏隐藏后不再留下「状态栏 + 顶栏」的死区，
+            // 帖子列表可以一直滑到状态栏下面
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             topBar = {
-                TopAppBar(
+                OffscreenTopAppBar(
+                    topAppBarState = topAppBarState,
+                    scrollBehavior = scrollBehavior,
                     title = { UserCard(userAvatarUrl(qq), username, uid) },
                     actions = {
+                        IconButton(onClick = onToSearch) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_search_24),
+                                contentDescription = stringResource(R.string.search_hint)
+                            )
+                        }
                         IconButton(onClick = onToNotification) {
                             NotificationIcon(unreadCount)
                         }
-                    },
-                    scrollBehavior = scrollBehavior,
-//                    colors = TopAppBarDefaults.topAppBarColors(
-//                        containerColor = Color.Transparent,                    // 👈 透明
-//                        scrolledContainerColor = MaterialTheme.colorScheme.surface
-//                    )
+                    }
                 )
             },
             snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
@@ -135,12 +160,13 @@ fun HomeNavHost(
 
             Column(
                 modifier = Modifier
-                    //.consumeWindowInsets(innerPadding)
-                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
                 HomeUI(
                     feedListViewmodel = feedListViewmodel,
+                    topAppBarState = topAppBarState,
                     onToPostFeed = onToPostFeed,
                     onToFeedDetail = onToFeedDetail,
                     onLike = { id -> feedListViewmodel.toggleLike(id) },
@@ -167,12 +193,13 @@ fun HomeNavHost(
 
 @Composable
 private fun HomeUI(
+    modifier: Modifier = Modifier,
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onLike: (id: Int) -> Unit,
+    topAppBarState: TopAppBarState,
     homeViewmodel: HomeViewmodel = viewModel(),
-    feedListViewmodel: FeedListViewmodel,
-    modifier: Modifier = Modifier
+    feedListViewmodel: FeedListViewmodel
 ) {
     val refreshViewmodel: RefreshStateViewModel = viewModel()
     val isRefresh = refreshViewmodel.feedRefresh
@@ -197,6 +224,8 @@ private fun HomeUI(
         }) {
         FeedListHost(
             isRefresh = feedUiState is FeedUiState.Loading,
+            topAppBarState = topAppBarState,
+            density = LocalDensity.current,
             onToFeedDetail = onToFeedDetail,
             onToPostFeed = onToPostFeed,
             onToPreviewImg = { url -> imgUrl = url },

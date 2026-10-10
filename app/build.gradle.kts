@@ -21,8 +21,8 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 172
-        versionName = "3.9.2"
+        versionCode = 173
+        versionName = "3.10.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -67,40 +67,55 @@ android {
 }
 
 dependencies {
-    implementation("net.engawapg.lib:zoomable:2.13.0")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-    implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.32.0")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.32.0")
-    implementation("io.coil-kt.coil3:coil:3.1.0")
-    implementation("io.coil-kt.coil3:coil-svg:3.1.0")
-    implementation("io.coil-kt.coil3:coil-compose:3.5.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
-    implementation("androidx.navigation3:navigation3-runtime:1.1.5")
-    implementation("androidx.navigation3:navigation3-ui:1.1.5")
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
-    implementation("com.squareup.okhttp3:okhttp:5.4.0")
-    implementation("androidx.paging:paging-compose:3.2.0")
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+    // ===== Compose（BOM 统一版本）=====
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.material3)
+    implementation(libs.androidx.compose.material3)   // alpha 覆盖
+
+    // ===== AndroidX 基础 =====
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+
+    // ===== Navigation 3 =====
+    implementation("androidx.navigation3:navigation3-runtime:1.1.5")
+    implementation("androidx.navigation3:navigation3-ui:1.1.5")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.10.0")
+
+    // ===== Lifecycle（统一 2.10.0）=====
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+
+    // ===== 网络 =====
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:5.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+
+    // ===== 协程 =====
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+
+    // ===== 图片 =====
+    implementation("io.coil-kt.coil3:coil:3.5.0")
+    implementation("io.coil-kt.coil3:coil-svg:3.5.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.5.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.5.0")
+    implementation("net.engawapg.lib:zoomable:2.13.0")
+
+    // ===== Markdown =====
+    implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.32.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.32.0")
+
+    // ===== 数据 / 存储 =====
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.paging:paging-compose:3.2.0")
+
+    // ===== 测试 =====
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

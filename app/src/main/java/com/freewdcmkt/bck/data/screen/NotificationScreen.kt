@@ -4,7 +4,9 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-object NotificationScreen: NavKey
+data class NotificationScreen(
+    val instanceId: Long = System.nanoTime()
+) : NavKey
 @Serializable
 data class NotificationDataList(
     val list: List<NotificationData>

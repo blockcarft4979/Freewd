@@ -34,8 +34,8 @@ fun FreewdSwitch(
     ) {
         Text(
             text = text,
+            modifier = modifier.weight(1f)
         )
-        Spacer(modifier.width(8.dp))
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,

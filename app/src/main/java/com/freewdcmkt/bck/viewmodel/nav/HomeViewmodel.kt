@@ -12,7 +12,7 @@ import com.freewdcmkt.bck.util.JsonParser.json
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.network.CommunityClient
-import com.freewdcmkt.bck.util.network.RetroClient
+import com.freewdcmkt.bck.util.network.RetroV2Client
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -99,13 +99,15 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     fun verifyToken() {
         viewModelScope.launch {
             try {
-                val response = RetroClient.apiService.verifyToken()
+                // v2：GET /auth/verify，响应信封为 {success, data, message}
+                val response = RetroV2Client.apiService.verifyToken()
                 val data = response.body()
-                if (data?.data != null) {
-                    val data = data.data
-                    UserInfoData.updateUnreadCount(data.unreadCount)
-                    UserInfoManager.saveUsername(data.username)
+                if (response.isSuccessful && data?.isSuccess == true && data.data != null) {
+                    val result = data.data
+                    UserInfoData.updateUnreadCount(result.unreadCount)
+                    UserInfoManager.saveUsername(result.username)
                 } else {
+                    // token 无效 / 已过期（服务端 401）：清掉本地登录态
                     TokenManager.clearToken()
                     UserInfoManager.clearAllData()
                     _homeUiState.value = HomeUiState.Error(null)

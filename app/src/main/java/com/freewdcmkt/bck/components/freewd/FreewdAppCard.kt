@@ -85,6 +85,7 @@ fun NotificationCard(
                         ContentText(
                             stringResource(
                                 R.string.reply_feed_hint,
+                                username,
                                 msg
                             )
                         )

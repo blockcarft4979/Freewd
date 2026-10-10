@@ -15,6 +15,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,6 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.NotificationCard
@@ -36,16 +40,18 @@ import com.freewdcmkt.bck.viewmodel.user.NotificationViewmodel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Notification(
-    viewmodel: NotificationViewmodel = viewModel(),
     onToFeedDetail: (Int) -> Unit,
     onBack: () -> Unit
 ) {
+    val viewmodel: NotificationViewmodel = viewModel()
     val snackBarHostState = remember { SnackbarHostState() }
     val uiStates by viewmodel.uiStates.collectAsState()
     val expand = remember { mutableStateOf(false) }
     val noNetworkHint = stringResource(R.string.no_internet_hint)
     val yesHint = stringResource(R.string.yes_hint)
+
     LaunchedEffect(Unit) { viewmodel.getNotification() }
+
 
     LaunchedEffect(uiStates) {
         if (uiStates is NotificationUiStates.LoadError) {

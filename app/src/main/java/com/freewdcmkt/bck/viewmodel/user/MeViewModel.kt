@@ -3,11 +3,11 @@ package com.freewdcmkt.bck.viewmodel.user
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.screen.UsernameData
-import com.freewdcmkt.bck.util.JsonParser
 import com.freewdcmkt.bck.util.UserInfoManager
-import com.freewdcmkt.bck.util.network.RetroClient
+import com.freewdcmkt.bck.util.network.ApiResult
+import com.freewdcmkt.bck.util.network.RetroV2Client
+import com.freewdcmkt.bck.util.network.safeApiCall
 import com.freewdcmkt.bck.util.time.getSystemDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,23 +25,21 @@ class MeViewModel : ViewModel() {
     fun submitUsername(username: String) {
         viewModelScope.launch {
             _isShowSubmittingDialog.value = true
-            try {
-                val response = RetroClient.apiService.submitUsername(UsernameData(username))
-                val data = response.body()
-                if (data?.data != null) {
-                    val data = data.data
-                    _isShowSubmittingDialog.value = false
-                    UserInfoManager.saveUsername(data.username)
-                } else {
-                    val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(
-                        response.errorBody()?.string() ?: ""
-                    )
-                    _errorMsg.value = errorData.msg ?: ""
+            when (val result = safeApiCall { RetroV2Client.apiService.submitUsername(UsernameData(username)) }) {
+                is ApiResult.Success -> {
+                    result.data?.username?.let { UserInfoManager.saveUsername(it) }
                     _isShowSubmittingDialog.value = false
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _isShowSubmittingDialog.value = false
+
+                is ApiResult.Error -> {
+                    _errorMsg.value = result.message
+                    _isShowSubmittingDialog.value = false
+                }
+
+                is ApiResult.NetworkError -> {
+                    _isShowSubmittingDialog.value = false
+                    Log.d("USER CENTER", "submitUsername network error")
+                }
             }
         }
     }
@@ -49,29 +47,27 @@ class MeViewModel : ViewModel() {
     fun checkIn() {
         _isShowCheckInDialog.value = true
         viewModelScope.launch {
-            try {
-                val response = RetroClient.apiService.checkIn()
-                val data = response.body()
-                Log.d("USER CENTER rep", response.toString())
-                if (data?.data != null) {
-                    val data = data.data
-                    UserInfoManager.saveCheckInDays(data.checkInDays)
-                    UserInfoManager.saveExp(data.totalXp)
-                    UserInfoManager.saveLastCheckInDate(getSystemDate())
-                    _isShowCheckInDialog.value = false
-                } else {
-                    val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(
-                        response.errorBody()?.string() ?: ""
-                    )
-                    _errorMsg.value = errorData.msg ?: ""
+            when (val result = safeApiCall { RetroV2Client.apiService.checkIn() }) {
+                is ApiResult.Success -> {
+                    result.data?.let { data ->
+                        UserInfoManager.saveCheckInDays(data.checkInDays)
+                        UserInfoManager.saveExp(data.totalXp)
+                        UserInfoManager.saveLastCheckInDate(data.lastCheckInDate ?: getSystemDate())
+                    }
                     _isShowCheckInDialog.value = false
                 }
-            } catch (e: Exception) {
-                _isShowCheckInDialog.value = false
-                Log.d("USER CENTER", e.toString())
+
+                is ApiResult.Error -> {
+                    _errorMsg.value = result.message
+                    _isShowCheckInDialog.value = false
+                }
+
+                is ApiResult.NetworkError -> {
+                    _isShowCheckInDialog.value = false
+                    Log.d("USER CENTER", "checkIn network error")
+                }
             }
         }
-
     }
 
 

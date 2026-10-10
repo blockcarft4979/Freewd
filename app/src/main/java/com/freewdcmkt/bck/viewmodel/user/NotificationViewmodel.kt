@@ -1,63 +1,53 @@
 package com.freewdcmkt.bck.viewmodel.user
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.data.BaseData
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.NotificationData
-import com.freewdcmkt.bck.data.screen.NotificationDataList
-import com.freewdcmkt.bck.util.JsonParser
-import com.freewdcmkt.bck.util.network.NetworkClient
-import kotlinx.coroutines.Dispatchers
+import com.freewdcmkt.bck.util.network.ApiResult
+import com.freewdcmkt.bck.util.network.RetroV2Client
+import com.freewdcmkt.bck.util.network.safeApiCall
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class NotificationViewmodel : ViewModel() {
     private var isLoaded: Boolean = false
     private val _uiStates = MutableStateFlow<NotificationUiStates>(NotificationUiStates.Loading)
     val uiStates: StateFlow<NotificationUiStates> = _uiStates.asStateFlow()
+
+    /** GET /notifications（v2，等价于 v1 的 notification/get_notification.php） */
     fun getNotification() {
         if (isLoaded) {
             return
         }
         _uiStates.value = NotificationUiStates.Loading
         viewModelScope.launch {
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Notification.NOTIFICATION_URL).build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                Log.d("NOTIFICATION VIEWMODEL", body)
-                val data = JsonParser.json.decodeFromString<BaseData<NotificationDataList>>(body)
-                Log.d("NOTIFICATION VIEWMODEL DATA", data.toString())
-                if (response.isSuccessful && data.data != null) {
+            when (val result = safeApiCall { RetroV2Client.apiService.getNotifications() }) {
+                is ApiResult.Success -> {
                     isLoaded = true
                     UserInfoData.clearUnreadCount()
-                    _uiStates.value = NotificationUiStates.Finish(data.data.list)
-                } else {
-                    val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
-                    _uiStates.value = NotificationUiStates.LoadError(errorData.msg)
+                    _uiStates.value = NotificationUiStates.Finish(result.data?.list ?: emptyList())
                 }
-            } catch (e: Exception) {
-                _uiStates.value = NotificationUiStates.LoadError(isNoNetwork = true)
+
+                is ApiResult.Error -> {
+                    _uiStates.value = NotificationUiStates.LoadError(result.message)
+                }
+
+                is ApiResult.NetworkError -> {
+                    _uiStates.value = NotificationUiStates.LoadError(isNoNetwork = true)
+                }
             }
         }
-        Log.d("NOTIFICATION VIEWMODEL", _uiStates.value.toString())
     }
 
 
+    /** POST /notifications/clear（v2，等价于 v1 的 notification/clear_notification.php） */
     fun clearNotifications(isAll: Boolean) {
         if (!isLoaded) {
             return
@@ -72,25 +62,19 @@ class NotificationViewmodel : ViewModel() {
             }.toString().toRequestBody("application/json".toMediaType())
 
         viewModelScope.launch {
-
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    NetworkClient.client.newCall(
-                        Request.Builder().url(RequestApi.Notification.CLEAR_ALL_NOTIFICATIONS)
-                            .post(requestBody).build()
-                    ).execute()
-                }
-                val body = response.body.string()
-                if (response.isSuccessful) {
+            when (val result = safeApiCall { RetroV2Client.apiService.clearNotifications(requestBody) }) {
+                is ApiResult.Success -> {
                     _uiStates.value = NotificationUiStates.Finish(emptyList())
-                } else {
-                    val errorData = JsonParser.json.decodeFromString<BaseData<Nothing>>(body)
-                    _uiStates.value = NotificationUiStates.LoadError(errorData.msg)
                 }
-            } catch (e: Exception) {
-                _uiStates.value = NotificationUiStates.LoadError(isNoNetwork = true)
-            }
 
+                is ApiResult.Error -> {
+                    _uiStates.value = NotificationUiStates.LoadError(result.message)
+                }
+
+                is ApiResult.NetworkError -> {
+                    _uiStates.value = NotificationUiStates.LoadError(isNoNetwork = true)
+                }
+            }
         }
 
     }

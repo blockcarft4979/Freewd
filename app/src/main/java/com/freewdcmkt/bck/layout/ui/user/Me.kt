@@ -1,9 +1,13 @@
 package com.freewdcmkt.bck.layout.ui.user
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -14,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -35,7 +40,12 @@ import com.freewdcmkt.bck.viewmodel.user.MeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Me(viewmodel: MeViewModel = viewModel(), onToAboutApp: () -> Unit) {
+fun Me(
+    viewmodel: MeViewModel = viewModel(),
+    onToAboutApp: () -> Unit,
+    onToUserCenter: () -> Unit,
+    onToSettings: () -> Unit
+) {
 
     val isShowChenInDialog by viewmodel.isShowChenInDialog.collectAsState()
     val isChecked by UserInfoData.isChecked.collectAsState()
@@ -66,7 +76,8 @@ fun Me(viewmodel: MeViewModel = viewModel(), onToAboutApp: () -> Unit) {
         checkInDays = checkInDays,
         isChecked = isChecked,
         onCheckIn = { viewmodel.checkIn() },
-        onToAboutApp = onToAboutApp
+        onToAboutApp = onToAboutApp,
+        onToUserCenter = onToUserCenter, onToSettings = onToSettings
     )
 
 }
@@ -78,7 +89,9 @@ private fun MeUiLayout(
     isChecked: Boolean,
     onConfirmUsername: (String) -> Unit,
     onCheckIn: () -> Unit,
-    onToAboutApp: () -> Unit
+    onToAboutApp: () -> Unit,
+    onToUserCenter: () -> Unit,
+    onToSettings: () -> Unit
 ) {
 
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
@@ -125,11 +138,19 @@ private fun MeUiLayout(
                 uid
             )
         })
-    }) { innerPadding ->
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = onToSettings) {
+            Icon(
+                painterResource(R.drawable.baseline_settings_24),
+                contentDescription = null
+            )
+        }
+    }, floatingActionButtonPosition = FabPosition.Start) { innerPadding ->
         LazyColumn(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 15.dp)
+                .padding(horizontal = 15.dp),
         ) {
 
             item {
@@ -140,12 +161,13 @@ private fun MeUiLayout(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
 
-//            SettingCard(
-//                R.drawable.personal_center,
-//                stringResource(R.string.user_center_hint),
-//                stringResource(R.string.user_center_description_hint),
-//                onClick = onToUserCenter
-//            )
+                // 个人中心：进入自己的主页（资料卡 + 等级经验卡 + 我的帖子）
+                SettingCard(
+                    icon = R.drawable.personal_center,
+                    name = stringResource(R.string.user_center_hint),
+                    description = stringResource(R.string.user_center_description_hint),
+                    onClick = onToUserCenter
+                )
                 SettingCard(
                     icon = if (isChecked) R.drawable.calendarchecked else
                         R.drawable.calendaruncheck,
@@ -181,5 +203,6 @@ private fun MeUiLayout(
             }
         }
     }
+
 
 }

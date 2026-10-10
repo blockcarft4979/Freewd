@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 日本語。key は values/strings.xml と完全に一致させてください。 -->
+<resources>
+
+    <!-- ========== アプリ ========== -->
+    <string name="app_name">Freewd コミュニティ</string>
+    <string name="app_introduction">Freewd は愛から生まれました</string>
+    <string name="content_desc_app_icon">アプリアイコン</string>
+
+    <!-- ========== ログイン / 登録 ========== -->
+    <string name="login_welcome_title">Freewd コミュニティへようこそ</string>
+    <string name="login_account_hint">QQ アカウント</string>
+    <string name="login_password_hint">パスワード</string>
+    <string name="login_login_btn">ログイン</string>
+    <string name="login_register_btn">新規登録</string>
+    <string name="login_hint">ログインすると便利な機能をご利用いただけます</string>
+    <string name="login_password_or_account_needed">アカウントとパスワードの両方を入力してください</string>
+    <string name="login_success">おかえりなさい</string>
+    <string name="logging_in_hint">ログイン中…</string>
+    <string name="register_hint">新規登録</string>
+    <string name="auth_code">認証コード</string>
+    <string name="send_auth_code">コードを送信</string>
+    <string name="wait_send_auth_code">%s 秒後にもう一度お試しください</string>
+    <string name="agree_agreement_part">利用規約とプライバシーポリシーを読み、同意します</string>
+    <string name="user_agreement">利用規約</string>
+    <string name="policy_privacy">プライバシーポリシー</string>
+    <string name="confirm_password_hint">パスワードの確認</string>
+    <string name="forget_password_hint">パスワードをお忘れですか？</string>
+
+    <!-- ========== パスワード変更 ========== -->
+    <string name="change_password_hint">パスワード変更</string>
+    <string name="new_password_hint">新しいパスワード</string>
+    <string name="submit_password_hint">パスワードを送信</string>
+    <string name="change_password_succeed_toast_hint">パスワードを変更しました。3 秒後にログイン画面へ移動します</string>
+
+    <!-- ========== ホーム / タイムライン ========== -->
+    <string name="home_hint">ホーム</string>
+    <string name="me_hint">マイページ</string>
+    <string name="uid_hint">UID: %s</string>
+    <string name="feed_detail_hint">投稿の詳細</string>
+    <string name="add_post_hint">新規投稿</string>
+    <string name="post_hint">投稿</string>
+    <string name="favorite_hint">いいね</string>
+    <string name="freewd_feed_hint">Freewd フィード</string>
+    <string name="loading_hint">読み込み中</string>
+    <string name="load_error_hint">読み込みに失敗しました</string>
+    <string name="retry_hint">再試行</string>
+    <string name="back_hint">戻る</string>
+    <string name="more_hint">その他</string>
+    <string name="send_hint">送信</string>
+    <string name="reply_hint">返信</string>
+    <string name="reply_to_user_hint">%s さんに返信</string>
+    <string name="copy_feed_link_hint">投稿リンクをコピー</string>
+    <string name="copied_link_hint">リンクをコピーしました</string>
+    <string name="post_count_hint">投稿: %s</string>
+    <string name="likes_count_hint">いいね: %s</string>
+
+    <!-- ========== 投稿 ========== -->
+    <string name="post_new_feed_hint">投稿</string>
+    <string name="post_feed_content_hint">今あったことを共有</string>
+    <string name="anonymous_post_hint">匿名で投稿</string>
+    <string name="title_hint">タイトル</string>
+    <string name="content_hint">本文</string>
+    <string name="add_picture_hint">画像を追加</string>
+    <string name="enabled_markdown_hint">Markdown 有効</string>
+    <string name="disabled_markdown_hint">Markdown 無効</string>
+
+    <!-- ========== 通知 ========== -->
+    <string name="notification_hint">通知</string>
+    <string name="no_notifications_hint">通知はありません</string>
+    <string name="clear_all_notifications_hint">すべて消去</string>
+    <string name="like_feed_hint">%s さんがあなたの投稿にいいねしました</string>
+    <string name="reply_feed_hint">%s さんがあなたの投稿に返信しました: %s</string>
+    <string name="unsupported_notification_hint">対応していない種類です。アプリを更新してください</string>
+
+    <!-- ========== マイページ ========== -->
+    <string name="user_center_hint">マイページ</string>
+    <string name="user_center_description_hint">プロフィールと自分の投稿を表示</string>
+    <string name="change_username_hint">ユーザー名を変更</string>
+    <string name="change_username_description_hint">タップしてユーザー名を変更</string>
+    <string name="check_in_hint">チェックイン</string>
+    <string name="checking_hint">チェックイン中…</string>
+    <string name="unchecked_hint">本日はまだチェックインしていません</string>
+    <string name="checked_hint">%d 日連続でチェックインしました</string>
+    <string name="logout_hint">ログアウト</string>
+    <string name="logout_account_hint">現在のアカウントからログアウトしますか？</string>
+    <string name="logout_description_hint">現在のアカウントからログアウトします</string>
+    <string name="follow_me">フォローする</string>
+
+    <!-- ========== ダイアログ / 確認 ========== -->
+    <string name="yes_hint">OK</string>
+    <string name="no_hint">キャンセル</string>
+    <string name="cancel_hint">キャンセル</string>
+    <string name="delete_hint">削除</string>
+    <string name="delete_post_title_hint">投稿を削除</string>
+    <string name="delete_post_message_hint">この投稿を削除しますか？</string>
+    <string name="delete_comment_title_hint">コメントを削除</string>
+    <string name="delete_comment_message_hint">このコメントを削除しますか？この操作は取り消せません</string>
+
+    <!-- ========== 画像 ========== -->
+    <string name="image_hint">画像</string>
+    <string name="upload_image">画像をアップロード</string>
+    <string name="preview_image">画像をプレビュー</string>
+
+    <!-- ========== アプリについて ========== -->
+    <string name="about_hint">このアプリについて</string>
+    <string name="about_app_hint">Freewd について</string>
+    <string name="browser_hint">ブラウザ</string>
+
+    <!-- ========== 検索 ========== -->
+    <string name="search_hint">投稿を検索</string>
+    <string name="searching_hint">検索中…</string>
+    <string name="search_empty_hint">該当する投稿が見つかりません</string>
+    <string name="search_action_hint">検索</string>
+    <string name="search_user_hint">ユーザーを検索</string>
+    <string name="search_user_empty_hint">該当するユーザーが見つかりません</string>
+    <string name="search_tab_post">投稿</string>
+    <string name="search_tab_user">ユーザー</string>
+    <string name="user_post_count_hint">投稿 %d 件</string>
+    <string name="user_xp_hint">%d XP</string>
+
+    <!-- ========== ユーザーページ ========== -->
+    <string name="user_profile_hint">プロフィール</string>
+    <string name="user_joined_hint">%s 登録</string>
+    <string name="user_stat_post">投稿</string>
+    <string name="user_stat_like">いいね</string>
+    <string name="user_stat_xp">XP</string>
+    <string name="user_posts_section_hint">このユーザーの投稿</string>
+    <string name="user_no_post_hint">まだ投稿がありません</string>
+    <string name="user_my_posts_hint">自分の投稿</string>
+
+    <!-- ========== 共通ステータス ========== -->
+    <string name="wait_hint">しばらくお待ちください…</string>
+    <string name="submitting_hint">送信中…</string>
+    <string name="uploading_hint">アップロード中…</string>
+    <string name="unknown_error">不明なエラーが発生しました。ネットワークの問題かもしれません</string>
+    <string name="no_internet_hint">ネットワークに接続できません。接続設定をご確認ください</string>
+    <string name="data_error_hint">データの読み取りに失敗しました。もう一度お試しください</string>
+
+</resources>

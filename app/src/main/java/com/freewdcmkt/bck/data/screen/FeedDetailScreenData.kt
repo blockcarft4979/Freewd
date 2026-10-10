@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Serializable
 data class FeedDetailScreenData(

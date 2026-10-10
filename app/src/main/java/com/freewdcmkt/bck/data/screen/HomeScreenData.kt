@@ -26,6 +26,14 @@ data class LikeResult(
     @SerialName("like_count") val likeCount: Int
 )
 
+/**
+ * v2 GET /auth/verify 的返回。
+ * 服务端字段是 snake_case（unread_count），JsonParser 配了 SnakeCase 命名策略，无需注解。
+ */
 @Serializable
-data class VerifyTokenData(val username: String, val unreadCount: Int)
+data class VerifyTokenData(
+    val username: String,
+    val unreadCount: Int = 0,
+    val qq: String? = null
+)
 

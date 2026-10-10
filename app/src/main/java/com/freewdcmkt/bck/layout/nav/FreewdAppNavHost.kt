@@ -16,9 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.freewdcmkt.bck.data.screen.AboutAppScreenData
 import com.freewdcmkt.bck.data.screen.BrowserScreenData
@@ -26,11 +28,19 @@ import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
 import com.freewdcmkt.bck.data.screen.NotificationScreen
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
+import com.freewdcmkt.bck.data.screen.SearchScreen
+import com.freewdcmkt.bck.data.screen.SettingsScreenData
+import com.freewdcmkt.bck.data.screen.UserCenterScreen
+import com.freewdcmkt.bck.data.screen.UserProfileScreen
 import com.freewdcmkt.bck.layout.ui.community.FeedDetailLayout
 import com.freewdcmkt.bck.layout.ui.community.PostFeedLayout
+import com.freewdcmkt.bck.layout.ui.community.SearchLayout
 import com.freewdcmkt.bck.layout.ui.other.About
 import com.freewdcmkt.bck.layout.ui.other.BrowserLayout
+import com.freewdcmkt.bck.layout.ui.other.Settings
 import com.freewdcmkt.bck.layout.ui.user.Notification
+import com.freewdcmkt.bck.layout.ui.user.UserCenterLayout
+import com.freewdcmkt.bck.layout.ui.user.UserProfileLayout
 
 
 // 一个简单的共享状态，替代原来的 savedStateHandle[REFRESH]
@@ -48,6 +58,10 @@ fun FreewdAppNavHost(
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
 
         transitionSpec = {
@@ -86,8 +100,34 @@ fun FreewdAppNavHost(
                 HomeNavHost(
                     onToFeedDetail = { backStack.add(FeedDetailScreenData(it)) },
                     onToPostFeed = { backStack.add(PostFeedScreen()) },
-                    onToNotification = { backStack.add(NotificationScreen) },
+                    onToNotification = { backStack.add(NotificationScreen()) },
+                    onToSearch = { backStack.add(SearchScreen) },
                     onToAboutApp = { backStack.add(AboutAppScreenData) },
+                    onToUserCenter = { backStack.add(UserCenterScreen) },
+                    onToSettings = { backStack.add(SettingsScreenData) }
+                )
+            }
+
+            entry<SearchScreen> {
+                SearchLayout(
+                    onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
+                    onToUserProfile = { qq -> backStack.add(UserProfileScreen(qq)) },
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
+
+            entry<UserProfileScreen> { args ->
+                UserProfileLayout(
+                    qq = args.qq,
+                    onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
+                    onBack = { backStack.removeLastOrNull() }
+                )
+            }
+
+            entry<UserCenterScreen> {
+                UserCenterLayout(
+                    onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
+                    onBack = { backStack.removeLastOrNull() }
                 )
             }
 
@@ -126,6 +166,7 @@ fun FreewdAppNavHost(
             }
 
             entry<AboutAppScreenData> { About() }
+            entry<SettingsScreenData> { Settings() }
 
         }
     )

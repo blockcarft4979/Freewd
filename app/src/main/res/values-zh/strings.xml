@@ -1,106 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 简体中文。key 必须与 values/strings.xml 完全一致。 -->
 <resources>
-    <!-- 应用名称 -->
+
+    <!-- ========== 应用 ========== -->
     <string name="app_name">Freewd 社区</string>
-
-    <!-- ========== 登录界面 ========== -->
     <string name="app_introduction">Freewd 因爱而生</string>
-    <string name="login_welcome_title">欢迎来到 Freewd 社区</string>
-    <string name="login_account_hint">请输入您的 QQ 号</string>
-    <string name="login_password_hint">请输入您的密码</string>
-    <string name="login_login_btn">登录</string>
-    <string name="login_register_btn">注册</string>
-    <string name="login_hint">登录即可享受优质服务~</string>
-    <string name="login_password_or_account_needed">请确保账号和密码都已填写</string>
-    <string name="login_success">欢迎回来</string>
-
-    <!-- ========== 无障碍描述 ========== -->
     <string name="content_desc_app_icon">应用图标</string>
 
-    <!-- ========== 网络与数据错误 ========== -->
-    <string name="logout_account_hint">你要退出当前账号吗？</string>
-    <string name="no_internet_hint">网络连接不可用，请检查网络设置。</string>
-    <string name="data_error_hint">数据解析失败，请重试。</string>
-
-    <!-- ========== 主界面 / 首页 ========== -->
-    <string name="home_hint">首页</string>
-    <string name="uid_hint">UID：%s</string>
-    <string name="post_hint">帖子</string>
-    <string name="post_new_feed_hint">发布</string>
-    <string name="add_post_hint">发新帖</string>
-    <string name="browser_hint">浏览</string>
-    <string name="feed_detail_hint">帖子详情</string>
-    <string name="load_error_hint">加载失败</string>
-    <string name="favorite_hint">点赞</string>
-    <string name="me_hint">我的</string>
-    <string name="retry_hint">重试</string>
-    <string name="title_hint">标题</string>
-    <string name="content_hint">内容</string>
-    <string name="delete_hint">删除</string>
-    <string name="confirm_password_hint">确认密码</string>
-    <string name="wait_send_auth_code">请等待 %s 秒后重试</string>
+    <!-- ========== 登录 / 注册 ========== -->
+    <string name="settings_hint">设置</string>
+    <string name="login_welcome_title">欢迎来到 Freewd 社区</string>
+    <string name="login_account_hint">QQ 号</string>
+    <string name="login_password_hint">密码</string>
+    <string name="login_login_btn">登录</string>
+    <string name="login_register_btn">注册</string>
+    <string name="login_hint">登录即可享受优质服务～</string>
+    <string name="login_password_or_account_needed">请确保账号和密码都已填写</string>
+    <string name="login_success">欢迎回来</string>
+    <string name="logging_in_hint">正在登录…</string>
     <string name="register_hint">注册</string>
     <string name="auth_code">验证码</string>
     <string name="send_auth_code">发送验证码</string>
-    <string name="reply_hint">回复</string>
-    <string name="more_hint">更多</string>
-    <string name="back_hint">返回</string>
-
-    <!-- ========== 对话框操作 ========== -->
-    <string name="delete_post_title_hint">删除帖子</string>
-    <string name="delete_post_message_hint">确定要删除此帖吗？</string>
-    <string name="yes_hint">确定</string>
-    <string name="no_hint">取消</string>
-    <string name="send_hint">发送</string>
-    <string name="notification_hint">通知</string>
-    <string name="copy_feed_link_hint">复制链接</string>
-    <string name="reply_to_user_hint">回复 %s</string>
-    <string name="freewd_feed_hint">Freewd 帖子</string>
-    <string name="copied_link_hint">链接已复制</string>
-    <string name="like_feed_hint">点赞了你的帖子</string>
-    <string name="reply_feed_hint">回复了你的帖子：%s</string>
-    <string name="unsupported_notification_hint">不支持的类型，请升级应用</string>
-    <string name="post_count_hint">帖子：%s</string>
-    <string name="likes_count_hint">获赞：%s</string>
-    <string name="change_username_hint">修改用户名</string>
-    <string name="change_username_description_hint">点击这里更改你的用户名</string>
-    <string name="logout_hint">退出登录</string>
-    <string name="logout_description_hint">退出当前账号</string>
-    <string name="hint_logout_hint">退出登录</string>
-    <string name="no_notifications_hint">无通知</string>
-    <string name="clear_all_notifications_hint">清理通知</string>
-    <string name="loading_hint">加载中</string>
-    <string name="image_hint">图片</string>
-    <string name="upload_image">上传图片</string>
-    <string name="preview_image">预览图片</string>
-    <string name="cancel_hint">取消</string>
-    <string name="submitting_hint">提交中......</string>
-    <string name="user_center_hint">用户中心</string>
-    <string name="user_center_description_hint">查看你的信息</string>
-    <string name="uploading_hint">上传中......</string>
-    <string name="about_hint">关于</string>
-    <string name="about_app_hint">关于 Freewd</string>
+    <string name="wait_send_auth_code">请等待 %s 秒后重试</string>
     <string name="agree_agreement_part">我已阅读《用户协议》和《隐私政策》</string>
     <string name="user_agreement">用户协议</string>
     <string name="policy_privacy">隐私政策</string>
-    <string name="add_picture_hint">添加图片</string>
-    <string name="check_in_hint">签到</string>
-    <string name="unchecked_hint">今日还未签到</string>
-    <string name="checked_hint">已签到 %d 天</string>
-    <string name="checking_hint">签到中......</string>
-    <string name="logging_in_hint">正在登录......</string>
-    <string name="unknown_error">未知错误，也许是网络问题？</string>
-    <string name="wait_hint">请等待......</string>
-    <string name="post_feed_content_hint">分享新鲜事</string>
-    <string name="anonymous_post_hint">匿名贴</string>
-    <string name="change_password_hint">修改密码</string>
-    <string name="change_password_succeed_toast_hint">修改密码成功，3秒后将会跳转登录</string>
-    <string name="new_password_hint">输入新的密码</string>
+    <string name="confirm_password_hint">确认密码</string>
     <string name="forget_password_hint">忘记密码了？</string>
+
+    <!-- ========== 修改密码 ========== -->
+    <string name="change_password_hint">修改密码</string>
+    <string name="new_password_hint">新密码</string>
     <string name="submit_password_hint">提交密码</string>
-    <string name="follow_me">关注我</string>
-    <string name="delete_comment_title_hint">删除评论</string>
-    <string name="delete_comment_message_hint">确定要删除这条评论吗？此操作不可恢复。</string>
+    <string name="change_password_succeed_toast_hint">密码修改成功，3 秒后将跳转到登录页</string>
+
+    <!-- ========== 首页 / 帖子流 ========== -->
+    <string name="home_hint">首页</string>
+    <string name="me_hint">我的</string>
+    <string name="uid_hint">UID：%s</string>
+    <string name="feed_detail_hint">帖子详情</string>
+    <string name="add_post_hint">发新帖</string>
+    <string name="post_hint">帖子</string>
+    <string name="favorite_hint">点赞</string>
+    <string name="freewd_feed_hint">Freewd 帖子</string>
+    <string name="loading_hint">加载中</string>
+    <string name="load_error_hint">加载失败</string>
+    <string name="retry_hint">重试</string>
+    <string name="back_hint">返回</string>
+    <string name="more_hint">更多</string>
+    <string name="send_hint">发送</string>
+    <string name="reply_hint">回复</string>
+    <string name="reply_to_user_hint">回复 %s</string>
+    <string name="copy_feed_link_hint">复制帖子链接</string>
+    <string name="copied_link_hint">链接已复制</string>
+    <string name="post_count_hint">帖子：%s</string>
+    <string name="likes_count_hint">获赞：%s</string>
+
+    <!-- ========== 发帖 ========== -->
+    <string name="post_new_feed_hint">发布</string>
+    <string name="post_feed_content_hint">分享新鲜事</string>
+    <string name="anonymous_post_hint">匿名发帖</string>
+    <string name="title_hint">标题</string>
+    <string name="content_hint">正文</string>
+    <string name="add_picture_hint">添加图片</string>
     <string name="enabled_markdown_hint">已启用 Markdown</string>
     <string name="disabled_markdown_hint">已禁用 Markdown</string>
+
+    <!-- ========== 通知 ========== -->
+    <string name="notification_hint">通知</string>
+    <string name="no_notifications_hint">暂无通知</string>
+    <string name="clear_all_notifications_hint">清空通知</string>
+    <string name="like_feed_hint">%s 赞了你的帖子</string>
+    <string name="reply_feed_hint">%s 回复了你的帖子：%s</string>
+    <string name="unsupported_notification_hint">暂不支持该类型，请更新应用</string>
+
+    <!-- ========== 用户中心 ========== -->
+    <string name="user_center_hint">个人中心</string>
+    <string name="user_center_description_hint">查看个人资料与我的帖子</string>
+    <string name="change_username_hint">修改用户名</string>
+    <string name="change_username_description_hint">点击这里更改你的用户名</string>
+    <string name="check_in_hint">签到</string>
+    <string name="checking_hint">签到中…</string>
+    <string name="unchecked_hint">今日还未签到</string>
+    <string name="checked_hint">已连续签到 %d 天</string>
+    <string name="logout_hint">退出登录</string>
+    <string name="logout_account_hint">你要退出当前账号吗？</string>
+    <string name="logout_description_hint">退出当前账号</string>
+    <string name="follow_me">关注我</string>
+
+    <!-- ========== 对话框 / 确认 ========== -->
+    <string name="yes_hint">确定</string>
+    <string name="no_hint">取消</string>
+    <string name="cancel_hint">取消</string>
+    <string name="delete_hint">删除</string>
+    <string name="delete_post_title_hint">删除帖子</string>
+    <string name="delete_post_message_hint">确定要删除此帖吗？</string>
+    <string name="delete_comment_title_hint">删除评论</string>
+    <string name="delete_comment_message_hint">确定要删除这条评论吗？此操作不可恢复。</string>
+
+    <!-- ========== 图片 ========== -->
+    <string name="image_hint">图片</string>
+    <string name="upload_image">上传图片</string>
+    <string name="preview_image">预览图片</string>
+
+    <!-- ========== 关于 ========== -->
+    <string name="about_hint">关于</string>
+    <string name="about_app_hint">关于 Freewd</string>
+    <string name="browser_hint">浏览</string>
+
+    <!-- ========== 搜索 ========== -->
+    <string name="search_hint">搜索帖子</string>
+    <string name="searching_hint">搜索中…</string>
+    <string name="search_empty_hint">没有找到相关帖子</string>
+    <string name="search_action_hint">搜索</string>
+    <string name="search_user_hint">搜索用户</string>
+    <string name="search_user_empty_hint">没有找到相关用户</string>
+    <string name="search_tab_post">帖子</string>
+    <string name="search_tab_user">用户</string>
+    <string name="user_post_count_hint">%d 篇帖子</string>
+    <string name="user_xp_hint">%d 经验</string>
+
+    <!-- ========== 用户主页 ========== -->
+    <string name="user_profile_hint">个人主页</string>
+    <string name="user_joined_hint">%s 加入</string>
+    <string name="user_stat_post">帖子</string>
+    <string name="user_stat_like">获赞</string>
+    <string name="user_stat_xp">经验</string>
+    <string name="user_posts_section_hint">TA 的帖子</string>
+    <string name="user_no_post_hint">还没有发过帖子</string>
+    <string name="user_my_posts_hint">我的帖子</string>
+
+    <!-- ========== 通用状态 ========== -->
+    <string name="setting_unsupported_devices">不支持的设备 :(</string>
+    <string name="wait_hint">请稍候…</string>
+    <string name="submitting_hint">提交中…</string>
+    <string name="uploading_hint">上传中…</string>
+    <string name="unknown_error">未知错误，也许是网络问题？</string>
+    <string name="no_internet_hint">网络连接不可用，请检查网络设置。</string>
+    <string name="data_error_hint">数据解析失败，请重试。</string>
+    <string name="setting_enable_dynamic_hint">启用动态取色</string>
+
 </resources>

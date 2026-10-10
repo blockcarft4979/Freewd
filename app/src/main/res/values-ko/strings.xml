@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 한국어. key는 values/strings.xml와 완전히 동일해야 합니다. -->
+<resources>
+
+    <!-- ========== 앱 ========== -->
+    <string name="app_name">Freewd 커뮤니티</string>
+    <string name="app_introduction">Freewd는 사랑에서 시작되었습니다</string>
+    <string name="content_desc_app_icon">앱 아이콘</string>
+
+    <!-- ========== 로그인 / 회원가입 ========== -->
+    <string name="login_welcome_title">Freewd 커뮤니티에 오신 것을 환영합니다</string>
+    <string name="login_account_hint">QQ 계정</string>
+    <string name="login_password_hint">비밀번호</string>
+    <string name="login_login_btn">로그인</string>
+    <string name="login_register_btn">회원가입</string>
+    <string name="login_hint">로그인하고 다양한 기능을 이용해 보세요</string>
+    <string name="login_password_or_account_needed">계정과 비밀번호를 모두 입력해 주세요</string>
+    <string name="login_success">다시 만나 반가워요</string>
+    <string name="logging_in_hint">로그인 중…</string>
+    <string name="register_hint">회원가입</string>
+    <string name="auth_code">인증번호</string>
+    <string name="send_auth_code">인증번호 받기</string>
+    <string name="wait_send_auth_code">%s초 후에 다시 시도해 주세요</string>
+    <string name="agree_agreement_part">이용약관과 개인정보 처리방침을 확인했으며 이에 동의합니다</string>
+    <string name="user_agreement">이용약관</string>
+    <string name="policy_privacy">개인정보 처리방침</string>
+    <string name="confirm_password_hint">비밀번호 확인</string>
+    <string name="forget_password_hint">비밀번호를 잊으셨나요?</string>
+
+    <!-- ========== 비밀번호 변경 ========== -->
+    <string name="change_password_hint">비밀번호 변경</string>
+    <string name="new_password_hint">새 비밀번호</string>
+    <string name="submit_password_hint">비밀번호 전송</string>
+    <string name="change_password_succeed_toast_hint">비밀번호가 변경되었습니다. 3초 후 로그인 화면으로 이동합니다</string>
+
+    <!-- ========== 홈 / 피드 ========== -->
+    <string name="home_hint">홈</string>
+    <string name="me_hint">마이</string>
+    <string name="uid_hint">UID: %s</string>
+    <string name="feed_detail_hint">게시물 상세</string>
+    <string name="add_post_hint">새 게시물</string>
+    <string name="post_hint">게시물</string>
+    <string name="favorite_hint">좋아요</string>
+    <string name="freewd_feed_hint">Freewd 피드</string>
+    <string name="loading_hint">불러오는 중</string>
+    <string name="load_error_hint">불러오지 못했습니다</string>
+    <string name="retry_hint">다시 시도</string>
+    <string name="back_hint">뒤로</string>
+    <string name="more_hint">더보기</string>
+    <string name="send_hint">보내기</string>
+    <string name="reply_hint">답글</string>
+    <string name="reply_to_user_hint">%s님에게 답글</string>
+    <string name="copy_feed_link_hint">게시물 링크 복사</string>
+    <string name="copied_link_hint">링크를 복사했습니다</string>
+    <string name="post_count_hint">게시물: %s</string>
+    <string name="likes_count_hint">좋아요: %s</string>
+
+    <!-- ========== 글쓰기 ========== -->
+    <string name="post_new_feed_hint">게시</string>
+    <string name="post_feed_content_hint">새로운 소식 공유하기</string>
+    <string name="anonymous_post_hint">익명으로 게시</string>
+    <string name="title_hint">제목</string>
+    <string name="content_hint">내용</string>
+    <string name="add_picture_hint">사진 추가</string>
+    <string name="enabled_markdown_hint">Markdown 사용</string>
+    <string name="disabled_markdown_hint">Markdown 사용 안 함</string>
+
+    <!-- ========== 알림 ========== -->
+    <string name="notification_hint">알림</string>
+    <string name="no_notifications_hint">알림이 없습니다</string>
+    <string name="clear_all_notifications_hint">전체 삭제</string>
+    <string name="like_feed_hint">%s님이 회원님의 게시물을 좋아합니다</string>
+    <string name="reply_feed_hint">%s님이 회원님의 게시물에 답글을 남겼습니다: %s</string>
+    <string name="unsupported_notification_hint">지원하지 않는 유형입니다. 앱을 업데이트해 주세요</string>
+
+    <!-- ========== 마이페이지 ========== -->
+    <string name="user_center_hint">마이페이지</string>
+    <string name="user_center_description_hint">프로필과 내 게시물 보기</string>
+    <string name="change_username_hint">아이디 변경</string>
+    <string name="change_username_description_hint">눌러서 아이디 변경</string>
+    <string name="check_in_hint">출석 체크</string>
+    <string name="checking_hint">출석 체크 중…</string>
+    <string name="unchecked_hint">오늘은 아직 출석 체크를 하지 않았습니다</string>
+    <string name="checked_hint">%d일 연속 출석했습니다</string>
+    <string name="logout_hint">로그아웃</string>
+    <string name="logout_account_hint">현재 계정에서 로그아웃하시겠습니까?</string>
+    <string name="logout_description_hint">현재 계정에서 로그아웃합니다</string>
+    <string name="follow_me">팔로우</string>
+
+    <!-- ========== 대화상자 / 확인 ========== -->
+    <string name="yes_hint">확인</string>
+    <string name="no_hint">취소</string>
+    <string name="cancel_hint">취소</string>
+    <string name="delete_hint">삭제</string>
+    <string name="delete_post_title_hint">게시물 삭제</string>
+    <string name="delete_post_message_hint">이 게시물을 삭제하시겠습니까?</string>
+    <string name="delete_comment_title_hint">댓글 삭제</string>
+    <string name="delete_comment_message_hint">이 댓글을 삭제하시겠습니까? 되돌릴 수 없습니다</string>
+
+    <!-- ========== 이미지 ========== -->
+    <string name="image_hint">이미지</string>
+    <string name="upload_image">이미지 업로드</string>
+    <string name="preview_image">이미지 미리보기</string>
+
+    <!-- ========== 앱 정보 ========== -->
+    <string name="about_hint">앱 정보</string>
+    <string name="about_app_hint">Freewd 정보</string>
+    <string name="browser_hint">브라우저</string>
+
+    <!-- ========== 검색 ========== -->
+    <string name="search_hint">게시물 검색</string>
+    <string name="searching_hint">검색 중…</string>
+    <string name="search_empty_hint">검색 결과가 없습니다</string>
+    <string name="search_action_hint">검색</string>
+    <string name="search_user_hint">사용자 검색</string>
+    <string name="search_user_empty_hint">검색된 사용자가 없습니다</string>
+    <string name="search_tab_post">게시물</string>
+    <string name="search_tab_user">사용자</string>
+    <string name="user_post_count_hint">게시물 %d개</string>
+    <string name="user_xp_hint">%d XP</string>
+
+    <!-- ========== 사용자 프로필 ========== -->
+    <string name="user_profile_hint">프로필</string>
+    <string name="user_joined_hint">%s 가입</string>
+    <string name="user_stat_post">게시물</string>
+    <string name="user_stat_like">좋아요</string>
+    <string name="user_stat_xp">XP</string>
+    <string name="user_posts_section_hint">작성한 게시물</string>
+    <string name="user_no_post_hint">아직 게시물이 없습니다</string>
+    <string name="user_my_posts_hint">내 게시물</string>
+
+    <!-- ========== 공통 상태 ========== -->
+    <string name="wait_hint">잠시만 기다려 주세요…</string>
+    <string name="submitting_hint">전송 중…</string>
+    <string name="uploading_hint">업로드 중…</string>
+    <string name="unknown_error">알 수 없는 오류입니다. 네트워크 문제일 수 있습니다</string>
+    <string name="no_internet_hint">네트워크에 연결할 수 없습니다. 연결 상태를 확인해 주세요</string>
+    <string name="data_error_hint">데이터를 불러오지 못했습니다. 다시 시도해 주세요</string>
+
+</resources>

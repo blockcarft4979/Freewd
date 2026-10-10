@@ -78,11 +78,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun FeedDetailLayout(
     id: Int,
-    viewmodel: FeedDetailViewmodel = viewModel(),
     onDeleteFeed: () -> Unit,
     onBack: () -> Unit,
 ) {
-
+    val viewmodel: FeedDetailViewmodel = viewModel()
     val feedDetailData by viewmodel.feedDetailData.collectAsState()
     val uiState by viewmodel.feedDetailUiState.collectAsState()
     val isAuthor by viewmodel.isAuthor.collectAsState()
@@ -280,7 +279,8 @@ fun FeedDetailLayout(
                         }, onReplyUser = { qq, username ->
                             focusRequester.requestFocus()
                             replyQq.value = qq
-                            replyUsername.value = username },
+                            replyUsername.value = username
+                        },
                         onToPreviewImg = { url -> imgUrl = url },
                         onDeleteReply = { pendingDeleteRid.value = it }
                     )
@@ -382,8 +382,3 @@ private fun FeedUiLayout(
 
 
 }
-
-
-
-
-

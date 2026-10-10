@@ -9,15 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.freewdcmkt.bck.R
 
 @Composable
-fun UserIcon(url: String) {
+fun UserIcon(url: String, size: Dp = 48.dp) {
     Image(
         painter = rememberAsyncImagePainter(url), null, modifier = Modifier
-            .size(48.dp)
+            .size(size)
             .padding(5.dp)
             .clip(CircleShape)
     )
