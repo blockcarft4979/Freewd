@@ -21,7 +21,7 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 174
+        versionCode = 175
         versionName = "3.10.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
