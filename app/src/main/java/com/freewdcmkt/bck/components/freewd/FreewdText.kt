@@ -27,6 +27,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.api.Link
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.util.time.formatTime
 import com.mikepenz.markdown.coil2.Coil2ImageTransformerImpl
@@ -165,7 +166,7 @@ fun ContentText(text: String) {
                     )
                 )
             ) {
-                if (url.startsWith("https://community.freewd.top/u/page?id=")) {
+                if (url.startsWith(Link.FEED_LINK)) {
                     append(stringResource(R.string.freewd_feed_hint))
                 } else {
                     append(url)
