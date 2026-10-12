@@ -40,37 +40,7 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/**
- * 仅剩的 v1 接口。
- *
- * v2 迁移后这里只剩 community 那一组（静态 JSON / 旧的 community 站点），
- * 它们由 [CommunityClient] 使用，注意不是 app.freewd.top 的 /api/v1。
- */
 interface ApiService {
-
-    @GET(RetroApi.Community.GET_FEED)
-    suspend fun getFeed(
-        @Query("page") page: Int
-    ): Response<BaseData<FeedData>>
-
-    @GET(RetroApi.Community.GET_FEED_DETAIL)
-    suspend fun getFeedDetail(@Query("id") id: Int): Response<BaseData<FeedDetailData>>
-
-    @POST(RetroApi.Community.UPLOAD)
-    suspend fun upload(@Body requestData: PostFeedRequestData): Response<BaseData<PostFeedData>>
-
-    @Multipart
-    @POST(RetroApi.Community.IMG_UPLOAD)
-    suspend fun uploadImg(@Part file: MultipartBody.Part): Response<BaseData<UploadImgData>>
-
-    @DELETE(RetroApi.Community.DELETE_FEED)
-    suspend fun deleteFeed(@Query("id") id: Int): Response<BaseData<Unit>>
-
-    @POST(RetroApi.Community.REPLY_FEED)
-    suspend fun replyFeed(@Body replyData: ReplyFeedData): Response<BaseData<Unit>>
-
-    @POST(RetroApi.Community.LIKE_FEED)
-    suspend fun likeFeed(@Body request: LikeFeedRequestData): Response<BaseData<LikeFeedResultData>>
 
     @GET(RetroApi.Other.HOME_DATA)
     suspend fun getHomeData(): Response<BaseData<HomeData>>
@@ -177,15 +147,6 @@ interface V2ApiService {
 
 }
 
-object RetroClient {
-    private val okHttpClient = NetworkClient.client
-    private val retrofit = Retrofit.Builder().client(okHttpClient)
-        .baseUrl(RetroApi.BASE_URL)
-        .addConverterFactory(JsonParser.json.asConverterFactory("application/json".toMediaType()))
-        .build()
-    val apiService: ApiService by lazy { retrofit.create(ApiService::class.java) }
-
-}
 
 object RetroV2Client {
     private val okHttpClient = NetworkClient.client

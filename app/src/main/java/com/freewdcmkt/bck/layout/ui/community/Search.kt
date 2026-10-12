@@ -65,13 +65,6 @@ import com.freewdcmkt.bck.viewmodel.community.SearchUiState
 import com.freewdcmkt.bck.viewmodel.community.SearchViewmodel
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-/**
- * 搜索页（v2 GET /search 帖子、GET /users/search 用户）
- *
- * 输入框用 [OutlinedTextField] 放在内容区（不是塞进顶栏），
- * 下面一条分段控件切换「帖子 / 用户」。
- * 输入停顿 400ms 自动搜；键盘搜索键 / 右侧搜索按钮立即搜。
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchLayout(

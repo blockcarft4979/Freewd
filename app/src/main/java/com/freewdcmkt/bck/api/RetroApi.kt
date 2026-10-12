@@ -25,24 +25,12 @@ object RetroApi {
         const val IMG_UPLOAD = "uploads"
     }
 
-    object Community {
-        const val GET_FEED = "community/get_feed"
-        const val GET_FEED_DETAIL = "community/get_feed_detail"
-        const val LIKE_FEED = "community/like_feed"
-        const val REPLY_FEED = "community/reply_feed"
-        const val DELETE_FEED = "community/delete_feed"
-        const val UPLOAD = "community/upload"
-        const val IMG_UPLOAD = "community/img_upload"
-    }
 
     /** v2 用户相关接口 */
     object User {
         const val ME = "users/me"
         const val CHECK_IN = "check_in"
         const val SUBMIT_USERNAME = "users/me/username"
-        // 下面两个仅 v1 存在，已不再使用，保留以便对照
-        const val V1_GET_USER_INFO = "user/get_user_info"
-        const val V1_SUBMIT_USERNAME = "user/submit_username"
     }
 
     object Other {
@@ -50,9 +38,5 @@ object RetroApi {
         const val FEED_ERROR_HINT = "community/feed_error_hint.json"
     }
 
-    object Document {
-        const val PRIVACY_POLICY = "document/privacy_policy.txt"
-        const val USER_AGREEMENT = "document/user_agreement.txt"
-    }
 
 }

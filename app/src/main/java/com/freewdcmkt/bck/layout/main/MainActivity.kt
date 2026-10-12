@@ -99,10 +99,17 @@ fun MainLayout(
     LaunchedEffect(deepLinkUrl) {
         if (deepLinkUrl == null) return@LaunchedEffect
         val uri = deepLinkUrl.toUri()
-        if (uri.host == "community.freewd.top" && uri.path == "/u/page") {
-            uri.getQueryParameter("id")
-                ?.toIntOrNull()
-                ?.let { pendingDeepLink.value = it }
+
+        if (uri.host == "bbs.freewd.top") {
+            val fragment = uri.fragment
+            if (!fragment.isNullOrEmpty()) {
+                val segments = fragment.split("/").filter { it.isNotEmpty() }
+                if (segments.size >= 2 && segments[0] == "post") {
+                    segments[1].toIntOrNull()?.let {
+                        pendingDeepLink.value = it
+                    }
+                }
+            }
         }
         onDeepLinkConsumed()
     }
