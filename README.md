@@ -20,8 +20,8 @@ Freewd 由 **BLOCKCARFT（BCK）** 一人开发与运营。这是一个纯粹“
 > 我们希望做一款干净、流畅、没有花里胡哨的广告、也没有多余弹窗的社区客户端，仅此而已。
 
 - 官方网站：[community.freewd.top](https://community.freewd.top)
-- 基岩版服务器官网（已关服，寒假再见）：[freewd.top](www.freewd.top)
-- [Freewd 社区网页版](bbs.freewd.top)
+- 基岩版服务器官网（已关服，寒假再见）：[freewd.top](https://www.freewd.top)
+- [Freewd 社区网页版](https://bbs.freewd.top)
 - [下载 Freewd 社区](https://github.com/blockcarft4979/Freewd/releases)
 - 联系邮箱：2216368705@qq.com
 
