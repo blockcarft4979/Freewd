@@ -5,7 +5,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)]()
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.x-purple.svg)]()
 [![Compose](https://img.shields.io/badge/Jetpack%20Compose-BOM%202024.x-blue.svg)]()
-[![License](https://img.shields.io/badge/License-暂未指定-lightgrey.svg)]()
+[![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)]()
 
 ---
 
