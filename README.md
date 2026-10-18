@@ -5,7 +5,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)]()
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.x-purple.svg)]()
 [![Compose](https://img.shields.io/badge/Jetpack%20Compose-BOM%202024.x-blue.svg)]()
-[![License](https://img.shields.io/badge/License-暂未指定-lightgrey.svg)]()
+[![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)]()
 
 ---
 
@@ -119,12 +119,6 @@ Freewd/
 
 ---
 
-## 许可
-
-本项目暂未指定开源许可证。在未明确许可前，请勿将代码用于商业用途或二次分发。如需使用，请先联系作者。
-
----
-
 ## 致谢
 
 - 感谢 Freewd 社区所有成员的支持
@@ -133,5 +127,8 @@ Freewd/
 - 特别致谢 D 老师（DeepSeek）的指导
 
 ---
+
+## License
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 © 2025–2026 Freewd Studio
