@@ -131,6 +131,7 @@ fun PostFeedLayout(
                     stringResource(R.string.anonymous_post_hint),
                     checked = isAnonymous,
                     onCheckedChange = { isAnonymous = it },
+                    modifier = Modifier.weight(1f,false)
                 )
                 Button(
                     onClick = {

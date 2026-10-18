@@ -63,7 +63,7 @@
     <!-- ========== 发帖 ========== -->
     <string name="post_new_feed_hint">Post</string>
     <string name="post_feed_content_hint">Share something new</string>
-    <string name="anonymous_post_hint">Anonymous post</string>
+    <string name="anonymous_post_hint">Anonymous</string>
     <string name="title_hint">Title</string>
     <string name="content_hint">Content</string>
     <string name="add_picture_hint">Add picture</string>
@@ -135,7 +135,7 @@
     <string name="user_my_posts_hint">My posts</string>
 
     <!-- ========== 通用状态 ========== -->
-    <string name="setting_enable_dynamic_hint">Enable dynamic Color</string>
+    <string name="setting_enable_dynamic_hint">Dynamic Color</string>
     <string name="setting_unsupported_devices">Unsupported device:(</string>
     <!-- ========== 通用状态 ========== -->
     <string name="wait_hint">Please wait…</string>

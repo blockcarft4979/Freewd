@@ -8,6 +8,7 @@
     <string name="content_desc_app_icon">アプリアイコン</string>
 
     <!-- ========== ログイン / 登録 ========== -->
+    <string name="settings_hint">設定</string>
     <string name="login_welcome_title">Freewd コミュニティへようこそ</string>
     <string name="login_account_hint">QQ アカウント</string>
     <string name="login_password_hint">パスワード</string>
@@ -130,11 +131,13 @@
     <string name="user_my_posts_hint">自分の投稿</string>
 
     <!-- ========== 共通ステータス ========== -->
+    <string name="setting_unsupported_devices">非対応デバイス</string>
     <string name="wait_hint">しばらくお待ちください…</string>
     <string name="submitting_hint">送信中…</string>
     <string name="uploading_hint">アップロード中…</string>
     <string name="unknown_error">不明なエラーが発生しました。ネットワークの問題かもしれません</string>
     <string name="no_internet_hint">ネットワークに接続できません。接続設定をご確認ください</string>
     <string name="data_error_hint">データの読み取りに失敗しました。もう一度お試しください</string>
+    <string name="setting_enable_dynamic_hint">ダイナミックカラー</string>
 
 </resources>

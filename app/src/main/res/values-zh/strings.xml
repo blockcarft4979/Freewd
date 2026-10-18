@@ -138,6 +138,6 @@
     <string name="unknown_error">未知错误，也许是网络问题？</string>
     <string name="no_internet_hint">网络连接不可用，请检查网络设置。</string>
     <string name="data_error_hint">数据解析失败，请重试。</string>
-    <string name="setting_enable_dynamic_hint">启用动态取色</string>
+    <string name="setting_enable_dynamic_hint">动态取色</string>
 
 </resources>
