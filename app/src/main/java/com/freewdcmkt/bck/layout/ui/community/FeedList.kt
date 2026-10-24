@@ -1,17 +1,13 @@
 package com.freewdcmkt.bck.layout.ui.community
 
-import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -21,29 +17,25 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarState
+import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
 import com.freewdcmkt.bck.components.ui.LoadingCard
-import com.freewdcmkt.bck.components.ui.ProgressiveBlurScrim
-import com.freewdcmkt.bck.components.ui.feedListTopPadding
 import com.freewdcmkt.bck.data.screen.PostsData
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
@@ -72,33 +64,24 @@ fun FeedListHost(
     val listState = rememberLazyListState()
 
     val feedList = feedListData?.feed ?: emptyList()
+    val fabVisible by remember { derivedStateOf { !listState.isScrollInProgress } }
+    // val statusBarBlur = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    // val blurListStates = List(BlurLayerCount) { rememberLazyListState() }
 
-    // 渐进模糊底衬：Modifier.blur 只模糊自身内容，所以要把列表按同一滚动位置再画一份；
-    // 而「半径随 y 递减」只能靠多层叠加，于是每层各需要一个独立的滚动状态。
-    // 关键：必须**逐帧**镜像主列表的位置。之前用 80ms 采样，滚动时副本落后最多 80ms，
-    // 糊的那份和真实卡片错位叠在一起，就是「顶栏和卡片重叠」的来源。
-    val statusBarBlur = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val blurListStates = List(BlurLayerCount) { rememberLazyListState() }
-    // 状态栏高度在 composition 阶段取好；heightOffset 交给内部在布局阶段读，
-    // 避免滚动时逐帧重组整个 FeedListHost
-    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val contentPadding = remember(topAppBarState, density, statusBarHeight) {
-        FeedListContentPadding(statusBarHeight, topAppBarState, density)
-    }
-
-    if (statusBarBlur && blurListStates.isNotEmpty()) {
-        LaunchedEffect(listState, feedList) {
-            snapshotFlow {
-                listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
-            }.collect { (index, offset) ->
-                blurListStates.forEach { mirror -> mirror.scrollToItem(index, offset) }
-            }
-        }
-        // 回到顶部 / 数据整体刷新时，副本的 index 可能已经越界，这里复位一下
-        LaunchedEffect(feedList.isEmpty()) {
-            blurListStates.forEach { it.scrollToItem(0, 0) }
-        }
-    }
+//
+//    if (statusBarBlur && blurListStates.isNotEmpty()) {
+//        LaunchedEffect(listState, feedList) {
+//            snapshotFlow {
+//                listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+//            }.collect { (index, offset) ->
+//                blurListStates.forEach { mirror -> mirror.scrollToItem(index, offset) }
+//            }
+//        }
+//        // 回到顶部 / 数据整体刷新时，副本的 index 可能已经越界，这里复位一下
+//        LaunchedEffect(feedList.isEmpty()) {
+//            blurListStates.forEach { it.scrollToItem(0, 0) }
+//        }
+//    }
 
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
@@ -125,14 +108,26 @@ fun FeedListHost(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
+//            AnimatedVisibility(
+//                visible = fabVisible,
+//                enter = fadeIn() + slideInVertically { it / 2 },
+//                exit = fadeOut() + slideOutVertically { it / 2 }
+//            ) {
+//
+//            }
             FloatingActionButton(
                 onClick = onToPostFeed,
+                modifier = Modifier.animateFloatingActionButton(
+                    visible = fabVisible,
+                    alignment = Alignment.BottomEnd
+                )
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.baseline_add_24),
+                    painter = painterResource(R.drawable.send),
                     contentDescription = stringResource(R.string.add_post_hint)
                 )
             }
+
         }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -151,31 +146,10 @@ fun FeedListHost(
                         listState = listState,
                         isLoadingMore = isLoadingMore,
                         hasMore = hasMore,
-                        contentPadding = contentPadding,
                         onToPreviewImg = onToPreviewImg,
                         onLike = onLike,
-                        overlay = {
-                            if (statusBarBlur && blurListStates.isNotEmpty()) {
-                                ProgressiveBlurScrim(
-                                    topAppBarState = topAppBarState,
-                                    density = density
-                                ) { layerIndex ->
-                                    // 同一份列表、同一个滚动位置，每层再画一份
-                                    FeedListContent(
-                                        postsData = feedList,
-                                        listState = blurListStates[layerIndex],
-                                        isLoadingMore = isLoadingMore,
-                                        hasMore = hasMore,
-                                        contentPadding = contentPadding,
-                                        onClick = {},
-                                        onToPreviewImg = {},
-                                        onLike = {},
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                }
-                            }
-                        }
-                    )
+
+                        )
                 }
             }
         }
@@ -190,12 +164,11 @@ private fun FeedListUi(
     listState: LazyListState,
     isLoadingMore: Boolean,
     hasMore: Boolean,
-    contentPadding: PaddingValues,
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit,
     // 画在列表之上、顶栏之下的东西（状态栏毛玻璃底衬）
-    overlay: @Composable () -> Unit = {}
+    //overlay: @Composable () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         FeedListContent(
@@ -203,13 +176,12 @@ private fun FeedListUi(
             listState = listState,
             isLoadingMore = isLoadingMore,
             hasMore = hasMore,
-            contentPadding = contentPadding,
             onClick = onClick,
             onToPreviewImg = onToPreviewImg,
             onLike = onLike,
             modifier = Modifier.fillMaxSize()
         )
-        overlay()
+        //overlay()
     }
 }
 
@@ -225,7 +197,6 @@ private fun FeedListContent(
     listState: LazyListState,
     isLoadingMore: Boolean,
     hasMore: Boolean,
-    contentPadding: PaddingValues,
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit,
@@ -233,7 +204,6 @@ private fun FeedListContent(
 ) {
     LazyColumn(
         state = listState,
-        contentPadding = contentPadding,
         modifier = modifier
     ) {
         items(
@@ -274,20 +244,20 @@ private fun FeedListContent(
  * 被订阅，滚动时整棵 FeedListHost 每帧重组一次；`LazyColumn` 是在测量阶段
  * 调用 `calculateTopPadding()` 的，所以把读取放进这里，状态变化只会让列表重新测量。
  */
-@Immutable
-private class FeedListContentPadding(
-    private val statusBarHeight: Dp,
-    private val topAppBarState: TopAppBarState,
-    private val density: Density
-) : PaddingValues {
-
-    override fun calculateTopPadding(): Dp =
-        feedListTopPadding(statusBarHeight, topAppBarState, density)
-
-    override fun calculateBottomPadding(): Dp = 0.dp
-
-    override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp = 0.dp
-
-    override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp = 0.dp
-}
+//@Immutable
+//private class FeedListContentPadding(
+//    private val statusBarHeight: Dp,
+//    private val topAppBarState: TopAppBarState,
+//    private val density: Density
+//) : PaddingValues {
+//
+//    override fun calculateTopPadding(): Dp =
+//        //feedListTopPadding(statusBarHeight, topAppBarState, density)
+//
+//    override fun calculateBottomPadding(): Dp = 0.dp
+//
+//    override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp = 0.dp
+//
+//    override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp = 0.dp
+//}
 

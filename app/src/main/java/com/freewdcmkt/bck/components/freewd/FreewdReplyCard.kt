@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.components
+package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -42,9 +42,9 @@ fun ReplyInputBar(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .background(MaterialTheme.colorScheme.onSurface),
-        tonalElevation = 8.dp
+            .navigationBarsPadding(),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
@@ -78,7 +78,7 @@ fun ReplyInputBar(
                 shape = CircleShape,
             ) {
                 Icon(
-                    painterResource(R.drawable.baseline_send_24),
+                    painterResource(R.drawable.send),
                     stringResource(R.string.send_hint),
                     modifier = Modifier.size(26.dp)
                 )

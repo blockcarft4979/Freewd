@@ -53,7 +53,6 @@ import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link.feedLink
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.ReplyCard
-import com.freewdcmkt.bck.components.ReplyInputBar
 import com.freewdcmkt.bck.components.freewd.ContentMarkdown
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
@@ -61,6 +60,7 @@ import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
+import com.freewdcmkt.bck.components.freewd.ReplyInputBar
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
@@ -244,11 +244,9 @@ fun FeedDetailLayout(
                     username = replyUsername.value,
                     onSend = {
                         val targetQq = replyQq.value
-                        Log.d("INPUT BAR DATA(BEFORE)", targetQq)
                         viewmodel.replyFeed(id, it, targetQq.ifEmpty { null })
                         focusRequester.requestFocus()
                         replyQq.value = ""
-                        Log.d("INPUT BAR DATA", replyQq.value)
                     },
                     modifier = Modifier.imePadding(),
                     focusRequester = focusRequester

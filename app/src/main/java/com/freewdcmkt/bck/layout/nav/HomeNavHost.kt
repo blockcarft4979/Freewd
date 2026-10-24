@@ -2,9 +2,8 @@ package com.freewdcmkt.bck.layout.nav
 
 import android.app.Application
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
@@ -20,6 +19,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -51,7 +52,6 @@ import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.UserCard
-import com.freewdcmkt.bck.components.ui.OffscreenTopAppBar
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.layout.ui.community.FeedListHost
@@ -91,8 +91,7 @@ fun HomeNavHost(
 
     val retryHint = stringResource(R.string.retry_hint)
     val snackBarHostState = remember { SnackbarHostState() }
-    // 拿出来单独持有，是为了把顶栏的收起高度 heightOffset 传给列表，
-    // 让列表上内边距跟着顶栏一起收，不留空白
+
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -134,14 +133,12 @@ fun HomeNavHost(
         }
     ) {
         Scaffold(
-            // 内容铺满全屏：顶栏隐藏后不再留下「状态栏 + 顶栏」的死区，
-            // 帖子列表可以一直滑到状态栏下面
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             topBar = {
-                OffscreenTopAppBar(
-                    topAppBarState = topAppBarState,
+                TopAppBar(
                     scrollBehavior = scrollBehavior,
-                    title = { UserCard(userAvatarUrl(qq), username, uid) },
+                    title = {
+                        UserCard(userAvatarUrl(qq), username, uid)
+                    },
                     actions = {
                         IconButton(onClick = onToSearch) {
                             Icon(
@@ -152,7 +149,11 @@ fun HomeNavHost(
                         IconButton(onClick = onToNotification) {
                             NotificationIcon(unreadCount)
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent
+                    )
                 )
             },
             snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
@@ -160,7 +161,7 @@ fun HomeNavHost(
 
             Column(
                 modifier = Modifier
-                    .consumeWindowInsets(innerPadding)
+                    .padding(innerPadding)
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {

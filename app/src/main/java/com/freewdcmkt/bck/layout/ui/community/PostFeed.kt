@@ -131,7 +131,7 @@ fun PostFeedLayout(
                     stringResource(R.string.anonymous_post_hint),
                     checked = isAnonymous,
                     onCheckedChange = { isAnonymous = it },
-                    modifier = Modifier.weight(1f,false)
+                    modifier = Modifier.weight(1f, false)
                 )
                 Button(
                     onClick = {
@@ -144,6 +144,7 @@ fun PostFeedLayout(
                     },
                     enabled = message.isNotBlank()
                 ) {
+                    Icon(painterResource(R.drawable.send), contentDescription = null)
                     Text(stringResource(R.string.post_new_feed_hint))
                 }
             }

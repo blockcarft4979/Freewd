@@ -63,7 +63,6 @@ fun UserCenterLayout(
     val listState = rememberLazyListState()
     var imgUrl by remember { mutableStateOf<String?>(null) }
 
-    // 空串 = 当前登录用户
     LaunchedEffect(Unit) { viewmodel.load("") }
 
     LaunchedEffect(listState, hasMore) {
@@ -105,8 +104,7 @@ fun UserCenterLayout(
 
                 is UserProfileUiState.Error -> FreewdHint(
                     icon = R.drawable.baseline_error_24,
-                    hint = (uiState as UserProfileUiState.Error).message
-                        ?: stringResource(R.string.unknown_error)
+                    hint = stringResource(R.string.unknown_error)
                 )
 
                 else -> LazyColumn(

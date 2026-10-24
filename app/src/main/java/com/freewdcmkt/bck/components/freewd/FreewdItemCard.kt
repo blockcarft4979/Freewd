@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -35,41 +36,51 @@ import coil3.compose.SubcomposeAsyncImage
 import com.freewdcmkt.bck.R
 
 @Composable
-fun SettingCard(
+fun ItemCard(
+    onClick: () -> Unit,
     icon: Int,
     name: String,
-    description: String? = null,
-    isRed: Boolean? = false,
-    onClick: () -> Unit
+    color: Color? = null,
+    isShowArrow: Boolean = true
 ) {
     Card(
+        shape = RoundedCornerShape(16.dp),
+
         modifier = Modifier
-            .padding(vertical = 4.dp)
             .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .clickable(onClick = onClick)
-                .padding(15.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp) // 加大内边距更大气
         ) {
             Icon(
-                painter = painterResource(icon),
+                modifier = Modifier.size(24.dp), // 32有点大，24比较合适
                 contentDescription = null,
-                tint = if (isRed == true) Color.Red else MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(10.dp)
+                painter = painterResource(icon),
+                tint = color ?: MaterialTheme.colorScheme.onSurface
             )
-            Column(modifier = Modifier.weight(1f)) {
-                TitleText(text = name)
-                if (description != null) ContentText(description)
-            }
+            Spacer(Modifier.width(12.dp)) // 间距加大
 
+            // 【关键点】weight 给 Text，让它填满中间，把箭头挤到最右边
+            Text(
+                text = name,
+                color = color ?: MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            // 箭头只需要 size，不需要 weight
+           if (isShowArrow) Icon(
+                painter = painterResource(R.drawable.right),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.outline // 箭头颜色通常淡一点
+            )
         }
-
     }
 }
 
@@ -158,13 +169,4 @@ fun ExpCard(exp: Int) {
             }
         }
     }
-}
-
-
-@Composable
-@Preview(showBackground = true)
-private fun Show() {
-    val f: Float = 1000 / 2800f
-    // SettingCard(R.drawable.fa6solidpen, "gdfiugf", "sdbhiusdu", onClick = {})
-    ImageCard("") {}
 }

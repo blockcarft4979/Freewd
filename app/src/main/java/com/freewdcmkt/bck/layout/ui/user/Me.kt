@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -31,7 +34,7 @@ import com.freewdcmkt.bck.components.freewd.ExpCard
 import com.freewdcmkt.bck.components.freewd.FreewdEditDialog
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
-import com.freewdcmkt.bck.components.freewd.SettingCard
+import com.freewdcmkt.bck.components.freewd.ItemCard
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.TokenManager
@@ -139,13 +142,17 @@ private fun MeUiLayout(
             )
         })
     }, floatingActionButton = {
-        FloatingActionButton(onClick = onToSettings) {
-            Icon(
-                painterResource(R.drawable.baseline_settings_24),
-                contentDescription = null
-            )
-        }
-    }, floatingActionButtonPosition = FabPosition.Start) { innerPadding ->
+        ExtendedFloatingActionButton(
+            onClick = onToSettings,
+            text = { Text(stringResource(R.string.settings_hint)) },
+            icon = {
+                Icon(
+                    painterResource(R.drawable.baseline_settings_24),
+                    contentDescription = null
+                )
+            }
+        )
+    }) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -161,43 +168,43 @@ private fun MeUiLayout(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 个人中心：进入自己的主页（资料卡 + 等级经验卡 + 我的帖子）
-                SettingCard(
-                    icon = R.drawable.personal_center,
-                    name = stringResource(R.string.user_center_hint),
-                    description = stringResource(R.string.user_center_description_hint),
-                    onClick = onToUserCenter
-                )
-                SettingCard(
-                    icon = if (isChecked) R.drawable.calendarchecked else
-                        R.drawable.calendaruncheck,
-                    name = stringResource(R.string.check_in_hint),
-                    description = if (isChecked) stringResource(
-                        R.string.checked_hint,
-                        checkInDays
-                    ) else stringResource(R.string.unchecked_hint),
-                    onClick = {
-                        if (!isChecked) {
-                            onCheckIn()
-                        }
-                    }
-                )
-                SettingCard(
-                    icon = R.drawable.fa6solidpen,
-                    name = stringResource(R.string.change_username_hint),
-                    description = stringResource(R.string.change_username_description_hint),
-                    onClick = { isShowEditDialog.value = true }
-                )
-                SettingCard(
-                    icon = R.drawable.frecat,
-                    name = stringResource(R.string.about_app_hint),
-                    onClick = onToAboutApp
-                )
-                SettingCard(
-                    R.drawable.logout,
-                    stringResource(R.string.logout_hint),
-                    stringResource(R.string.logout_description_hint),
-                    isRed = true,
+                Card(shape = RoundedCornerShape(16.dp)) {
+                    ItemCard(
+                        icon = R.drawable.personal_center,
+                        name = stringResource(R.string.user_center_hint),
+                        onClick = onToUserCenter
+                    )
+                    ItemCard(
+                        icon = if (isChecked) R.drawable.calendarchecked else
+                            R.drawable.calendaruncheck,
+                        name = if (isChecked) stringResource(
+                            R.string.checked_hint,
+                            checkInDays
+                        ) else stringResource(R.string.unchecked_hint),
+                        onClick = {
+                            if (!isChecked) {
+                                onCheckIn()
+                            }
+                        },
+                        isShowArrow = false
+                    )
+                    ItemCard(
+                        icon = R.drawable.fa6solidpen,
+                        name = stringResource(R.string.change_username_hint),
+                        onClick = { isShowEditDialog.value = true },
+                        isShowArrow = false
+                    )
+                    ItemCard(
+                        icon = R.drawable.frecat,
+                        name = stringResource(R.string.about_app_hint),
+                        onClick = onToAboutApp
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                ItemCard(
+                    icon = R.drawable.logout,
+                    name = stringResource(R.string.logout_hint),
+                    color = Color.Red,
                     onClick = { isShowDialog.value = true }
                 )
             }

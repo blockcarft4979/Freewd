@@ -47,9 +47,3 @@ fun FreewdFooter() {
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun Shoew() {
-    FreewdFooter()
-}
