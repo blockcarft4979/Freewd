@@ -64,18 +64,28 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun FreewdTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // 改成 false 才会使用上面的静态配色
     dynamicColor: Boolean = false,
+    pureBlackTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val colorScheme = when {
+
+    val baseScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) dynamicDarkColorScheme(context)
             else dynamicLightColorScheme(context)
         }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+
+    val colorScheme = if (pureBlackTheme && darkTheme) {
+        baseScheme.copy(
+            background = Color.Black,
+            surface = Color.Black,
+        )
+    } else {
+        baseScheme
     }
 
     MaterialTheme(

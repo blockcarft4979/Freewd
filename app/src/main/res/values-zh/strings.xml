@@ -132,6 +132,7 @@
 
     <!-- ========== 通用状态 ========== -->
     <string name="setting_unsupported_devices">不支持的设备 :(</string>
+    <string name="setting_black_theme_hint">纯黑背景</string>
     <string name="wait_hint">请稍候…</string>
     <string name="submitting_hint">提交中…</string>
     <string name="uploading_hint">上传中…</string>
@@ -139,5 +140,6 @@
     <string name="no_internet_hint">网络连接不可用，请检查网络设置。</string>
     <string name="data_error_hint">数据解析失败，请重试。</string>
     <string name="setting_enable_dynamic_hint">动态取色</string>
+    <string name="setting_theme_hint">主题</string>
 
 </resources>

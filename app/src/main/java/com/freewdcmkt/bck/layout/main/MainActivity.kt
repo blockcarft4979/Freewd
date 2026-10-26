@@ -3,7 +3,6 @@ package com.freewdcmkt.bck.layout.main
 import android.app.Application
 import android.app.ComponentCaller
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -17,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -27,9 +27,9 @@ import com.freewdcmkt.bck.layout.nav.AuthLayout
 import com.freewdcmkt.bck.layout.nav.FreewdAppNavHost
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.util.dynamicColorFlow
+import com.freewdcmkt.bck.util.pureBlackTheme
 import com.freewdcmkt.bck.viewmodel.main.LoginState
 import com.freewdcmkt.bck.viewmodel.main.MainViewmodel
-import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
 
@@ -55,9 +55,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val dynamicColors by dynamicColorFlow().collectAsState(initial = false)
-
-            FreewdTheme(dynamicColor = dynamicColors) {
+            val enabledDynamicColors by dynamicColorFlow().collectAsState(initial = false)
+            val enabledPureBlackTheme by pureBlackTheme().collectAsState(initial = false)
+            FreewdTheme(
+                dynamicColor = enabledDynamicColors,
+                pureBlackTheme = enabledPureBlackTheme
+            ) {
                 MainLayout(
                     deepLinkUrl = dynamicIntentUrl.value,
                     onDeepLinkConsumed = { dynamicIntentUrl.value = null }

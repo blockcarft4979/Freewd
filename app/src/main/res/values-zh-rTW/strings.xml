@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ========== 應用程式 ========== -->
+    <string name="app_name">Freewd 社區</string>
+    <string name="app_introduction">Freewd 因愛而生</string>
+    <string name="content_desc_app_icon">應用程式圖示</string>
+    <string name="settings_hint">設定</string>
+
+    <!-- ========== 登入 / 註冊 ========== -->
+    <string name="login_welcome_title">歡迎來到 Freewd 社群</string>
+    <string name="login_account_hint">QQ 帳號</string>
+    <string name="login_password_hint">密碼</string>
+    <string name="login_login_btn">登入</string>
+    <string name="login_register_btn">註冊</string>
+    <string name="login_hint">登入以享受優質服務~</string>
+    <string name="login_password_or_account_needed">請確認已填寫帳號與密碼</string>
+    <string name="login_success">歡迎回來</string>
+    <string name="logging_in_hint">登入中…</string>
+    <string name="register_hint">註冊</string>
+    <string name="auth_code">驗證碼</string>
+    <string name="send_auth_code">發送驗證碼</string>
+    <string name="wait_send_auth_code">請等待 %s 秒後重試</string>
+    <string name="agree_agreement_part">我已閱讀《使用者協議》與《隱私權政策》</string>
+    <string name="user_agreement">使用者協議</string>
+    <string name="policy_privacy">隱私權政策</string>
+    <string name="confirm_password_hint">確認密碼</string>
+    <string name="forget_password_hint">忘記密碼？</string>
+
+    <!-- ========== 修改密碼 ========== -->
+    <string name="change_password_hint">修改密碼</string>
+    <string name="new_password_hint">新密碼</string>
+    <string name="submit_password_hint">提交密碼</string>
+    <string name="change_password_succeed_toast_hint">密碼修改成功，將在 3 秒後跳轉至登入頁面。</string>
+
+    <!-- ========== 首頁 / 貼文流 ========== -->
+    <string name="home_hint">首頁</string>
+    <string name="me_hint">我的</string>
+    <string name="uid_hint">UID: %s</string>
+    <string name="feed_detail_hint">貼文詳情</string>
+    <string name="add_post_hint">發佈新貼文</string>
+    <string name="post_hint">發佈</string>
+    <string name="favorite_hint">按讚</string>
+    <string name="freewd_feed_hint">Freewd 動態</string>
+    <string name="loading_hint">載入中</string>
+    <string name="load_error_hint">載入失敗</string>
+    <string name="retry_hint">重試</string>
+    <string name="back_hint">返回</string>
+    <string name="more_hint">更多</string>
+    <string name="send_hint">傳送</string>
+    <string name="reply_hint">回覆</string>
+    <string name="reply_to_user_hint">回覆 %s</string>
+    <string name="copy_feed_link_hint">複製貼文連結</string>
+    <string name="copied_link_hint">連結已複製</string>
+    <string name="post_count_hint">貼文：%s</string>
+    <string name="likes_count_hint">讚數：%s</string>
+
+    <!-- ========== 發帖 ========== -->
+    <string name="post_new_feed_hint">發佈</string>
+    <string name="post_feed_content_hint">分享新鮮事</string>
+    <string name="anonymous_post_hint">匿名</string>
+    <string name="title_hint">標題</string>
+    <string name="content_hint">內容</string>
+    <string name="add_picture_hint">新增圖片</string>
+    <string name="enabled_markdown_hint">已啟用 Markdown</string>
+    <string name="disabled_markdown_hint">已停用 Markdown</string>
+
+    <!-- ========== 通知 ========== -->
+    <string name="notification_hint">通知</string>
+    <string name="no_notifications_hint">沒有通知</string>
+    <string name="clear_all_notifications_hint">全部清除</string>
+    <string name="like_feed_hint">%s 對你的貼文按了讚</string>
+    <string name="reply_feed_hint">%s 回覆了你的貼文：%s</string>
+    <string name="unsupported_notification_hint">不支援的類型，請更新應用程式。</string>
+
+    <!-- ========== 使用者中心 ========== -->
+    <string name="user_center_hint">個人中心</string>
+    <string name="user_center_description_hint">檢視你的個人檔案與貼文</string>
+    <string name="change_username_hint">修改使用者名稱</string>
+    <string name="change_username_description_hint">點擊此處修改使用者名稱</string>
+    <string name="check_in_hint">簽到</string>
+    <string name="checking_hint">簽到中…</string>
+    <string name="unchecked_hint">你今天尚未簽到。</string>
+    <string name="checked_hint">已連續簽到 %d 天。</string>
+    <string name="logout_hint">登出</string>
+    <string name="logout_account_hint">確定要登出目前帳號嗎？</string>
+    <string name="logout_description_hint">登出目前帳號。</string>
+    <string name="follow_me">追蹤我</string>
+
+    <!-- ========== 對話框 / 確認 ========== -->
+    <string name="yes_hint">是</string>
+    <string name="no_hint">否</string>
+    <string name="cancel_hint">取消</string>
+    <string name="delete_hint">刪除</string>
+    <string name="delete_post_title_hint">刪除貼文</string>
+    <string name="delete_post_message_hint">確定要刪除這則貼文嗎？</string>
+    <string name="delete_comment_title_hint">刪除留言</string>
+    <string name="delete_comment_message_hint">確定要刪除這則留言嗎？此操作無法復原。</string>
+
+    <!-- ========== 圖片 ========== -->
+    <string name="image_hint">圖片</string>
+    <string name="upload_image">上傳圖片</string>
+    <string name="preview_image">預覽圖片</string>
+
+    <!-- ========== 關於 ========== -->
+    <string name="about_hint">關於</string>
+    <string name="about_app_hint">關於 Freewd</string>
+    <string name="browser_hint">瀏覽</string>
+
+    <!-- ========== 搜尋 ========== -->
+    <string name="search_hint">搜尋貼文</string>
+    <string name="searching_hint">搜尋中…</string>
+    <string name="search_empty_hint">沒有符合的貼文</string>
+    <string name="search_action_hint">搜尋</string>
+    <string name="search_user_hint">搜尋使用者</string>
+    <string name="search_user_empty_hint">沒有符合的使用者</string>
+    <string name="search_tab_post">貼文</string>
+    <string name="search_tab_user">使用者</string>
+    <string name="user_post_count_hint">%d 則貼文</string>
+    <string name="user_xp_hint">%d XP</string>
+
+    <!-- ========== 使用者主頁 ========== -->
+    <string name="user_profile_hint">個人檔案</string>
+    <string name="user_joined_hint">於 %s 加入</string>
+    <string name="user_stat_post">貼文</string>
+    <string name="user_stat_like">讚數</string>
+    <string name="user_stat_xp">XP</string>
+    <string name="user_posts_section_hint">貼文</string>
+    <string name="user_no_post_hint">尚無貼文</string>
+    <string name="user_my_posts_hint">我的貼文</string>
+
+    <!-- ========== 通用狀態 ========== -->
+    <string name="setting_enable_dynamic_hint">動態色彩</string>
+    <string name="setting_unsupported_devices">不支援的裝置 :(</string>
+    <string name="setting_theme_hint">主題</string>
+    <string name="setting_black_theme_hint">純黑背景</string>
+    <!-- ========== 通用狀態 ========== -->
+    <string name="wait_hint">請稍候…</string>
+    <string name="submitting_hint">提交中…</string>
+    <string name="uploading_hint">上傳中…</string>
+    <string name="unknown_error">發生未知錯誤，可能是網路問題？</string>
+    <string name="no_internet_hint">無網路連線，請檢查你的網路設定。</string>
+    <string name="data_error_hint">資料解析失敗，請重試。</string>
+
+</resources>

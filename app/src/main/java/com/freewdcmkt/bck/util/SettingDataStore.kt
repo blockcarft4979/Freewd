@@ -11,6 +11,7 @@ val Context.dataStore by preferencesDataStore(name = "settings")
 
 object SettingsKeys {
     val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+    val PURE_BLACK_THEME = booleanPreferencesKey("pure_black_theme")
 }
 
 // 读取：默认开启动态取色
@@ -22,5 +23,14 @@ fun Context.dynamicColorFlow() = dataStore.data.map { prefs ->
 suspend fun Context.setDynamicColor(enabled: Boolean) {
     dataStore.edit { prefs ->
         prefs[SettingsKeys.DYNAMIC_COLOR] = enabled
+    }
+}
+
+fun Context.pureBlackTheme() = dataStore.data.map { prefs ->
+    prefs[SettingsKeys.PURE_BLACK_THEME] ?: false
+}
+suspend fun Context.setPureBlackTheme(enabled: Boolean) {
+    dataStore.edit { prefs ->
+        prefs[SettingsKeys.PURE_BLACK_THEME] = enabled
     }
 }

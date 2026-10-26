@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -40,6 +39,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -82,15 +83,17 @@ fun SearchLayout(
     val isSearched by viewmodel.isSearched.collectAsState()
 
     val keyboard = LocalSoftwareKeyboardController.current
-    // 帖子与用户各自独立的列表状态，切换模式不互相干扰滚动位置
+
     val postListState = rememberLazyListState()
     val userListState = rememberLazyListState()
 
     var input by rememberSaveable { mutableStateOf("") }
     var imgUrl by remember { mutableStateOf<String?>(null) }
-
-    // 滑到底自动加载下一页（切模式时会用新模式的列表状态重新订阅）
+    val focusRequester = remember { FocusRequester() }
     val activeListState = if (mode == SearchMode.POST) postListState else userListState
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
     LaunchedEffect(activeListState, hasMore, mode) {
         snapshotFlow {
             val lastVisible = activeListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -108,10 +111,11 @@ fun SearchLayout(
             TopAppBar(
                 title = {
                     FreewdSearchBar(
+                        modifier = Modifier.focusRequester(focusRequester),
                         value = input,
                         onValueChange = {
                             input = it
-                           viewmodel.onKeywordChange(it)
+                            viewmodel.onKeywordChange(it)
                         },
                         hint = if (mode == SearchMode.POST) stringResource(R.string.search_hint) else stringResource(
                             R.string.search_user_hint
@@ -197,7 +201,6 @@ fun SearchLayout(
     }
 }
 
-/** 「帖子 / 用户」分段切换 */
 @Composable
 private fun SearchModeSwitch(
     mode: SearchMode,

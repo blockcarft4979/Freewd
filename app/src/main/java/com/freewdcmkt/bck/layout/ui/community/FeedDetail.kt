@@ -361,9 +361,10 @@ private fun FeedUiLayout(
                 }
             }
         }
+
         items(
             items = feedDetailData.reply ?: emptyList(),
-            key = { " ${it.commentId}_${it.date}" }
+            key = { "${it.commentId}_${it.date}" }
         ) { replyData ->
             ReplyCard(
                 isDeleting = deletingIds.contains(replyData.commentId),

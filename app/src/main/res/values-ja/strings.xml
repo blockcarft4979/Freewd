@@ -132,6 +132,8 @@
 
     <!-- ========== 共通ステータス ========== -->
     <string name="setting_unsupported_devices">非対応デバイス</string>
+    <string name="setting_theme_hint">テーマ</string>
+    <string name="setting_black_theme_hint">ピュアブラックテーマ</string>
     <string name="wait_hint">しばらくお待ちください…</string>
     <string name="submitting_hint">送信中…</string>
     <string name="uploading_hint">アップロード中…</string>
