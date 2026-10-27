@@ -21,8 +21,8 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 179
-        versionName = "3.10.5"
+        versionCode = 180
+        versionName = "3.10.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -106,14 +106,15 @@ dependencies {
     implementation("net.engawapg.lib:zoomable:2.13.0")
 
     // ===== Markdown =====
-    implementation("com.mikepenz:multiplatform-markdown-renderer:0.32.0")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.32.0")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.32.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer:0.46.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.46.0")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-coil3:0.46.0")
 
     // ===== 数据 / 存储 =====
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("androidx.paging:paging-compose:3.2.0")
+    implementation(libs.androidx.ui)
 
     // ===== 测试 =====
     testImplementation(libs.junit)

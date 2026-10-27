@@ -80,8 +80,8 @@
     <string name="change_username_description_hint">Tap here to change your username</string>
     <string name="check_in_hint">Check in</string>
     <string name="checking_hint">Checking in…</string>
-    <string name="unchecked_hint">You haven\'t checked in today yet.</string>
-    <string name="checked_hint">Checked in for %d days.</string>
+    <string name="unchecked_hint">You haven\'t checked in today yet</string>
+    <string name="checked_hint">Checked in for %d days</string>
     <string name="logout_hint">Log out</string>
     <string name="logout_account_hint">Do you want to log out the current account?</string>
     <string name="logout_description_hint">Log out of the current account.</string>
