@@ -36,7 +36,7 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link
-import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.util.time.formatTime
 import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl

@@ -36,6 +36,10 @@ class UserProfileViewmodel : ViewModel() {
     private val _hasMore = MutableStateFlow(false)
     val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
 
+    // 🌟 新增：首次加载帖子的 Loading 状态
+    private val _isLoadingPosts = MutableStateFlow(false)
+    val isLoadingPosts: StateFlow<Boolean> = _isLoadingPosts.asStateFlow()
+
     /** 当前已加载的目标（"" 代表当前登录用户）；null 表示还没加载过 */
     private var loadedTarget: String? = null
     private var currentPage = 0
@@ -57,6 +61,7 @@ class UserProfileViewmodel : ViewModel() {
         totalPages = 0
         _hasMore.value = false
         _isLoadingMore.value = false
+        _isLoadingPosts.value = false // 🌟 重置状态
         _uiState.value = UserProfileUiState.Loading
         _posts.value = emptyList()
 
@@ -105,40 +110,51 @@ class UserProfileViewmodel : ViewModel() {
     }
 
     private suspend fun loadPosts(target: String, page: Int, isAppend: Boolean) {
-        // 只传 qq（query 传 null）即「该用户的全部帖子」
-        when (val result = safeApiCall {
-            RetroV2Client.apiService.searchPosts(
-                query = null,
-                page = page,
-                limit = pageSize,
-                authorQq = target
-            )
-        }) {
-            is ApiResult.Success -> {
-                val data = result.data
-                if (data == null) {
-                    _isLoadingMore.value = false
-                    return
-                }
-                currentPage = data.page
-                totalPages = data.pages
-                _hasMore.value = currentPage < totalPages
-                _posts.value = if (isAppend) {
-                    (_posts.value + data.feed).distinctBy { it.id }
-                } else {
-                    data.feed
-                }
-            }
-
-            is ApiResult.Error -> {
-                Log.d("USER PROFILE", "加载帖子失败: ${result.message}")
-            }
-
-            is ApiResult.NetworkError -> {
-                Log.d("USER PROFILE", "加载帖子网络异常")
-            }
+        // 🌟 如果是加载第一页，开启帖子 Loading 状态
+        if (!isAppend) {
+            _isLoadingPosts.value = true
         }
-        _isLoadingMore.value = false
+
+        try {
+            // 只传 qq（query 传 null）即「该用户的全部帖子」
+            when (val result = safeApiCall {
+                RetroV2Client.apiService.searchPosts(
+                    query = null,
+                    page = page,
+                    limit = pageSize,
+                    authorQq = target
+                )
+            }) {
+                is ApiResult.Success -> {
+                    val data = result.data
+                    if (data == null) {
+                        return // finally 会负责关闭 loading
+                    }
+                    currentPage = data.page
+                    totalPages = data.pages
+                    _hasMore.value = currentPage < totalPages
+                    _posts.value = if (isAppend) {
+                        (_posts.value + data.feed).distinctBy { it.id }
+                    } else {
+                        data.feed
+                    }
+                }
+
+                is ApiResult.Error -> {
+                    Log.d("USER PROFILE", "加载帖子失败: ${result.message}")
+                }
+
+                is ApiResult.NetworkError -> {
+                    Log.d("USER PROFILE", "加载帖子网络异常")
+                }
+            }
+        } finally {
+            // 🌟 无论成功、失败还是异常，都确保重置状态，防止永远转圈
+            if (!isAppend) {
+                _isLoadingPosts.value = false
+            }
+            _isLoadingMore.value = false
+        }
     }
 
     /** 点赞：乐观更新 + 失败回滚 */

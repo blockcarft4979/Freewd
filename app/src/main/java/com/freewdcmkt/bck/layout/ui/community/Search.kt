@@ -53,11 +53,11 @@ import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdSearchBar
+import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.components.freewd.UidText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.FreewdHint
-import com.freewdcmkt.bck.components.ui.LoadingCard
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.screen.PostsData
 import com.freewdcmkt.bck.data.screen.SearchMode
@@ -91,8 +91,9 @@ fun SearchLayout(
     var imgUrl by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
     val activeListState = if (mode == SearchMode.POST) postListState else userListState
+
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        if (input.isBlank()) focusRequester.requestFocus()
     }
     LaunchedEffect(activeListState, hasMore, mode) {
         snapshotFlow {
@@ -273,7 +274,13 @@ private fun SearchPostsContent(
             )
         }
         if (isLoadingMore) {
-            item { LoadingCard() }
+            item {
+                LoadingCard(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .height(64.dp)
+                )
+            }
         }
     }
 }

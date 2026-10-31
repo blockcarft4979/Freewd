@@ -34,7 +34,8 @@ fun ReplyCard(
     replyData: FeedReplyData,
     isDeleting: Boolean,
     onReplyUser: (String, String) -> Unit,
-    onLongClick: () -> Unit
+    onLongClick: () -> Unit,
+    onToUserProfile:(qq: String)-> Unit
 ) {
     // 缩放
     val scale by animateFloatAsState(
@@ -89,7 +90,7 @@ fun ReplyCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Row(modifier = Modifier.padding(10.dp)) {
-            SmallUserIcon(userAvatarUrl(replyData.qq))
+            SmallUserIcon(userAvatarUrl(replyData.qq), onClick = { onToUserProfile(replyData.qq) })
             Column(
                 modifier = Modifier.padding(start = 8.dp),
                 verticalArrangement = Arrangement.Top

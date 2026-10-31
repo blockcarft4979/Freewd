@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.components.ui
+package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun LoadingCard() {
+fun LoadingCard(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -35,15 +35,15 @@ fun LoadingCard() {
 @Composable
 fun LoadingCard(hint: String) {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.Companion.fillMaxSize(),
+        contentAlignment = Alignment.Companion.Center
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Companion.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             LoadingIndicator()
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.Companion.height(12.dp))
             Text(hint)
         }
     }
@@ -54,4 +54,3 @@ fun LoadingCard(hint: String) {
 private fun ShowLoadingCardWithHint() {
     LoadingCard("搜索中…")
 }
-

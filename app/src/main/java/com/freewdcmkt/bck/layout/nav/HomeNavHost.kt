@@ -32,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,6 +61,7 @@ import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +74,7 @@ fun HomeNavHost(
     onToAboutApp: () -> Unit,
     onToUserCenter: () -> Unit,
     onToSettings: () -> Unit,
+    onToUserProfile:(qq: String)-> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -91,7 +94,7 @@ fun HomeNavHost(
 
     val retryHint = stringResource(R.string.retry_hint)
     val snackBarHostState = remember { SnackbarHostState() }
-
+    val scope = rememberCoroutineScope()
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -137,7 +140,11 @@ fun HomeNavHost(
                 TopAppBar(
                     scrollBehavior = scrollBehavior,
                     title = {
-                        UserCard(userAvatarUrl(qq), username, uid)
+                        UserCard(
+                            userAvatarUrl(qq),
+                            username,
+                            uid,
+                            onClick = { scope.launch { drawerState.open() } })
                     },
                     actions = {
                         IconButton(onClick = onToSearch) {
@@ -167,10 +174,10 @@ fun HomeNavHost(
             ) {
                 HomeUI(
                     feedListViewmodel = feedListViewmodel,
-                    topAppBarState = topAppBarState,
                     onToPostFeed = onToPostFeed,
                     onToFeedDetail = onToFeedDetail,
                     onLike = { id -> feedListViewmodel.toggleLike(id) },
+                    onToUserProfile = onToUserProfile
                 )
             }
         }
@@ -198,7 +205,7 @@ private fun HomeUI(
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onLike: (id: Int) -> Unit,
-    topAppBarState: TopAppBarState,
+    onToUserProfile: (qq: String) -> Unit,
     homeViewmodel: HomeViewmodel = viewModel(),
     feedListViewmodel: FeedListViewmodel
 ) {
@@ -225,12 +232,11 @@ private fun HomeUI(
         }) {
         FeedListHost(
             isRefresh = feedUiState is FeedUiState.Loading,
-            topAppBarState = topAppBarState,
-            density = LocalDensity.current,
             onToFeedDetail = onToFeedDetail,
             onToPostFeed = onToPostFeed,
             onToPreviewImg = { url -> imgUrl = url },
-            onLike = onLike
+            onLike = onLike,
+            onToUserProfile = onToUserProfile
         )
         PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
     }

@@ -21,11 +21,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
 
@@ -56,6 +62,8 @@ fun FreewdLoadingDialog(text: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FreewdEditDialog(
+    modifier: Modifier = Modifier,
+    text: String = "",
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit,
     title: String,
@@ -63,7 +71,18 @@ fun FreewdEditDialog(
     hintMsg1: String?,
     hintMsg2: String?
 ) {
-    val text = rememberSaveable() { mutableStateOf("") }
+
+    val textState = rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(
+            TextFieldValue(
+                text = text,
+                selection = TextRange(0, text.length)
+            )
+        )
+    }
+
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss
@@ -82,16 +101,20 @@ fun FreewdEditDialog(
             Spacer(modifier = Modifier.height(8.dp))
 
             TextField(
-                value = text.value,
-                onValueChange = {
-                    if (maxLength == null) text.value = it else {
-                        if (it.length <= maxLength) {
-                            text.value = it
+                value = textState.value,
+                onValueChange = { newValue ->
+                    if (maxLength == null) {
+                        textState.value = newValue
+                    } else {
+                        if (newValue.text.length <= maxLength) {
+                            textState.value = newValue
                         }
                     }
                 },
                 maxLines = 1,
-                modifier = Modifier.fillMaxWidth()
+                modifier = modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -100,16 +123,15 @@ fun FreewdEditDialog(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
-
                 if (hintMsg1 != null) TextButton(onClick = onDismiss) { Text(hintMsg1) }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 if (hintMsg2 != null) TextButton(
-                    onClick = { onConfirm(text.value) },
-                    enabled = text.value.isNotBlank()
+                    // 🌟 提交时取 .text 传出去
+                    onClick = { onConfirm(textState.value.text) },
+                    enabled = textState.value.text.isNotBlank()
                 ) { Text(hintMsg2) }
-
             }
         }
     }

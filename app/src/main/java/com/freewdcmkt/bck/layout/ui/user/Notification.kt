@@ -32,7 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.NotificationCard
 import com.freewdcmkt.bck.components.ui.FreewdHint
-import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.data.screen.NotificationData
 import com.freewdcmkt.bck.viewmodel.user.NotificationUiStates
 import com.freewdcmkt.bck.viewmodel.user.NotificationViewmodel

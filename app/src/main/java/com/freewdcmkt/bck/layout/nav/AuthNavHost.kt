@@ -3,6 +3,9 @@ package com.freewdcmkt.bck.layout.nav
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -35,36 +38,43 @@ fun AuthLayout(viewModel: LogInViewModel = viewModel()) {
         onBack = { backStack.removeLastOrNull() },
         transitionSpec = {
             slideInHorizontally(
-                initialOffsetX = { it },
-                animationSpec = tween(350, easing = FastOutSlowInEasing)
-            ) togetherWith
+                initialOffsetX = { it / 4 },
+                animationSpec = tween(320, easing = FastOutSlowInEasing)
+            ) + fadeIn(tween(320)) togetherWith
                     slideOutHorizontally(
-                        targetOffsetX = { -it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
-        },
-
-        popTransitionSpec = {
-            slideInHorizontally(
-                initialOffsetX = { -it },
-                animationSpec = tween(350, easing = FastOutSlowInEasing)
-            ) + fadeIn(animationSpec = tween(350, delayMillis = 50)) togetherWith
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
+                        targetOffsetX = { -it / 4 },           // 旧页只左退 1/4
+                        animationSpec = tween(320, easing = FastOutSlowInEasing)
+                    ) + scaleOut(
+                targetScale = 0.92f,                   // 旧页缩到 0.92，制造"退后一层"
+                animationSpec = tween(320, easing = FastOutSlowInEasing)
+            ) + fadeOut(tween(320))
         },
 
         predictivePopTransitionSpec = {
-            slideInHorizontally(
-                initialOffsetX = { -it },
-                animationSpec = tween(350, easing = FastOutSlowInEasing)
-            ) togetherWith
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
+            (scaleIn(initialScale = 0.92f) + fadeIn()) togetherWith
+                    (slideOutHorizontally(targetOffsetX = { it / 4 }) +
+                            scaleOut(targetScale = 0.92f) +
+                            fadeOut())
         },
+
+        popTransitionSpec = {
+            (scaleIn(
+                initialScale = 0.92f,
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            ) + fadeIn(
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            )) togetherWith
+                    (slideOutHorizontally(
+                        targetOffsetX = { it / 4 },
+                        animationSpec = tween(300, easing = FastOutSlowInEasing)
+                    ) + scaleOut(
+                        targetScale = 0.92f,
+                        animationSpec = tween(300, easing = FastOutSlowInEasing)
+                    ) + fadeOut(
+                        animationSpec = tween(300, easing = FastOutSlowInEasing)
+                    ))
+        },
+
 
         entryProvider = entryProvider {
             entry<LoginScreenData> {
@@ -79,12 +89,14 @@ fun AuthLayout(viewModel: LogInViewModel = viewModel()) {
                         }
                     },
                     onToUserAgreement = { backStack.add(DocumentScreenData(it)) },
-                    onChangePassword = {backStack.add(ChangePasswordScreenData)},
+                    onChangePassword = { backStack.add(ChangePasswordScreenData) },
                 )
             }
-            entry<ChangePasswordScreenData> { ChangePasswordHost(
-                onChangedPassword = { backStack.removeLastOrNull() }
-            ) }
+            entry<ChangePasswordScreenData> {
+                ChangePasswordHost(
+                    onChangedPassword = { backStack.removeLastOrNull() }
+                )
+            }
             entry<RegisterScreenData> {
                 RegisterLayout(
                     onToUserAgreement = { backStack.add(DocumentScreenData(it)) },

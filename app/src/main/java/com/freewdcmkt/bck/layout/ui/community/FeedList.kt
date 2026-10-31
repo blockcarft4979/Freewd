@@ -16,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,13 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
-import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.data.screen.PostsData
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
@@ -49,12 +47,11 @@ private const val BlurLayerCount = 3
 fun FeedListHost(
     viewmodel: FeedListViewmodel = viewModel(),
     isRefresh: Boolean,
-    topAppBarState: TopAppBarState,
-    density: Density,
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onToPreviewImg: (String) -> Unit,
-    onLike: (id: Int) -> Unit
+    onLike: (id: Int) -> Unit,
+    onToUserProfile: (qq: String) -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val feedListData by viewmodel.feedListData.collectAsState()
@@ -65,23 +62,6 @@ fun FeedListHost(
 
     val feedList = feedListData?.feed ?: emptyList()
     val fabVisible by remember { derivedStateOf { !listState.isScrollInProgress } }
-    // val statusBarBlur = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    // val blurListStates = List(BlurLayerCount) { rememberLazyListState() }
-
-//
-//    if (statusBarBlur && blurListStates.isNotEmpty()) {
-//        LaunchedEffect(listState, feedList) {
-//            snapshotFlow {
-//                listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
-//            }.collect { (index, offset) ->
-//                blurListStates.forEach { mirror -> mirror.scrollToItem(index, offset) }
-//            }
-//        }
-//        // 回到顶部 / 数据整体刷新时，副本的 index 可能已经越界，这里复位一下
-//        LaunchedEffect(feedList.isEmpty()) {
-//            blurListStates.forEach { it.scrollToItem(0, 0) }
-//        }
-//    }
 
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
@@ -108,13 +88,7 @@ fun FeedListHost(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
-//            AnimatedVisibility(
-//                visible = fabVisible,
-//                enter = fadeIn() + slideInVertically { it / 2 },
-//                exit = fadeOut() + slideOutVertically { it / 2 }
-//            ) {
-//
-//            }
+
             FloatingActionButton(
                 onClick = onToPostFeed,
                 modifier = Modifier.animateFloatingActionButton(
@@ -148,8 +122,8 @@ fun FeedListHost(
                         hasMore = hasMore,
                         onToPreviewImg = onToPreviewImg,
                         onLike = onLike,
-
-                        )
+                        onToUserProfile = onToUserProfile,
+                    )
                 }
             }
         }
@@ -166,9 +140,8 @@ private fun FeedListUi(
     hasMore: Boolean,
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (String) -> Unit,
+    onToUserProfile: (qq: String) -> Unit,
     onLike: (id: Int) -> Unit,
-    // 画在列表之上、顶栏之下的东西（状态栏毛玻璃底衬）
-    //overlay: @Composable () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         FeedListContent(
@@ -179,6 +152,7 @@ private fun FeedListUi(
             onClick = onClick,
             onToPreviewImg = onToPreviewImg,
             onLike = onLike,
+            onToUserProfile = onToUserProfile,
             modifier = Modifier.fillMaxSize()
         )
         //overlay()
@@ -200,6 +174,7 @@ private fun FeedListContent(
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit,
+    onToUserProfile: (qq: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -212,16 +187,17 @@ private fun FeedListContent(
                 feed,
                 onClick = onClick,
                 onToPreviewImg = onToPreviewImg,
-                onLike = onLike
+                onLike = onLike,
+                onClickUserIcon = { onToUserProfile(feed.qq) }
             )
         }
         if (isLoadingMore) {
             item {
-                Box(
+                LoadingCard(
                     modifier = Modifier
                         .padding(16.dp)
                         .height(64.dp)
-                ) { LoadingCard() }
+                )
             }
         } else if (!hasMore && postsData.isNotEmpty()) {
             item {
@@ -236,28 +212,4 @@ private fun FeedListContent(
         }
     }
 }
-
-/**
- * 列表上内边距 = 顶栏底边当前的 y 坐标，**在布局阶段**才读取折叠状态。
- *
- * 直接在 composable 里读 [TopAppBarState.heightOffset] 会让它在 composition 阶段
- * 被订阅，滚动时整棵 FeedListHost 每帧重组一次；`LazyColumn` 是在测量阶段
- * 调用 `calculateTopPadding()` 的，所以把读取放进这里，状态变化只会让列表重新测量。
- */
-//@Immutable
-//private class FeedListContentPadding(
-//    private val statusBarHeight: Dp,
-//    private val topAppBarState: TopAppBarState,
-//    private val density: Density
-//) : PaddingValues {
-//
-//    override fun calculateTopPadding(): Dp =
-//        //feedListTopPadding(statusBarHeight, topAppBarState, density)
-//
-//    override fun calculateBottomPadding(): Dp = 0.dp
-//
-//    override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp = 0.dp
-//
-//    override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp = 0.dp
-//}
 

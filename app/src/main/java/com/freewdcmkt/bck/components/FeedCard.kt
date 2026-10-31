@@ -32,19 +32,25 @@ fun FeedCard(
     feed: PostsData,
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (url: String) -> Unit,
-    onLike: (id: Int) -> Unit
+    onLike: (id: Int) -> Unit,
+    onClickUserIcon: () -> Unit = {}
 ) {
 
-    // var imgUrl by rememberSaveable() { mutableStateOf<String?>(null) }
 
-    Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.padding(vertical = 4.dp, horizontal = 15.dp)) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.padding(vertical = 4.dp, horizontal = 15.dp)
+    ) {
         Row(
             modifier = Modifier
                 .clickable(onClick = { onClick(feed.id) })
                 .padding(10.dp),
             verticalAlignment = Alignment.Top
         ) {
-            if (feed.qq == "0") FreewdIcon() else UserIcon(userAvatarUrl(feed.qq))
+            if (feed.qq == "0") FreewdIcon() else UserIcon(
+                userAvatarUrl(feed.qq),
+                onClick = onClickUserIcon
+            )
 
             Spacer(modifier = Modifier.width(8.dp))
 

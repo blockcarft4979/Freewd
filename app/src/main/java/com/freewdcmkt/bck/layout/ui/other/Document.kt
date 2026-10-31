@@ -23,7 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.ContentMarkdown
 import com.freewdcmkt.bck.components.ui.FreewdHint
-import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.viewmodel.other.DocumentUiState
 import com.freewdcmkt.bck.viewmodel.other.DocumentViewModel
 

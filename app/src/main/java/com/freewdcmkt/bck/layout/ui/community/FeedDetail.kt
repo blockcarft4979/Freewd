@@ -65,7 +65,7 @@ import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.FreewdHint
-import com.freewdcmkt.bck.components.ui.LoadingCard
+import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
@@ -80,6 +80,7 @@ fun FeedDetailLayout(
     id: Int,
     onDeleteFeed: () -> Unit,
     onBack: () -> Unit,
+    onToUserProfile:(qq: String)-> Unit,
 ) {
     val viewmodel: FeedDetailViewmodel = viewModel()
     val feedDetailData by viewmodel.feedDetailData.collectAsState()
@@ -176,7 +177,7 @@ fun FeedDetailLayout(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             if (feedDetailData.isError == true || feedDetailData.qq == "0") FreewdIcon() else UserIcon(
-                                userAvatarUrl(feedDetailData.qq)
+                                userAvatarUrl(feedDetailData.qq), onClick = { onToUserProfile(feedDetailData.qq) }
                             )
                             Column(
                                 verticalArrangement = Arrangement.Center
@@ -280,7 +281,8 @@ fun FeedDetailLayout(
                             replyUsername.value = username
                         },
                         onToPreviewImg = { url -> imgUrl = url },
-                        onDeleteReply = { pendingDeleteRid.value = it }
+                        onDeleteReply = { pendingDeleteRid.value = it },
+                        onToUserProfile = onToUserProfile
                     )
                 }
             }
@@ -299,7 +301,8 @@ private fun FeedUiLayout(
     onClickLike: () -> Unit,
     onReplyUser: (String, String) -> Unit,
     onToPreviewImg: (String) -> Unit,
-    onDeleteReply: (Int) -> Unit
+    onDeleteReply: (Int) -> Unit,
+    onToUserProfile: (qq: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -374,7 +377,8 @@ private fun FeedUiLayout(
                     if (replyData.qq == UserInfoData.account.value) {
                         onDeleteReply(replyData.commentId)
                     }
-                }
+                },
+                onToUserProfile = onToUserProfile
             )
         }
     }

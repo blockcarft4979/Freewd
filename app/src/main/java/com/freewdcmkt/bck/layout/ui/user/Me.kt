@@ -106,6 +106,7 @@ private fun MeUiLayout(
 
     if (isShowEditDialog.value) {
         FreewdEditDialog(
+            text = username,
             onDismiss = { isShowEditDialog.value = false },
             onConfirm = {
                 onConfirmUsername(it)
@@ -114,7 +115,7 @@ private fun MeUiLayout(
             title = stringResource(R.string.change_username_hint),
             maxLength = 15,
             hintMsg1 = stringResource(R.string.cancel_hint),
-            hintMsg2 = stringResource(R.string.yes_hint)
+            hintMsg2 = stringResource(R.string.yes_hint),
         )
     }
 
@@ -189,13 +190,13 @@ private fun MeUiLayout(
                         isShowArrow = false
                     )
                     ItemCard(
-                        icon = R.drawable.fa6solidpen,
+                        icon = R.drawable.baseline_edit_24,
                         name = stringResource(R.string.change_username_hint),
                         onClick = { isShowEditDialog.value = true },
                         isShowArrow = false
                     )
                     ItemCard(
-                        icon = R.drawable.frecat,
+                        icon = R.mipmap.ic_launcher_monochrome,
                         name = stringResource(R.string.about_app_hint),
                         onClick = onToAboutApp
                     )

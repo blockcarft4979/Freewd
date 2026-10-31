@@ -1,9 +1,14 @@
 package com.freewdcmkt.bck.layout.nav
 
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -39,7 +44,6 @@ import com.freewdcmkt.bck.layout.ui.other.About
 import com.freewdcmkt.bck.layout.ui.other.BrowserLayout
 import com.freewdcmkt.bck.layout.ui.other.Settings
 import com.freewdcmkt.bck.layout.ui.user.Notification
-import com.freewdcmkt.bck.layout.ui.user.UserCenterLayout
 import com.freewdcmkt.bck.layout.ui.user.UserProfileLayout
 
 
@@ -66,35 +70,42 @@ fun FreewdAppNavHost(
 
         transitionSpec = {
             slideInHorizontally(
-                initialOffsetX = { it },
-                animationSpec = tween(350, easing = FastOutSlowInEasing)
-            ) + fadeIn(animationSpec = tween(350, delayMillis = 50)) togetherWith
+                initialOffsetX = { it / 4 },
+                animationSpec = tween(320, easing = FastOutSlowInEasing)
+            ) + fadeIn(tween(320)) togetherWith
                     slideOutHorizontally(
-                        targetOffsetX = { -it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
-        },
-        popTransitionSpec = {
-            slideInHorizontally(
-                initialOffsetX = { -it },
-                animationSpec = tween(350, easing = FastOutSlowInEasing)
-            ) + fadeIn(animationSpec = tween(350, delayMillis = 50)) togetherWith
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
-        },
-        predictivePopTransitionSpec = {
-            slideInHorizontally(
-                initialOffsetX = { -it },
-                animationSpec = tween(350, easing = FastOutSlowInEasing)
-            ) togetherWith
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(350, easing = FastOutSlowInEasing)
-                    )
+                        targetOffsetX = { -it / 4 },           // 旧页只左退 1/4
+                        animationSpec = tween(320, easing = FastOutSlowInEasing)
+                    ) + scaleOut(
+                targetScale = 0.92f,                   // 旧页缩到 0.92，制造"退后一层"
+                animationSpec = tween(320, easing = FastOutSlowInEasing)
+            ) + fadeOut(tween(320))
         },
 
+        predictivePopTransitionSpec = {
+            (scaleIn(initialScale = 0.92f) + fadeIn()) togetherWith
+                    (slideOutHorizontally(targetOffsetX = { it / 4 }) +
+                            scaleOut(targetScale = 0.92f) +
+                            fadeOut())
+        },
+
+        popTransitionSpec = {
+            (scaleIn(
+                initialScale = 0.92f,
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            ) + fadeIn(
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            )) togetherWith
+                    (slideOutHorizontally(
+                        targetOffsetX = { it / 4 },
+                        animationSpec = tween(300, easing = FastOutSlowInEasing)
+                    ) + scaleOut(
+                        targetScale = 0.92f,
+                        animationSpec = tween(300, easing = FastOutSlowInEasing)
+                    ) + fadeOut(
+                        animationSpec = tween(300, easing = FastOutSlowInEasing)
+                    ))
+        },
         entryProvider = entryProvider {
             entry<HomeScreenData> {
                 HomeNavHost(
@@ -104,7 +115,8 @@ fun FreewdAppNavHost(
                     onToSearch = { backStack.add(SearchScreen) },
                     onToAboutApp = { backStack.add(AboutAppScreenData) },
                     onToUserCenter = { backStack.add(UserCenterScreen) },
-                    onToSettings = { backStack.add(SettingsScreenData) }
+                    onToSettings = { backStack.add(SettingsScreenData) },
+                    onToUserProfile = {backStack.add(UserProfileScreen(it))}
                 )
             }
 
@@ -125,12 +137,12 @@ fun FreewdAppNavHost(
             }
 
             entry<UserCenterScreen> {
-                UserCenterLayout(
+                UserProfileLayout(
+                    qq = "",
                     onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
                     onBack = { backStack.removeLastOrNull() }
                 )
             }
-
             entry<FeedDetailScreenData> { args ->
                 FeedDetailLayout(
                     args.id,
@@ -138,7 +150,8 @@ fun FreewdAppNavHost(
                         refreshViewModel.feedRefresh = true
                         backStack.removeLastOrNull()
                     },
-                    onBack = { backStack.removeLastOrNull() }
+                    onBack = { backStack.removeLastOrNull() },
+                    onToUserProfile = {backStack.add(UserProfileScreen(it))}
                 )
             }
 
