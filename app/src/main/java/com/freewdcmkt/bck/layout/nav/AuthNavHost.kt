@@ -9,10 +9,13 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -34,6 +37,7 @@ fun AuthLayout(viewModel: LogInViewModel = viewModel()) {
     val backStack = remember { mutableStateListOf<NavKey>(LoginScreenData) }
 
     NavDisplay(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         transitionSpec = {
