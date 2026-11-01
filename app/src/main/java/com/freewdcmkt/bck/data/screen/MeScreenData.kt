@@ -24,3 +24,5 @@ data class CheckInData(
     val lastCheckInDate: String? = null,
     val alreadyCheckedIn: Boolean = false
 )
+@Serializable
+data class UpdateBioData(val bio: String)

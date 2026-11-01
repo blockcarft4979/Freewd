@@ -2,24 +2,32 @@ package com.freewdcmkt.bck.components.freewd
 
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberBottomSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -71,7 +79,6 @@ fun FreewdEditDialog(
     hintMsg1: String?,
     hintMsg2: String?
 ) {
-
     val textState = rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(
             TextFieldValue(
@@ -80,17 +87,26 @@ fun FreewdEditDialog(
             )
         )
     }
-
     val focusRequester = remember { FocusRequester() }
+
+    val sheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
+    )
+
+
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        contentWindowInsets = { WindowInsets.ime }
     ) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(24.dp)
-                .imePadding()
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = title,
@@ -128,7 +144,6 @@ fun FreewdEditDialog(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 if (hintMsg2 != null) TextButton(
-                    // 🌟 提交时取 .text 传出去
                     onClick = { onConfirm(textState.value.text) },
                     enabled = textState.value.text.isNotBlank()
                 ) { Text(hintMsg2) }

@@ -8,6 +8,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -51,6 +51,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.FeedCard
+import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.ExpCard
 import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.components.freewd.UidText
@@ -59,26 +60,23 @@ import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.UserProfileData
 import com.freewdcmkt.bck.viewmodel.user.UserProfileUiState
 import com.freewdcmkt.bck.viewmodel.user.UserProfileViewmodel
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-/**
- * 用户主页 & 个人中心 (合二为一)
- *
- * @param qq 目标 QQ。**传空字符串 "" 代表查看自己（个人中心）**，此时会显示经验卡。
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileLayout(
+    isShowBackArrow: Boolean = true,
     qq: String,
     onToFeedDetail: (id: Int) -> Unit,
     onBack: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit = {},
     viewmodel: UserProfileViewmodel = viewModel()
 ) {
-    // 判断是否是“个人中心”
-    val isSelfCenter = qq.isBlank()
+    val isSelfCenter = qq.isBlank() || UserInfoData.account.collectAsState().value == qq
 
     val uiState by viewmodel.uiState.collectAsState()
     val profile by viewmodel.profile.collectAsState()
@@ -86,12 +84,23 @@ fun UserProfileLayout(
     val hasMore by viewmodel.hasMore.collectAsState()
     val isLoadingMore by viewmodel.isLoadingMore.collectAsState()
     val isLoadingPosts by viewmodel.isLoadingPosts.collectAsState()
+    val localUsername by UserInfoData.username.collectAsState()
+    val localExp by UserInfoData.exp.collectAsState()
+    val localBio by UserInfoData.bio.collectAsState()
 
     val listState = rememberLazyListState()
     var imgUrl by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(qq) { viewmodel.load(qq) }
-
+    LaunchedEffect(isSelfCenter, localUsername, localExp,localBio) {
+        if (isSelfCenter && profile != null) {
+            viewmodel.updateLocalProfile(
+                newUsername = localUsername,
+                newExp = localExp,
+                newBio = localBio
+            )
+        }
+    }
     LaunchedEffect(listState, hasMore) {
         snapshotFlow {
             val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
@@ -116,10 +125,8 @@ fun UserProfileLayout(
             if (firstItem == null) {
                 false
             } else if (firstItem.index == 0) {
-                // 如果第一个可见的还是资料卡，算一下它向上滑了多少
                 -firstItem.offset > avatarThresholdPx
             } else {
-                // 如果第一个可见的已经不是资料卡了，说明肯定滑出去了
                 true
             }
         }
@@ -163,7 +170,7 @@ fun UserProfileLayout(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    if (isShowBackArrow) IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_arrow_back_24),
                             contentDescription = stringResource(R.string.back_hint)
@@ -193,14 +200,18 @@ fun UserProfileLayout(
                     state = listState,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    profile?.let { data ->
-                        item { UserProfileHeader(data) }
 
+                    profile?.let { data ->
                         item {
-                            Box(modifier = Modifier.padding(horizontal = 15.dp)) {
-                                ExpCard(exp = data.xp)
-                            }
+                            UserProfileHeader(data)
+                            ExpCard(exp = data.xp)
                         }
+                    }
+                    item {
+                        Column(
+                            modifier = Modifier,
+                            content = content
+                        )
                     }
                     item {
                         Text(
@@ -275,7 +286,6 @@ fun UserProfileLayout(
 fun UserProfileHeader(data: UserProfileData) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 15.dp, vertical = 10.dp)
@@ -304,6 +314,7 @@ fun UserProfileHeader(data: UserProfileData) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            ContentText(data.bio.ifBlank { stringResource(R.string.user_no_bio_hint) })
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             Spacer(modifier = Modifier.height(14.dp))
 

@@ -133,7 +133,7 @@ fun ExpCard(exp: Int) {
         else -> "Lv 6"
     }
 
-    Card(shape = RoundedCornerShape(16.dp)) {
+    Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.padding(horizontal = 15.dp)) {
         Column(
             modifier = Modifier
                 .padding(15.dp)

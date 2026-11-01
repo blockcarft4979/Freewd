@@ -2,7 +2,7 @@
 <resources>
 
     <!-- ========== 應用程式 ========== -->
-    <string name="app_name">Freewd 社區</string>
+    <string name="app_name">Freewd 社群</string>
     <string name="app_introduction">Freewd 因愛而生</string>
     <string name="content_desc_app_icon">應用程式圖示</string>
     <string name="settings_hint">設定</string>
@@ -130,6 +130,8 @@
     <string name="user_my_posts_hint">我的貼文</string>
 
     <!-- ========== 通用狀態 ========== -->
+    <string name="user_edit_bio_hint">修改個人簽名</string>
+    <string name="user_no_bio_hint">該使用者很懶，什麼都沒寫</string>
     <string name="setting_enable_dynamic_hint">動態色彩</string>
     <string name="setting_unsupported_devices">不支援的裝置 :(</string>
     <string name="setting_theme_hint">主題</string>

@@ -4,7 +4,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.ContentText
 import com.freewdcmkt.bck.components.freewd.DateText
+import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.SmallUserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedReplyData
@@ -35,7 +35,7 @@ fun ReplyCard(
     isDeleting: Boolean,
     onReplyUser: (String, String) -> Unit,
     onLongClick: () -> Unit,
-    onToUserProfile:(qq: String)-> Unit
+    onToUserProfile: (qq: String) -> Unit
 ) {
     // 缩放
     val scale by animateFloatAsState(
@@ -90,7 +90,9 @@ fun ReplyCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Row(modifier = Modifier.padding(10.dp)) {
-            SmallUserIcon(userAvatarUrl(replyData.qq), onClick = { onToUserProfile(replyData.qq) })
+            if (replyData.qq == "0") FreewdIcon() else SmallUserIcon(
+                userAvatarUrl(replyData.qq),
+                onClick = { onToUserProfile(replyData.qq) })
             Column(
                 modifier = Modifier.padding(start = 8.dp),
                 verticalArrangement = Arrangement.Top

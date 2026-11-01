@@ -128,6 +128,8 @@
     <string name="user_posts_section_hint">Posts</string>
     <string name="user_no_post_hint">No posts yet</string>
     <string name="user_my_posts_hint">My posts</string>
+    <string name="user_edit_bio_hint">Edit bio</string>
+    <string name="user_no_bio_hint">This user was lazy and didn\'t write anything</string>
 
     <!-- ========== 通用状态 ========== -->
     <string name="setting_enable_dynamic_hint">Dynamic Color</string>

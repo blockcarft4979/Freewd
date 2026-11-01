@@ -21,8 +21,8 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 181
-        versionName = "3.10.7"
+        versionCode = 182
+        versionName = "3.10.8"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -115,6 +115,7 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("androidx.paging:paging-compose:3.2.0")
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.foundation)
 
     // ===== 测试 =====
     testImplementation(libs.junit)

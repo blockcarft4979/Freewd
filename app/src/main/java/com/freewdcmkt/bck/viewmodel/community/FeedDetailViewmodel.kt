@@ -54,8 +54,7 @@ class FeedDetailViewmodel : ViewModel() {
                 is ApiResult.Success -> {
                     val data = result.data
                     if (data != null) {
-                        val currentAccount = UserInfoData.account.value
-                        _isAuthor.value = (currentAccount == data.qq)
+                        _isAuthor.value = data.canDelete
                         _feedDetailData.value = data
                         _feedDetailUiState.value = FeedDetailUiState.Success
                     } else {
@@ -109,16 +108,13 @@ class FeedDetailViewmodel : ViewModel() {
             val newLikeCount = if (isLiked) oldData.likeCount - 1 else oldData.likeCount + 1
             val newIsLiked = !isLiked
 
-            // 1. 乐观更新：立即改本地
             _feedDetailData.value = oldData.copy(
                 likeCount = newLikeCount.coerceAtLeast(0),
                 isLiked = newIsLiked
             )
 
-            // 2. 发请求
             when (val result = safeApiCall { RetroV2Client.apiService.likePost(id) }) {
                 is ApiResult.Success -> {
-                    // 用服务端返回的数据覆盖，保证一致
                     result.data?.let { likeData ->
                         _feedDetailData.value = oldData.copy(
                             isLiked = likeData.isLiked,

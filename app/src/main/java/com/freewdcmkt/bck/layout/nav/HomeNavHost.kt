@@ -21,7 +21,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
@@ -38,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -57,6 +55,7 @@ import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.layout.ui.community.FeedListHost
 import com.freewdcmkt.bck.layout.ui.user.Me
+import com.freewdcmkt.bck.layout.ui.user.UserProfileLayout
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
@@ -66,15 +65,15 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeNavHost(
+    refreshViewModel: RefreshStateViewModel,
     feedListViewmodel: FeedListViewmodel = viewModel(),
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onToNotification: () -> Unit,
     onToSearch: () -> Unit,
     onToAboutApp: () -> Unit,
-    onToUserCenter: () -> Unit,
     onToSettings: () -> Unit,
-    onToUserProfile:(qq: String)-> Unit
+    onToUserProfile: (qq: String) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -128,9 +127,17 @@ fun HomeNavHost(
         drawerState = drawerState,
         drawerContent = {
             DismissibleDrawerSheet {
-                Me(
-                    onToAboutApp = onToAboutApp,
-                    onToUserCenter = onToUserCenter, onToSettings = onToSettings
+                UserProfileLayout(
+                    isShowBackArrow = false,
+                    qq = qq,
+                    onToFeedDetail = onToFeedDetail,
+                    onBack = { scope.launch { drawerState.close() } },
+                    content = {
+                        Me(
+                            onToAboutApp = onToAboutApp,
+                          onToSettings = onToSettings
+                        )
+                    },
                 )
             }
         }
@@ -173,6 +180,8 @@ fun HomeNavHost(
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
                 HomeUI(
+                    refreshViewModel = refreshViewModel, // 🌟 传给 HomeUI
+                    homeViewmodel = viewmodel,
                     feedListViewmodel = feedListViewmodel,
                     onToPostFeed = onToPostFeed,
                     onToFeedDetail = onToFeedDetail,
@@ -206,11 +215,12 @@ private fun HomeUI(
     onToPostFeed: () -> Unit,
     onLike: (id: Int) -> Unit,
     onToUserProfile: (qq: String) -> Unit,
-    homeViewmodel: HomeViewmodel = viewModel(),
-    feedListViewmodel: FeedListViewmodel
+    homeViewmodel: HomeViewmodel,
+    feedListViewmodel: FeedListViewmodel,
+    refreshViewModel: RefreshStateViewModel,
 ) {
-    val refreshViewmodel: RefreshStateViewModel = viewModel()
-    val isRefresh = refreshViewmodel.feedRefresh
+
+    val isRefresh = refreshViewModel.feedRefresh
     val homeUiState by homeViewmodel.homeUiState.collectAsState()
     val feedUiState by feedListViewmodel.feedUiState.collectAsState()
 
@@ -219,7 +229,7 @@ private fun HomeUI(
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
             feedListViewmodel.fetchData(true)
-            refreshViewmodel.feedRefresh = false
+            refreshViewModel.feedRefresh = false
         }
     }
 

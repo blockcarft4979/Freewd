@@ -29,6 +29,12 @@ object UserInfoData {
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
+    val bio = UserInfoManager.getUserBioFlow()
+        .stateIn(
+            scope = appScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ""
+        )
     val uid = UserInfoManager.getUidFlow()
         .stateIn(
             scope = appScope,

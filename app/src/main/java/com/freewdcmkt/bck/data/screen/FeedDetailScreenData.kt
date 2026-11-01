@@ -4,12 +4,11 @@ import androidx.annotation.Keep
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.UUID
 
 @Serializable
 data class FeedDetailScreenData(
     val id: Int
-): NavKey {
+) : NavKey {
 }
 
 @Serializable
@@ -22,6 +21,7 @@ data class FeedDetailData(
     val username: String = "",
     val date: String = "",
     val likeCount: Int = 0,
+    val canDelete: Boolean = false,
     val isLiked: Boolean = false,
     val isMarkdown: Boolean = false,
     val img: String? = null,
@@ -34,6 +34,7 @@ data class FeedReplyData(
     val date: String,
     val msg: String,
     val qq: String,
+    val canDelete: Boolean,
     val username: String
 )
 
@@ -43,9 +44,11 @@ data class ReplyFeedData(
     @SerialName("reply")
     val reply: String? = null
 )
+
 @Keep
 @Serializable
 data class LikeFeedRequestData(val id: Int)
+
 @Serializable
 @Keep
 data class LikeFeedResultData(

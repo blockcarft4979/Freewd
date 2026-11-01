@@ -11,8 +11,6 @@ import com.freewdcmkt.bck.data.screen.CheckInData
 import com.freewdcmkt.bck.data.screen.FeedData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.data.screen.HomeData
-import com.freewdcmkt.bck.data.screen.LikeFeedRequestData
-import com.freewdcmkt.bck.data.screen.LikeFeedResultData
 import com.freewdcmkt.bck.data.screen.LikeResult
 import com.freewdcmkt.bck.data.screen.LoginData
 import com.freewdcmkt.bck.data.screen.NotificationDataList
@@ -21,6 +19,7 @@ import com.freewdcmkt.bck.data.screen.PostFeedRequestData
 import com.freewdcmkt.bck.data.screen.ReplyFeedData
 import com.freewdcmkt.bck.data.screen.SearchUsersData
 import com.freewdcmkt.bck.data.screen.SubmitPasswordRequestData
+import com.freewdcmkt.bck.data.screen.UpdateBioData
 import com.freewdcmkt.bck.data.screen.UploadImgData
 import com.freewdcmkt.bck.data.screen.UserProfileData
 import com.freewdcmkt.bck.data.screen.UsernameData
@@ -36,6 +35,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -110,7 +110,10 @@ interface V2ApiService {
     suspend fun deletePost(@Path("id") id: Int): Response<ApiResponse<Unit>>
 
     @POST(RetroApi.Post.REPLY_POST)
-    suspend fun replyPost(@Path("id") id: Int, @Body request: ReplyFeedData): Response<ApiResponse<Unit>>
+    suspend fun replyPost(
+        @Path("id") id: Int,
+        @Body request: ReplyFeedData
+    ): Response<ApiResponse<Unit>>
 
     @POST(RetroApi.Post.UPLOAD_POST)
     suspend fun uploadPost(@Body requestData: PostFeedRequestData): Response<ApiResponse<PostFeedData>>
@@ -145,6 +148,8 @@ interface V2ApiService {
         @Query("limit") limit: Int = 20
     ): Response<ApiResponse<SearchUsersData>>
 
+    @PUT(RetroApi.User.UPDATE_BIO)
+    suspend fun updateBio(@Body request: UpdateBioData): Response<ApiResponse<Unit>>
 }
 
 

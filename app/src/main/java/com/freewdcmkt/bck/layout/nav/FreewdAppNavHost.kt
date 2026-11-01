@@ -47,10 +47,8 @@ import com.freewdcmkt.bck.layout.ui.user.Notification
 import com.freewdcmkt.bck.layout.ui.user.UserProfileLayout
 
 
-// 一个简单的共享状态，替代原来的 savedStateHandle[REFRESH]
 class RefreshStateViewModel : ViewModel() {
     var feedRefresh by mutableStateOf(false)
-    var notificationRefresh by mutableStateOf(false)
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -74,10 +72,10 @@ fun FreewdAppNavHost(
                 animationSpec = tween(320, easing = FastOutSlowInEasing)
             ) + fadeIn(tween(320)) togetherWith
                     slideOutHorizontally(
-                        targetOffsetX = { -it / 4 },           // 旧页只左退 1/4
+                        targetOffsetX = { -it / 4 },
                         animationSpec = tween(320, easing = FastOutSlowInEasing)
                     ) + scaleOut(
-                targetScale = 0.92f,                   // 旧页缩到 0.92，制造"退后一层"
+                targetScale = 0.92f,
                 animationSpec = tween(320, easing = FastOutSlowInEasing)
             ) + fadeOut(tween(320))
         },
@@ -109,12 +107,12 @@ fun FreewdAppNavHost(
         entryProvider = entryProvider {
             entry<HomeScreenData> {
                 HomeNavHost(
+                    refreshViewModel = refreshViewModel,
                     onToFeedDetail = { backStack.add(FeedDetailScreenData(it)) },
                     onToPostFeed = { backStack.add(PostFeedScreen()) },
                     onToNotification = { backStack.add(NotificationScreen()) },
                     onToSearch = { backStack.add(SearchScreen) },
                     onToAboutApp = { backStack.add(AboutAppScreenData) },
-                    onToUserCenter = { backStack.add(UserCenterScreen) },
                     onToSettings = { backStack.add(SettingsScreenData) },
                     onToUserProfile = {backStack.add(UserProfileScreen(it))}
                 )
@@ -136,13 +134,13 @@ fun FreewdAppNavHost(
                 )
             }
 
-            entry<UserCenterScreen> {
-                UserProfileLayout(
-                    qq = "",
-                    onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
-                    onBack = { backStack.removeLastOrNull() }
-                )
-            }
+//            entry<UserCenterScreen> {
+//                UserProfileLayout(
+//                    qq = "",
+//                    onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
+//                    onBack = { backStack.removeLastOrNull() }
+//                )
+//            }
             entry<FeedDetailScreenData> { args ->
                 FeedDetailLayout(
                     args.id,

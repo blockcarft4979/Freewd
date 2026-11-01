@@ -130,6 +130,8 @@
     <string name="user_my_posts_hint">내 게시물</string>
 
     <!-- ========== 공통 상태 ========== -->
+    <string name="user_edit_bio_hint">자기소개 수정</string>
+    <string name="user_no_bio_hint">이 사용자는 게을러서 아무것도 작성하지 않았습니다</string>
     <string name="setting_enable_dynamic_hint">다이내믹 컬러</string>
     <string name="setting_unsupported_devices">지원되지 않는 기기 :(</string>
     <string name="setting_theme_hint">테마</string>

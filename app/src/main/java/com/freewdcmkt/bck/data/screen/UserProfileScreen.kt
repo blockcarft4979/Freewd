@@ -21,6 +21,7 @@ data class UserProfileData(
     val uid: Int = 0,
     val qq: String = "",
     val username: String = "",
+    val bio: String,
     val xp: Int = 0,
     val joinedAt: String? = null,
     val postCount: Int = 0,

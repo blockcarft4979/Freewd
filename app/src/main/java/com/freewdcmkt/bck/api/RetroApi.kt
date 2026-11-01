@@ -1,8 +1,7 @@
 package com.freewdcmkt.bck.api
 
 object RetroApi {
-    const val BASE_URL = "https://app.freewd.top/api/v1/"
-    const val V2_BASE_URL = "https://app.freewd.top/api/v2/index.php/"
+    const val V2_BASE_URL = "https://app.freewd.top/api/v2/index/"
 
     const val COMMUNITY_BASE_URL = "https://community.freewd.top/app/api/v1/"
 
@@ -29,6 +28,7 @@ object RetroApi {
     /** v2 用户相关接口 */
     object User {
         const val ME = "users/me"
+        const val UPDATE_BIO = "users/me/bio"
         const val CHECK_IN = "check_in"
         const val SUBMIT_USERNAME = "users/me/username"
     }

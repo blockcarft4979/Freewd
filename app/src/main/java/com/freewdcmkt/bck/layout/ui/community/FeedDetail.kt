@@ -3,7 +3,6 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -60,14 +59,13 @@ import com.freewdcmkt.bck.components.freewd.FreewdIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.IconTextButton
 import com.freewdcmkt.bck.components.freewd.ImageCard
+import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.components.freewd.ReplyInputBar
 import com.freewdcmkt.bck.components.freewd.TitleText
 import com.freewdcmkt.bck.components.freewd.UserIcon
 import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.FreewdHint
-import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
-import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailViewmodel
@@ -80,7 +78,7 @@ fun FeedDetailLayout(
     id: Int,
     onDeleteFeed: () -> Unit,
     onBack: () -> Unit,
-    onToUserProfile:(qq: String)-> Unit,
+    onToUserProfile: (qq: String) -> Unit,
 ) {
     val viewmodel: FeedDetailViewmodel = viewModel()
     val feedDetailData by viewmodel.feedDetailData.collectAsState()
@@ -177,7 +175,8 @@ fun FeedDetailLayout(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             if (feedDetailData.isError == true || feedDetailData.qq == "0") FreewdIcon() else UserIcon(
-                                userAvatarUrl(feedDetailData.qq), onClick = { onToUserProfile(feedDetailData.qq) }
+                                userAvatarUrl(feedDetailData.qq),
+                                onClick = { onToUserProfile(feedDetailData.qq) }
                             )
                             Column(
                                 verticalArrangement = Arrangement.Center
@@ -374,7 +373,7 @@ private fun FeedUiLayout(
                 replyData = replyData,
                 onReplyUser = onReplyUser,
                 onLongClick = {
-                    if (replyData.qq == UserInfoData.account.value) {
+                    if (replyData.canDelete) {
                         onDeleteReply(replyData.commentId)
                     }
                 },

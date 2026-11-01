@@ -140,6 +140,8 @@
     <string name="unknown_error">不明なエラーが発生しました。ネットワークの問題かもしれません</string>
     <string name="no_internet_hint">ネットワークに接続できません。接続設定をご確認ください</string>
     <string name="data_error_hint">データの読み取りに失敗しました。もう一度お試しください</string>
+    <string name="user_edit_bio_hint">自己紹介を編集</string>
+    <string name="user_no_bio_hint">このユーザーは怠け者で、何も書いていません</string>
     <string name="setting_enable_dynamic_hint">ダイナミックカラー</string>
 
 </resources>

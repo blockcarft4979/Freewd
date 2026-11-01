@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.freewdcmkt.bck.data.screen.PostsData
 import com.freewdcmkt.bck.data.screen.UserProfileData
+import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.network.ApiResult
 import com.freewdcmkt.bck.util.network.RetroV2Client
 import com.freewdcmkt.bck.util.network.safeApiCall
@@ -72,7 +73,8 @@ class UserProfileViewmodel : ViewModel() {
             val pathTarget = targetQq.ifBlank { "me" }
 
             // 先取资料，资料失败就没必要再拉帖子
-            when (val result = safeApiCall { RetroV2Client.apiService.getUserProfile(pathTarget) }) {
+            when (val result =
+                safeApiCall { RetroV2Client.apiService.getUserProfile(pathTarget) }) {
                 is ApiResult.Success -> {
                     val data = result.data
                     if (data == null) {
@@ -81,6 +83,7 @@ class UserProfileViewmodel : ViewModel() {
                     }
                     _profile.value = data
                     _uiState.value = UserProfileUiState.Success
+                    UserInfoManager.saveUserBio(data.bio)
                     // 用资料里返回的 qq 拉帖子：个人中心传 "me" 时，这样也能拿到自己的 QQ
                     loadPosts(target = data.qq.ifBlank { targetQq }, page = 1, isAppend = false)
                 }
@@ -154,6 +157,29 @@ class UserProfileViewmodel : ViewModel() {
                 _isLoadingPosts.value = false
             }
             _isLoadingMore.value = false
+        }
+    }
+
+    /**
+     * 本地无感更新数据（用于签到、改名等已通过其他接口完成的操作）
+     */
+    fun updateLocalProfile(newUsername: String, newExp: Int, newBio: String) {
+        // 1. 更新资料卡数据
+        _profile.value = _profile.value?.copy(
+            username = newUsername,
+            xp = newExp,
+            bio = newBio
+        )
+
+        // 2. （可选）更新自己帖子列表里的用户名
+        _posts.value = _posts.value.map { post ->
+            // 如果帖子是当前用户发的，把名字换掉
+            // 注意这里需要根据你的实际数据结构判断，这里假设 post 里有 qq 字段
+            if (post.qq == _profile.value?.qq) {
+                post.copy(username = newUsername)
+            } else {
+                post
+            }
         }
     }
 

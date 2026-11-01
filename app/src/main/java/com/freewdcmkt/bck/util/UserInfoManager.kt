@@ -31,7 +31,7 @@ object UserInfoManager {
     private val UID = stringPreferencesKey("uid")
     private val IS_LOGIN = booleanPreferencesKey("is_login")
     private val USER_ACCOUNT = stringPreferencesKey("user_account")
-    private val HOME_IMAGE_URL = stringPreferencesKey("home_image_url")
+    private val BIO = stringPreferencesKey("bio")
     private val NOTIFICATION_ID = intPreferencesKey("notification_id")
     private val EXP = intPreferencesKey("exp")
     private val CHECK_IN_DAYS = intPreferencesKey("check_in_days")
@@ -61,7 +61,9 @@ object UserInfoManager {
     suspend fun saveUserAccount(qq: String) = dataStore.setValue(USER_ACCOUNT, qq)
 
     fun getUserAccountFlow() = dataStore.getValueFlow(USER_ACCOUNT, "")
+    suspend fun saveUserBio(bio: String) = dataStore.setValue(BIO, bio)
 
+    fun getUserBioFlow() = dataStore.getValueFlow(BIO, "")
     suspend fun saveNotificationId(id: Int) = dataStore.setValue(NOTIFICATION_ID, id)
 
     fun getNotificationIdFlow() = dataStore.getValueFlow(NOTIFICATION_ID, 0)

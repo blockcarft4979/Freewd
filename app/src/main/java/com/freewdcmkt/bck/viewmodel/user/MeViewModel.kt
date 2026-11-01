@@ -3,6 +3,7 @@ package com.freewdcmkt.bck.viewmodel.user
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.freewdcmkt.bck.data.screen.UpdateBioData
 import com.freewdcmkt.bck.data.screen.UsernameData
 import com.freewdcmkt.bck.util.UserInfoManager
 import com.freewdcmkt.bck.util.network.ApiResult
@@ -65,6 +66,28 @@ class MeViewModel : ViewModel() {
                 is ApiResult.NetworkError -> {
                     _isShowCheckInDialog.value = false
                     Log.d("USER CENTER", "checkIn network error")
+                }
+            }
+        }
+    }
+
+    fun updateBio(bio:String){
+        viewModelScope.launch {
+            _isShowSubmittingDialog.value = true
+            when (val result = safeApiCall { RetroV2Client.apiService.updateBio(UpdateBioData(bio)) }) {
+                is ApiResult.Success -> {
+                    UserInfoManager.saveUserBio(bio)
+                    _isShowSubmittingDialog.value = false
+                }
+
+                is ApiResult.Error -> {
+                    _errorMsg.value = result.message
+                    _isShowSubmittingDialog.value = false
+                }
+
+                is ApiResult.NetworkError -> {
+                    _isShowSubmittingDialog.value = false
+                    Log.d("USER CENTER", "submitBio network error")
                 }
             }
         }
