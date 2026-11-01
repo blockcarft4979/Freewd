@@ -3,6 +3,7 @@ package com.freewdcmkt.bck.viewmodel.user
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.PostsData
 import com.freewdcmkt.bck.data.screen.UserProfileData
 import com.freewdcmkt.bck.util.UserInfoManager
@@ -83,7 +84,7 @@ class UserProfileViewmodel : ViewModel() {
                     }
                     _profile.value = data
                     _uiState.value = UserProfileUiState.Success
-                    UserInfoManager.saveUserBio(data.bio)
+                    if (data.qq == UserInfoData.account.value) UserInfoManager.saveUserBio(data.bio)
                     // 用资料里返回的 qq 拉帖子：个人中心传 "me" 时，这样也能拿到自己的 QQ
                     loadPosts(target = data.qq.ifBlank { targetQq }, page = 1, isAppend = false)
                 }
@@ -129,10 +130,7 @@ class UserProfileViewmodel : ViewModel() {
                 )
             }) {
                 is ApiResult.Success -> {
-                    val data = result.data
-                    if (data == null) {
-                        return // finally 会负责关闭 loading
-                    }
+                    val data = result.data ?: return // finally 会负责关闭 loading
                     currentPage = data.page
                     totalPages = data.pages
                     _hasMore.value = currentPage < totalPages
