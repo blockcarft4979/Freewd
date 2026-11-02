@@ -51,7 +51,7 @@ fun FeedListHost(
     onToPostFeed: () -> Unit,
     onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit,
-    onToUserProfile: (qq: String) -> Unit
+    onToUserProfile: (uid: Int) -> Unit
 ) {
     val uiState by viewmodel.feedUiState.collectAsState()
     val feedListData by viewmodel.feedListData.collectAsState()
@@ -140,7 +140,7 @@ private fun FeedListUi(
     hasMore: Boolean,
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (String) -> Unit,
-    onToUserProfile: (qq: String) -> Unit,
+    onToUserProfile: (uid: Int) -> Unit,
     onLike: (id: Int) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -174,7 +174,7 @@ private fun FeedListContent(
     onClick: (id: Int) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit,
-    onToUserProfile: (qq: String) -> Unit,
+    onToUserProfile: (uid: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -188,7 +188,7 @@ private fun FeedListContent(
                 onClick = onClick,
                 onToPreviewImg = onToPreviewImg,
                 onLike = onLike,
-                onClickUserIcon = { onToUserProfile(feed.qq) }
+                onClickUserIcon = { onToUserProfile(feed.uid) }
             )
         }
         if (isLoadingMore) {

@@ -35,7 +35,7 @@ fun ReplyCard(
     isDeleting: Boolean,
     onReplyUser: (String, String) -> Unit,
     onLongClick: () -> Unit,
-    onToUserProfile: (qq: String) -> Unit
+    onToUserProfile: (uid: Int) -> Unit
 ) {
     // 缩放
     val scale by animateFloatAsState(
@@ -92,7 +92,7 @@ fun ReplyCard(
         Row(modifier = Modifier.padding(10.dp)) {
             if (replyData.qq == "0") FreewdIcon() else SmallUserIcon(
                 userAvatarUrl(replyData.qq),
-                onClick = { onToUserProfile(replyData.qq) })
+                onClick = { onToUserProfile(replyData.uid) })
             Column(
                 modifier = Modifier.padding(start = 8.dp),
                 verticalArrangement = Arrangement.Top

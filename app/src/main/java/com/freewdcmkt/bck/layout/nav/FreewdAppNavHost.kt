@@ -128,7 +128,7 @@ fun FreewdAppNavHost(
 
             entry<UserProfileScreen> { args ->
                 UserProfileLayout(
-                    qq = args.qq,
+                    uid = args.uid,
                     onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
                     onBack = { backStack.removeLastOrNull() }
                 )

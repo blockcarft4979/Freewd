@@ -73,7 +73,7 @@ fun HomeNavHost(
     onToSearch: () -> Unit,
     onToAboutApp: () -> Unit,
     onToSettings: () -> Unit,
-    onToUserProfile: (qq: String) -> Unit
+    onToUserProfile: (uid: Int) -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -129,7 +129,7 @@ fun HomeNavHost(
             DismissibleDrawerSheet {
                 UserProfileLayout(
                     isShowBackArrow = false,
-                    qq = qq,
+                    uid = uid,
                     onToFeedDetail = onToFeedDetail,
                     onBack = { scope.launch { drawerState.close() } },
                     content = {
@@ -150,7 +150,7 @@ fun HomeNavHost(
                         UserCard(
                             userAvatarUrl(qq),
                             username,
-                            uid,
+                            uid.toString(),
                             onClick = { scope.launch { drawerState.open() } })
                     },
                     actions = {
@@ -214,7 +214,7 @@ private fun HomeUI(
     onToFeedDetail: (id: Int) -> Unit,
     onToPostFeed: () -> Unit,
     onLike: (id: Int) -> Unit,
-    onToUserProfile: (qq: String) -> Unit,
+    onToUserProfile: (uid: Int) -> Unit,
     homeViewmodel: HomeViewmodel,
     feedListViewmodel: FeedListViewmodel,
     refreshViewModel: RefreshStateViewModel,

@@ -14,6 +14,7 @@ data class FeedData(
 
 @Serializable
 data class PostsData(
+    val uid: Int=0,
     val title: String? = null,
     val msg: String? = null,
     val id: Int,

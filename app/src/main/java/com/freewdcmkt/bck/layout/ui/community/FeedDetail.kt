@@ -78,7 +78,7 @@ fun FeedDetailLayout(
     id: Int,
     onDeleteFeed: () -> Unit,
     onBack: () -> Unit,
-    onToUserProfile: (qq: String) -> Unit,
+    onToUserProfile: (uid: Int) -> Unit,
 ) {
     val viewmodel: FeedDetailViewmodel = viewModel()
     val feedDetailData by viewmodel.feedDetailData.collectAsState()
@@ -176,7 +176,7 @@ fun FeedDetailLayout(
                         ) {
                             if (feedDetailData.isError == true || feedDetailData.qq == "0") FreewdIcon() else UserIcon(
                                 userAvatarUrl(feedDetailData.qq),
-                                onClick = { onToUserProfile(feedDetailData.qq) }
+                                onClick = { onToUserProfile(feedDetailData.uid) }
                             )
                             Column(
                                 verticalArrangement = Arrangement.Center
@@ -301,7 +301,7 @@ private fun FeedUiLayout(
     onReplyUser: (String, String) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onDeleteReply: (Int) -> Unit,
-    onToUserProfile: (qq: String) -> Unit
+    onToUserProfile: (uid: Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier

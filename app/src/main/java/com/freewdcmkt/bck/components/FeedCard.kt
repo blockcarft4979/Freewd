@@ -86,21 +86,3 @@ fun FeedCard(
 
 }
 
-@Composable
-@Preview(showBackground = false)
-fun ShowCard() {
-    val feed = PostsData(
-        "WO SHI TITLE",
-        "我是内容，你好世界\n南梁写代码拯救世界！喵~~",
-        100,
-        "IM ", "",
-        "2025-08-13",
-        30000,
-        true,
-        "11"
-    )
-    FeedCard(
-        feed,
-        onClick = { }, onToPreviewImg = {}, onLike = {}
-    )
-}

@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.layout.ui.user
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -70,13 +71,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun UserProfileLayout(
     isShowBackArrow: Boolean = true,
-    qq: String,
+    uid: Int,
     onToFeedDetail: (id: Int) -> Unit,
     onBack: () -> Unit,
     content: @Composable ColumnScope.() -> Unit = {},
     viewmodel: UserProfileViewmodel = viewModel()
 ) {
-    val isSelfCenter = qq.isBlank() || UserInfoData.account.collectAsState().value == qq
+    val isSelfCenter = UserInfoData.uid.collectAsState().value.toInt() == uid
 
     val uiState by viewmodel.uiState.collectAsState()
     val profile by viewmodel.profile.collectAsState()
@@ -91,7 +92,8 @@ fun UserProfileLayout(
     val listState = rememberLazyListState()
     var imgUrl by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(qq) { viewmodel.load(qq) }
+    LaunchedEffect(uid) { viewmodel.load(uid) }
+    Log.d("user uid",uid.toString())
     LaunchedEffect(isSelfCenter, localUsername, localExp,localBio) {
         if (isSelfCenter && profile != null) {
             viewmodel.updateLocalProfile(

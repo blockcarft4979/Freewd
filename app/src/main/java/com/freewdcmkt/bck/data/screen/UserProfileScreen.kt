@@ -4,7 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserProfileScreen(val qq: String) : NavKey
+data class UserProfileScreen(val uid: Int) : NavKey
 
 /** 个人中心（看自己的主页，额外带等级经验卡） */
 @Serializable

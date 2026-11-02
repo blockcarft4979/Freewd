@@ -39,7 +39,7 @@ object UserInfoData {
         .stateIn(
             scope = appScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ""
+            initialValue = 0
         )
     val exp = UserInfoManager.getExpFlow().map { it }.stateIn(
         scope = appScope,

@@ -28,7 +28,7 @@ private fun <T> DataStore<Preferences>.getValueFlow(
 object UserInfoManager {
     private val Context.dataStore by preferencesDataStore(name = "user_info")
     private val USERNAME = stringPreferencesKey("username")
-    private val UID = stringPreferencesKey("uid")
+    private val UID = intPreferencesKey("uid")
     private val IS_LOGIN = booleanPreferencesKey("is_login")
     private val USER_ACCOUNT = stringPreferencesKey("user_account")
     private val BIO = stringPreferencesKey("bio")
@@ -51,9 +51,9 @@ object UserInfoManager {
 
     fun getUsernameFlow() = dataStore.getValueFlow(USERNAME, "")
 
-    suspend fun saveUid(uid: String) = dataStore.setValue(UID, uid)
+    suspend fun saveUid(uid: Int) = dataStore.setValue(UID, uid)
 
-    fun getUidFlow() = dataStore.getValueFlow(UID, "")
+    fun getUidFlow() = dataStore.getValueFlow(UID, 0)
     suspend fun saveLogin(isLogin: Boolean) = dataStore.setValue(IS_LOGIN, isLogin)
 
     fun isLoginFlow() = dataStore.getValueFlow(IS_LOGIN, false)
@@ -82,7 +82,7 @@ object UserInfoManager {
 suspend fun initUserInfo(loginData: LoginData, qq: String) {
     TokenManager.saveToken(loginData.token)
     UserInfoManager.saveUsername(loginData.username)
-    UserInfoManager.saveUid(loginData.uid.toString())
+    UserInfoManager.saveUid(loginData.uid)
     UserInfoManager.saveExp(loginData.xp)
     UserInfoManager.saveCheckInDays(loginData.checkInDays)
     UserInfoManager.saveLastCheckInDate(loginData.lastCheckInDate ?: "")

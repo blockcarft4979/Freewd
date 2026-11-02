@@ -78,9 +78,9 @@ interface V2ApiService {
     @POST(RetroApi.User.CHECK_IN)
     suspend fun checkIn(): Response<ApiResponse<CheckInData>>
 
-    /** GET /users/{qq} —— 用户资料（用户主页） */
-    @GET("users/{qq}")
-    suspend fun getUserProfile(@Path("qq") qq: String): Response<ApiResponse<UserProfileData>>
+    /** GET /users/{uid} —— 用户资料（用户主页），路径参数为 uid */
+    @GET("users/{uid}")
+    suspend fun getUserProfile(@Path("uid") uid: Int): Response<ApiResponse<UserProfileData>>
 
     @POST(RetroApi.User.SUBMIT_USERNAME)
     suspend fun submitUsername(@Body request: UsernameData): Response<ApiResponse<UsernameData>>
@@ -126,17 +126,17 @@ interface V2ApiService {
     suspend fun deleteReply(@Path("id") id: Int, @Path("rid") rid: Int): Response<ApiResponse<Unit>>
 
     // ===== 搜索 =====
-    // GET /search?q=&page=&limit=  ->  {total, page, limit, pages, feed[]}
-    // 返回结构和 GET /posts 同构，所以直接复用 FeedData
     // GET /search?q=&qq=&uid=&username=&page=&limit=  ->  {total, page, limit, pages, feed[]}
-    // q / qq / uid / username 可任意组合；只传 qq（不传 q）即「某用户的全部帖子」，
-    // 用户主页就是靠这个拉 TA 的帖子，不用额外的服务端接口。
+    // 返回结构与 GET /posts 同构，复用 FeedData。
+    // q / qq / uid / username 可任意组合；只传 uid（不传 q）即「某用户的全部帖子」，
+    // 用户主页正是靠这个拉 TA 的帖子，无需额外的服务端接口。
     @GET("search")
     suspend fun searchPosts(
         @Query("q") query: String? = null,
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 20,
         @Query("qq") authorQq: String? = null,
+        @Query("uid") authorUid: Int? = null,
         @Query("username") authorUsername: String? = null
     ): Response<ApiResponse<FeedData>>
 

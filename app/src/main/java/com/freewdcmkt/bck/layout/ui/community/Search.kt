@@ -70,7 +70,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun SearchLayout(
     onToFeedDetail: (id: Int) -> Unit,
-    onToUserProfile: (qq: String) -> Unit,
+    onToUserProfile: (uid: Int) -> Unit,
     onBack: () -> Unit
 ) {
     val viewmodel: SearchViewmodel = viewModel()
@@ -291,7 +291,7 @@ private fun SearchUsersContent(
     users: List<SearchUserData>,
     listState: LazyListState,
     isLoadingMore: Boolean,
-    onToUserProfile: (String) -> Unit
+    onToUserProfile: (Int) -> Unit
 ) {
     LazyColumn(
         state = listState,
@@ -299,7 +299,7 @@ private fun SearchUsersContent(
         modifier = Modifier.fillMaxSize()
     ) {
         items(items = users, key = { it.uid }) { user ->
-            UserResultCard(user = user, onClick = { onToUserProfile(user.qq) })
+            UserResultCard(user = user, onClick = { onToUserProfile(user.uid) })
         }
         if (isLoadingMore) {
             item { LoadingCard() }
