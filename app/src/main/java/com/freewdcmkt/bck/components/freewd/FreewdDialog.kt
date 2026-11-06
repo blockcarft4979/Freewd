@@ -2,16 +2,15 @@ package com.freewdcmkt.bck.components.freewd
 
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -27,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -76,16 +75,12 @@ fun FreewdEditDialog(
     onConfirm: (String) -> Unit,
     title: String,
     maxLength: Int? = null,
+    maxLines: Int = 1,
     hintMsg1: String?,
     hintMsg2: String?
 ) {
-    val textState = rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(
-            TextFieldValue(
-                text = text,
-                selection = TextRange(0, text.length)
-            )
-        )
+    val textState = rememberSaveable(text, stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(text = text, selection = TextRange(0, text.length)))
     }
     val focusRequester = remember { FocusRequester() }
 
@@ -119,20 +114,24 @@ fun FreewdEditDialog(
             TextField(
                 value = textState.value,
                 onValueChange = { newValue ->
-                    if (maxLength == null) {
-                        textState.value = newValue
+                    textState.value = if (maxLength == null || newValue.text.length <= maxLength) {
+                        newValue
                     } else {
-                        if (newValue.text.length <= maxLength) {
-                            textState.value = newValue
-                        }
+                        newValue.copy(text = newValue.text.take(maxLength))
                     }
                 },
-                maxLines = 1,
+                maxLines = maxLines,
                 modifier = modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
             )
-
+            maxLength?.let {
+                Text(
+                    "${textState.value.text.length} / $maxLength",
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
 
             Row(
@@ -212,7 +211,8 @@ fun FreewdModalBottomSheet(
 @Composable
 fun FreewdBottomSheetDialog(
     onDismiss: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
+    rowContent: @Composable RowScope.() -> Unit = {}
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss
@@ -221,5 +221,6 @@ fun FreewdBottomSheetDialog(
             modifier = Modifier.padding(24.dp),
             content = content
         )
+        Row(content = rowContent)
     }
 }

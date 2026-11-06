@@ -69,8 +69,8 @@
     <string name="notification_hint">Notifications</string>
     <string name="no_notifications_hint">No notifications</string>
     <string name="clear_all_notifications_hint">Clear all</string>
-    <string name="like_feed_hint">%s liked your post</string>
-    <string name="reply_feed_hint">%s replied to your post: %s</string>
+    <string name="like_feed_hint">Liked your post</string>
+    <string name="reply_feed_hint">Replied to your post: %s</string>
     <string name="unsupported_notification_hint">Unsupported type. Please update your app.</string>
 
     <!-- ========== 用户中心 ========== -->
@@ -143,5 +143,9 @@
     <string name="unknown_error">An unknown error, perhaps a network problem?</string>
     <string name="no_internet_hint">No internet connection. Please check your network settings.</string>
     <string name="data_error_hint">Failed to parse data. Please try again.</string>
-
+    <!-- ========== Feed detail 操作失败提示 ========== -->
+    <string name="like_failed_hint">Failed to update like status</string>
+    <string name="reply_failed_hint">Failed to send comment</string>
+    <string name="delete_feed_failed_hint">Failed to delete post</string>
+    <string name="delete_reply_failed_hint">Failed to delete comment</string>
 </resources>

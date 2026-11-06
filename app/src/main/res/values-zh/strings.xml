@@ -70,7 +70,7 @@
     <string name="notification_hint">通知</string>
     <string name="no_notifications_hint">暂无通知</string>
     <string name="clear_all_notifications_hint">清空通知</string>
-    <string name="like_feed_hint">%s 赞了你的帖子</string>
+    <string name="like_feed_hint">赞了你的帖子</string>
     <string name="reply_feed_hint">%s 回复了你的帖子：%s</string>
     <string name="unsupported_notification_hint">暂不支持该类型，请更新应用</string>
 
@@ -82,7 +82,7 @@
     <string name="check_in_hint">签到</string>
     <string name="checking_hint">签到中…</string>
     <string name="unchecked_hint">今日还未签到</string>
-    <string name="checked_hint">已连续签到 %d 天</string>
+    <string name="checked_hint">已签到 %d 天</string>
     <string name="logout_hint">退出登录</string>
     <string name="logout_account_hint">你要退出当前账号吗？</string>
     <string name="logout_description_hint">退出当前账号</string>
@@ -143,5 +143,9 @@
     <string name="user_no_bio_hint">该用户很懒，什么都没写</string>
     <string name="setting_enable_dynamic_hint">动态取色</string>
     <string name="setting_theme_hint">主题</string>
-
+    <!-- ========== 帖子详情操作失败提示 ========== -->
+    <string name="like_failed_hint">点赞状态更新失败</string>
+    <string name="reply_failed_hint">评论发送失败</string>
+    <string name="delete_feed_failed_hint">帖子删除失败</string>
+    <string name="delete_reply_failed_hint">评论删除失败</string>
 </resources>

@@ -3,21 +3,12 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,34 +30,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link.feedLink
-import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.ReplyCard
-import com.freewdcmkt.bck.components.freewd.ContentMarkdown
-import com.freewdcmkt.bck.components.freewd.ContentText
-import com.freewdcmkt.bck.components.freewd.DateText
-import com.freewdcmkt.bck.components.freewd.FreewdIcon
+import com.freewdcmkt.bck.components.freewd.FeedDetailCard
+import com.freewdcmkt.bck.components.freewd.ReplyCard
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
-import com.freewdcmkt.bck.components.freewd.IconTextButton
-import com.freewdcmkt.bck.components.freewd.ImageCard
 import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.components.freewd.ReplyInputBar
-import com.freewdcmkt.bck.components.freewd.TitleText
-import com.freewdcmkt.bck.components.freewd.UserIcon
-import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.components.ui.FreewdHint
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.screen.FeedDetailData
+import com.freewdcmkt.bck.viewmodel.community.FeedDetailEvent
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailUiState
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailViewmodel
 import kotlinx.coroutines.delay
@@ -95,13 +76,12 @@ fun FeedDetailLayout(
     val pendingDeleteRid = rememberSaveable { mutableStateOf<Int?>(null) }
     val copiedHint = stringResource(R.string.copied_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
-    val isShowDialog = rememberSaveable() { mutableStateOf(false) }
+    val isShowDialog = rememberSaveable { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-    val replyQq = rememberSaveable() { mutableStateOf("") }
-    val replyUsername = rememberSaveable() { mutableStateOf("") }
+    val replyQq = rememberSaveable { mutableStateOf("") }
+    val replyUsername = rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
-
     val clipboardManager = remember {
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
@@ -116,6 +96,25 @@ fun FeedDetailLayout(
             onDeleteFeed()
         }
     }
+
+    // === 收 ViewModel 一次性事件 → snackbar ===
+    LaunchedEffect(Unit) {
+        viewmodel.events.collect { event ->
+            val text = when (event) {
+                is FeedDetailEvent.ShowError ->
+                    event.serverMessage?.takeIf { it.isNotBlank() }
+                        ?: context.getString(event.messageRes)
+
+                is FeedDetailEvent.ShowMessage ->
+                    context.getString(event.messageRes)
+            }
+            snackBarHostState.showSnackbar(
+                message = text,
+                duration = SnackbarDuration.Short,
+            )
+        }
+    }
+
     if (isShowDialog.value) {
         FreewdModalBottomSheet(
             onDismiss = { isShowDialog.value = false },
@@ -141,7 +140,6 @@ fun FeedDetailLayout(
                         viewmodel.deleteReply(id, rid)
                         deletingIds.remove(rid)
                     }
-
                 }
                 pendingDeleteRid.value = null
             },
@@ -164,37 +162,11 @@ fun FeedDetailLayout(
                         )
                     }
                 },
-
                 title = {
-
-                    if (uiState is FeedDetailUiState.Loading)
-                        Text(stringResource(R.string.loading_hint))
-                    else
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            if (feedDetailData.isError == true || feedDetailData.qq == "0") FreewdIcon() else UserIcon(
-                                userAvatarUrl(feedDetailData.qq),
-                                onClick = { onToUserProfile(feedDetailData.uid) }
-                            )
-                            Column(
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                UsernameText(
-                                    feedDetailData.username,
-                                )
-                                DateText(
-                                    feedDetailData.date,
-                                )
-                            }
-
-                        }
+                    Text(stringResource(R.string.feed_detail_hint))
                 },
                 actions = {
-                    IconButton(onClick = {
-                        isExpanded.value = true
-                    }) {
+                    if (uiState is FeedDetailUiState.Success)  IconButton(onClick = { isExpanded.value = true }) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_more_vert_24),
                             contentDescription = stringResource(R.string.more_hint)
@@ -209,7 +181,6 @@ fun FeedDetailLayout(
                             onClick = {
                                 val link = feedLink(id)
                                 val clip = ClipData.newPlainText("Feed link", link)
-
                                 clipboardManager.setPrimaryClip(clip)
                                 isExpanded.value = false
                                 scope.launch {
@@ -232,7 +203,6 @@ fun FeedDetailLayout(
                                 isExpanded.value = false
                             },
                         )
-
                     }
                 }
             )
@@ -242,11 +212,16 @@ fun FeedDetailLayout(
             if (uiState is FeedDetailUiState.Success)
                 ReplyInputBar(
                     username = replyUsername.value,
-                    onSend = {
-                        val targetQq = replyQq.value
-                        viewmodel.replyFeed(id, it, targetQq.ifEmpty { null })
-                        focusRequester.requestFocus()
+                    onSend = { text ->
+                        viewmodel.replyFeed(
+                            id = id,
+                            content = text,
+                            replyQq = replyQq.value.ifEmpty { null },
+                        )
+                        // 重置回复目标，输入栏占位回到楼主
                         replyQq.value = ""
+                        replyUsername.value = feedDetailData.username
+                        focusRequester.requestFocus()
                     },
                     modifier = Modifier.imePadding(),
                     focusRequester = focusRequester
@@ -260,12 +235,12 @@ fun FeedDetailLayout(
             when (uiState) {
                 is FeedDetailUiState.Loading -> LoadingCard()
 
-                is FeedDetailUiState.Error -> {
-                    FreewdHint(hint = if (isNoNetwork) stringResource(R.string.unknown_error) else errorMSg)
-                }
+                is FeedDetailUiState.Error -> FreewdHint(
+                    hint = if (isNoNetwork) stringResource(R.string.unknown_error) else errorMSg,
+                    icon = R.drawable.baseline_close_24
+                )
 
                 else -> {
-
                     FeedUiLayout(
                         feedDetailData,
                         deletingIds = deletingIds,
@@ -274,7 +249,8 @@ fun FeedDetailLayout(
                                 id,
                                 feedDetailData.isLiked
                             )
-                        }, onReplyUser = { qq, username ->
+                        },
+                        onReplyUser = { qq, username ->
                             focusRequester.requestFocus()
                             replyQq.value = qq
                             replyUsername.value = username
@@ -290,14 +266,14 @@ fun FeedDetailLayout(
             url = imgUrl ?: "", onDismiss = { imgUrl = null }
         )
     }
-
 }
+
 
 @Composable
 private fun FeedUiLayout(
     feedDetailData: FeedDetailData,
     deletingIds: List<Int>,
-    onClickLike: () -> Unit,
+    onClickLike: (id: Int) -> Unit,
     onReplyUser: (String, String) -> Unit,
     onToPreviewImg: (String) -> Unit,
     onDeleteReply: (Int) -> Unit,
@@ -308,60 +284,13 @@ private fun FeedUiLayout(
             .fillMaxSize()
     ) {
         item {
-            Card(
-                modifier = Modifier
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 14.dp)
-                ) {
-                    SelectionContainer {
-                        Column {
-                            if (!feedDetailData.title.isNullOrEmpty()) {
-                                TitleText(
-                                    feedDetailData.title,
-                                )
-                            }
-                            if (feedDetailData.isMarkdown && !feedDetailData.msg.isNullOrEmpty()) {
-                                ContentMarkdown(
-                                    feedDetailData.msg,
-                                )
-                            } else if (feedDetailData.msg != null) {
-                                ContentText(
-                                    text = feedDetailData.msg
-                                )
-                            }
-                            if (feedDetailData.img != null) ImageCard(
-                                feedDetailData.img,
-                                onClick = onToPreviewImg
-                            )
-                        }
+            FeedDetailCard(
+                feedDetailData,
+                onToPreviewImg = onToPreviewImg,
+                onLike = onClickLike,
+                onClickUserIcon = { onToUserProfile(feedDetailData.uid) }
+            )
 
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
-                    ) {
-                        if (feedDetailData.isError == false) IconTextButton(
-                            icon = if (feedDetailData.isLiked)
-                                R.drawable.baseline_favorite_24
-                            else
-                                R.drawable.baseline_favorite_border_24,
-                            description = stringResource(R.string.favorite_hint),
-                            text = feedDetailData.likeCount.toString(),
-                            onClick = onClickLike,
-                        )
-                    }
-                }
-            }
         }
 
         items(
@@ -381,6 +310,4 @@ private fun FeedUiLayout(
             )
         }
     }
-
-
 }

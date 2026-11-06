@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.components
+package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox

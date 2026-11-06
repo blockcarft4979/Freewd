@@ -1,4 +1,4 @@
-package com.freewdcmkt.bck.components
+package com.freewdcmkt.bck.components.freewd
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -20,11 +20,6 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.freewd.ContentText
-import com.freewdcmkt.bck.components.freewd.DateText
-import com.freewdcmkt.bck.components.freewd.FreewdIcon
-import com.freewdcmkt.bck.components.freewd.SmallUserIcon
-import com.freewdcmkt.bck.components.freewd.UsernameText
 import com.freewdcmkt.bck.data.screen.FeedReplyData
 
 

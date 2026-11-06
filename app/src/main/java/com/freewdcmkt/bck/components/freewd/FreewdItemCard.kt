@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
@@ -38,7 +37,7 @@ import com.freewdcmkt.bck.R
 @Composable
 fun ItemCard(
     onClick: () -> Unit,
-    icon: Int,
+    icon: Int? = null,
     name: String,
     color: Color? = null,
     isShowArrow: Boolean = true
@@ -57,12 +56,15 @@ fun ItemCard(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp) // 加大内边距更大气
         ) {
-            Icon(
-                modifier = Modifier.size(24.dp), // 32有点大，24比较合适
-                contentDescription = null,
-                painter = painterResource(icon),
-                tint = color ?: MaterialTheme.colorScheme.onSurface
-            )
+            icon?.let {
+                Icon(
+                    modifier = Modifier.size(24.dp), // 32有点大，24比较合适
+                    contentDescription = null,
+                    painter = painterResource(icon),
+                    tint = color ?: MaterialTheme.colorScheme.onSurface
+                )
+            }
+
             Spacer(Modifier.width(12.dp)) // 间距加大
 
             // 【关键点】weight 给 Text，让它填满中间，把箭头挤到最右边
@@ -74,7 +76,7 @@ fun ItemCard(
             )
 
             // 箭头只需要 size，不需要 weight
-           if (isShowArrow) Icon(
+            if (isShowArrow) Icon(
                 painter = painterResource(R.drawable.right),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),

@@ -78,14 +78,13 @@ fun NotificationCard(
 
                 when (type) {
                     1 -> {
-                        ContentText(stringResource(R.string.like_feed_hint, username))
+                        ContentText(stringResource(R.string.like_feed_hint))
                     }
 
                     2 if msg != null -> {
                         ContentText(
                             stringResource(
                                 R.string.reply_feed_hint,
-                                username,
                                 msg
                             )
                         )

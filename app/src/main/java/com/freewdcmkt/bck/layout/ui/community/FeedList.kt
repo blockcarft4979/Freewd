@@ -31,9 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
-import com.freewdcmkt.bck.components.FeedCard
+import com.freewdcmkt.bck.components.freewd.FeedCard
 import com.freewdcmkt.bck.components.freewd.FreewdFooter
 import com.freewdcmkt.bck.components.freewd.LoadingCard
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.PostsData
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.community.FeedUiState
@@ -57,12 +58,12 @@ fun FeedListHost(
     val feedListData by viewmodel.feedListData.collectAsState()
     val isLoadingMore by viewmodel.isLoadingMore.collectAsState()
     val hasMore by viewmodel.hasMore.collectAsState()
-
+    val uid by UserInfoData.uid.collectAsState()
     val listState = rememberLazyListState()
 
     val feedList = feedListData?.feed ?: emptyList()
     val fabVisible by remember { derivedStateOf { !listState.isScrollInProgress } }
-
+    LaunchedEffect(uid) { viewmodel.fetchData(true) }
     LaunchedEffect(isRefresh) {
         if (isRefresh) {
             viewmodel.fetchData(forceRefresh = true)

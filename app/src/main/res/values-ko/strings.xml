@@ -69,7 +69,7 @@
     <string name="notification_hint">알림</string>
     <string name="no_notifications_hint">알림이 없습니다</string>
     <string name="clear_all_notifications_hint">모두 지우기</string>
-    <string name="like_feed_hint">%s님이 회원님의 게시물을 좋아합니다</string>
+    <string name="like_feed_hint">님이 회원님의 게시물을 좋아합니다</string>
     <string name="reply_feed_hint">%s님이 회원님의 게시물에 답글을 남겼습니다: %s</string>
     <string name="unsupported_notification_hint">지원되지 않는 유형입니다. 앱을 업데이트해 주세요.</string>
 
@@ -81,7 +81,7 @@
     <string name="check_in_hint">출석 체크</string>
     <string name="checking_hint">출석 체크 중…</string>
     <string name="unchecked_hint">오늘 아직 출석 체크를 하지 않았습니다.</string>
-    <string name="checked_hint">%d일 연속 출석 체크를 완료했습니다.</string>
+    <string name="checked_hint">%d일 출석 체크를 완료했습니다.</string>
     <string name="logout_hint">로그아웃</string>
     <string name="logout_account_hint">현재 계정에서 로그아웃하시겠습니까?</string>
     <string name="logout_description_hint">현재 계정에서 로그아웃합니다.</string>
@@ -143,5 +143,9 @@
     <string name="unknown_error">알 수 없는 오류입니다. 네트워크 문제일 수 있습니다.</string>
     <string name="no_internet_hint">인터넷에 연결되어 있지 않습니다. 네트워크 설정을 확인해 주세요.</string>
     <string name="data_error_hint">데이터를 구문 분석하지 못했습니다. 다시 시도해 주세요.</string>
-
+    <!-- ========== 피드 상세 작업 실패 ========== -->
+    <string name="like_failed_hint">좋아요 상태를 업데이트하지 못했습니다</string>
+    <string name="reply_failed_hint">댓글을 보내지 못했습니다</string>
+    <string name="delete_feed_failed_hint">게시물을 삭제하지 못했습니다</string>
+    <string name="delete_reply_failed_hint">댓글을 삭제하지 못했습니다</string>
 </resources>

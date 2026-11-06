@@ -1,11 +1,13 @@
 package com.freewdcmkt.bck.util.time
+
+import android.icu.text.DisplayContext
 import android.icu.text.RelativeDateTimeFormatter
 import android.icu.text.RelativeDateTimeFormatter.Direction
 import android.icu.text.RelativeDateTimeFormatter.RelativeUnit
-import android.icu.text.DisplayContext
 import android.icu.util.ULocale
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
@@ -22,7 +24,8 @@ fun formatTime(dateStr: String): String {
         val diffMillis = now - timeInMillis
 
         if (diffMillis < 0) {
-            return RelativeDateTimeFormatter.getInstance().format(Direction.PLAIN, RelativeDateTimeFormatter.AbsoluteUnit.NOW)
+            return RelativeDateTimeFormatter.getInstance()
+                .format(Direction.PLAIN, RelativeDateTimeFormatter.AbsoluteUnit.NOW)
         }
 
         val diffMinutes = diffMillis / (1000 * 60)
@@ -39,9 +42,22 @@ fun formatTime(dateStr: String): String {
             )
 
             return when {
-                diffMinutes < 1 -> formatter.format(Direction.PLAIN, RelativeDateTimeFormatter.AbsoluteUnit.NOW) // 刚刚
-                diffMinutes < 60 -> formatter.format(diffMinutes.toDouble(), Direction.LAST, RelativeUnit.MINUTES)
-                diffHours < 24 -> formatter.format(diffHours.toDouble(), Direction.LAST, RelativeUnit.HOURS)
+                diffMinutes < 1 -> formatter.format(
+                    Direction.PLAIN,
+                    RelativeDateTimeFormatter.AbsoluteUnit.NOW
+                ) // 刚刚
+                diffMinutes < 60 -> formatter.format(
+                    diffMinutes.toDouble(),
+                    Direction.LAST,
+                    RelativeUnit.MINUTES
+                )
+
+                diffHours < 24 -> formatter.format(
+                    diffHours.toDouble(),
+                    Direction.LAST,
+                    RelativeUnit.HOURS
+                )
+
                 else -> formatter.format(diffDays.toDouble(), Direction.LAST, RelativeUnit.DAYS)
             }
         }
@@ -66,7 +82,8 @@ fun formatTime(dateStr: String): String {
         }
 
 
-        val bestPattern = android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton)
+        val bestPattern =
+            android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton)
 
         val outputFormatter = SimpleDateFormat(bestPattern, Locale.getDefault())
         outputFormatter.format(date)
@@ -75,6 +92,7 @@ fun formatTime(dateStr: String): String {
         dateStr
     }
 }
-fun getSystemDate(): String {
-    return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+fun getSystemDate(pattern: String = "yyyy-MM-dd"): String {
+    return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern))
 }

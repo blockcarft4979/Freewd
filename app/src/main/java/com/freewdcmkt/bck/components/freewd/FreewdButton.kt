@@ -18,6 +18,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +36,7 @@ fun IconTextButton(
 ) {
     val scale = remember { Animatable(1f) }
     val scope = rememberCoroutineScope()
-
+    val haptic = LocalHapticFeedback.current
     Row(
         modifier = modifier
             .clickable(
@@ -42,6 +44,7 @@ fun IconTextButton(
                 interactionSource = remember { MutableInteractionSource() },
             ) {
                 onClick()
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 if (pulseOnClick) {
                     scope.launch {
                         scale.animateTo(

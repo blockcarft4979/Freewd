@@ -70,7 +70,7 @@
     <string name="notification_hint">通知</string>
     <string name="no_notifications_hint">通知はありません</string>
     <string name="clear_all_notifications_hint">すべて消去</string>
-    <string name="like_feed_hint">%s さんがあなたの投稿にいいねしました</string>
+    <string name="like_feed_hint">さんがあなたの投稿にいいねしました</string>
     <string name="reply_feed_hint">%s さんがあなたの投稿に返信しました: %s</string>
     <string name="unsupported_notification_hint">対応していない種類です。アプリを更新してください</string>
 
@@ -82,7 +82,7 @@
     <string name="check_in_hint">チェックイン</string>
     <string name="checking_hint">チェックイン中…</string>
     <string name="unchecked_hint">本日はまだチェックインしていません</string>
-    <string name="checked_hint">%d 日連続でチェックインしました</string>
+    <string name="checked_hint">%d 日間チェックインしました</string>
     <string name="logout_hint">ログアウト</string>
     <string name="logout_account_hint">現在のアカウントからログアウトしますか？</string>
     <string name="logout_description_hint">現在のアカウントからログアウトします</string>
@@ -143,5 +143,9 @@
     <string name="user_edit_bio_hint">自己紹介を編集</string>
     <string name="user_no_bio_hint">このユーザーは怠け者で、何も書いていません</string>
     <string name="setting_enable_dynamic_hint">ダイナミックカラー</string>
-
+    <!-- ========== Feed 詳細の操作失敗 ========== -->
+    <string name="like_failed_hint">いいねの更新に失敗しました</string>
+    <string name="reply_failed_hint">コメントの送信に失敗しました</string>
+    <string name="delete_feed_failed_hint">投稿の削除に失敗しました</string>
+    <string name="delete_reply_failed_hint">コメントの削除に失敗しました</string>
 </resources>

@@ -54,12 +54,12 @@ class UserProfileViewmodel : ViewModel() {
      * @param uid 目标用户 uid（唯一主键）；由调用方（个人中心/帖子详情）传入。
      *   服务端 GET /users/{uid} 对不存在 uid 返回 404，由 [safeApiCall] 统一转换为 Error。
      */
-    fun load(uid: Int) {
+    fun load(uid: Int, forceRefresh: Boolean = false) {
         if (uid <= 0) {
             _uiState.value = UserProfileUiState.Error("无效的用户 UID")
             return
         }
-        if (loadedTargetUid == uid && _uiState.value is UserProfileUiState.Success) {
+        if (loadedTargetUid == uid && _uiState.value is UserProfileUiState.Success && !forceRefresh) {
             return
         }
 
@@ -83,7 +83,12 @@ class UserProfileViewmodel : ViewModel() {
                     }
                     _profile.value = data
                     _uiState.value = UserProfileUiState.Success
-                    if (data.qq == UserInfoData.account.value) UserInfoManager.saveUserBio(data.bio)
+                    if (data.qq == UserInfoData.account.value) {
+                        UserInfoManager.saveUserBio(data.bio)
+                        UserInfoManager.saveLastCheckInDate(data.lastCheckinDate ?: "")
+                        UserInfoManager.saveExp(data.xp)
+                        UserInfoManager.saveCheckInDays(data.checkInDays)
+                    }
                     loadPosts(targetUid = uid, page = 1, isAppend = false)
                 }
 

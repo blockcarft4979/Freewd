@@ -149,7 +149,7 @@ class SearchViewmodel : ViewModel() {
 
             is ApiResult.Error -> if (!isAppend) _uiState.value = SearchUiState.Error(result.message)
             is ApiResult.NetworkError -> if (!isAppend) {
-                _uiState.value = SearchUiState.Error("网络异常，请检查网络连接")
+                _uiState.value = SearchUiState.Error()
             }
         }
     }

@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.FreewdSwitch
+import com.freewdcmkt.bck.components.freewd.ItemCard
 import com.freewdcmkt.bck.util.dynamicColorFlow
 import com.freewdcmkt.bck.util.pureBlackTheme
 import com.freewdcmkt.bck.util.setDynamicColor
@@ -26,7 +29,7 @@ import com.freewdcmkt.bck.util.setPureBlackTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun Settings() {
+fun Settings(onToAboutApp: () -> Unit) {
     val context = LocalContext.current
     val enabledDynamicColors by context.dynamicColorFlow().collectAsState(initial = false)
     val enabledPureBlackTheme by context.pureBlackTheme().collectAsState(initial = false)
@@ -44,18 +47,32 @@ fun Settings() {
                 text = stringResource(R.string.setting_theme_hint),
                 color = MaterialTheme.colorScheme.primary
             )
-            FreewdSwitch(
-                stringResource(R.string.setting_enable_dynamic_hint),
-                checked = enabledDynamicColors && dynamicColorSupported,
-                onCheckedChange = { scope.launch { context.setDynamicColor(it) } },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = dynamicColorSupported
+            Card(shape = RoundedCornerShape(16.dp)) {
+                Column(modifier = Modifier.padding(10.dp)) {
+                    FreewdSwitch(
+                        stringResource(R.string.setting_enable_dynamic_hint),
+                        checked = enabledDynamicColors && dynamicColorSupported,
+                        onCheckedChange = { scope.launch { context.setDynamicColor(it) } },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = dynamicColorSupported
+                    )
+                    FreewdSwitch(
+                        stringResource(R.string.setting_black_theme_hint),
+                        checked = enabledPureBlackTheme,
+                        onCheckedChange = { scope.launch { context.setPureBlackTheme(it) } },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+
+            Text(
+                fontSize = 12.sp,
+                text = stringResource(R.string.about_hint),
+                color = MaterialTheme.colorScheme.primary
             )
-            FreewdSwitch(
-                stringResource(R.string.setting_black_theme_hint),
-                checked = enabledPureBlackTheme,
-                onCheckedChange = { scope.launch { context.setPureBlackTheme(it) } },
-                modifier = Modifier.fillMaxWidth(),
+            ItemCard(
+                name = stringResource(R.string.about_app_hint),
+                onClick = onToAboutApp
             )
         }
     }

@@ -112,7 +112,6 @@ fun FreewdAppNavHost(
                     onToPostFeed = { backStack.add(PostFeedScreen()) },
                     onToNotification = { backStack.add(NotificationScreen()) },
                     onToSearch = { backStack.add(SearchScreen) },
-                    onToAboutApp = { backStack.add(AboutAppScreenData) },
                     onToSettings = { backStack.add(SettingsScreenData) },
                     onToUserProfile = {backStack.add(UserProfileScreen(it))}
                 )
@@ -134,13 +133,6 @@ fun FreewdAppNavHost(
                 )
             }
 
-//            entry<UserCenterScreen> {
-//                UserProfileLayout(
-//                    qq = "",
-//                    onToFeedDetail = { id -> backStack.add(FeedDetailScreenData(id)) },
-//                    onBack = { backStack.removeLastOrNull() }
-//                )
-//            }
             entry<FeedDetailScreenData> { args ->
                 FeedDetailLayout(
                     args.id,
@@ -177,7 +169,7 @@ fun FreewdAppNavHost(
             }
 
             entry<AboutAppScreenData> { About() }
-            entry<SettingsScreenData> { Settings() }
+            entry<SettingsScreenData> { Settings(onToAboutApp = {backStack.add(AboutAppScreenData)}) }
 
         }
     )

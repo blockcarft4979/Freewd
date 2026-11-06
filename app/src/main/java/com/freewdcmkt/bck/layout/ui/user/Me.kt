@@ -35,8 +35,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Me(
     viewmodel: MeViewModel = viewModel(),
-    onToAboutApp: () -> Unit,
-    onToSettings: () -> Unit
+    onToSettings: () -> Unit,
 ) {
 
     val isShowChenInDialog by viewmodel.isShowChenInDialog.collectAsState()
@@ -67,7 +66,6 @@ fun Me(
         isChecked = isChecked,
         onCheckIn = { viewmodel.checkIn() },
         onConfirmBio = { viewmodel.updateBio(it) },
-        onToAboutApp = onToAboutApp,
         onToSettings = onToSettings
     )
 
@@ -80,7 +78,6 @@ private fun MeUiLayout(
     onConfirmUsername: (String) -> Unit,
     onConfirmBio: (String) -> Unit,
     onCheckIn: () -> Unit,
-    onToAboutApp: () -> Unit,
     onToSettings: () -> Unit
 ) {
 
@@ -114,7 +111,8 @@ private fun MeUiLayout(
                 isShowEditBioDialog.value = false
             },
             title = stringResource(R.string.user_edit_bio_hint),
-            maxLength = 100,
+            maxLength = 200,
+            maxLines = 5,
             hintMsg1 = stringResource(R.string.cancel_hint),
             hintMsg2 = stringResource(R.string.yes_hint),
         )
@@ -170,11 +168,7 @@ private fun MeUiLayout(
                 icon = R.drawable.baseline_settings_24,
                 name = stringResource(R.string.settings_hint)
             )
-            ItemCard(
-                icon = R.mipmap.ic_launcher_monochrome,
-                name = stringResource(R.string.about_app_hint),
-                onClick = onToAboutApp
-            )
+
         }
         Spacer(modifier = Modifier.height(8.dp))
 

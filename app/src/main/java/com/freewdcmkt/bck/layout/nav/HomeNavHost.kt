@@ -48,7 +48,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.NotificationIcon
+import com.freewdcmkt.bck.components.freewd.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
@@ -71,7 +71,6 @@ fun HomeNavHost(
     onToPostFeed: () -> Unit,
     onToNotification: () -> Unit,
     onToSearch: () -> Unit,
-    onToAboutApp: () -> Unit,
     onToSettings: () -> Unit,
     onToUserProfile: (uid: Int) -> Unit
 ) {
@@ -127,6 +126,9 @@ fun HomeNavHost(
         drawerState = drawerState,
         drawerContent = {
             DismissibleDrawerSheet {
+//                MyProfile(
+//                    onToSettings = onToSettings
+//                )
                 UserProfileLayout(
                     isShowBackArrow = false,
                     uid = uid,
@@ -134,8 +136,7 @@ fun HomeNavHost(
                     onBack = { scope.launch { drawerState.close() } },
                     content = {
                         Me(
-                            onToAboutApp = onToAboutApp,
-                          onToSettings = onToSettings
+                            onToSettings = onToSettings
                         )
                     },
                 )
