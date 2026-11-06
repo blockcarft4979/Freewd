@@ -1,29 +1,37 @@
-name: Build APK
+name: Build Debug APK
 
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:  # 支持手动触发
+    paths:
+      - 'app/**'
+      - 'build.gradle*'
+      - 'settings.gradle*'
+      - 'gradle/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: build-debug-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+      - uses: gradle/actions/setup-gradle@v3
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+      - run: chmod +x ./gradlew
+
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
@@ -33,3 +41,4 @@ jobs:
         with:
           name: freewd-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14

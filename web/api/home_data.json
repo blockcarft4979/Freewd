@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "data": {
+    "notification": {
+      "is_show_notification": false,
+      "id": 20,
+      "title": "社区接口更新通知",
+      "msg": "用户主页接口正在更新，导致无法签到，请等待下一个版本更新，感谢支持理解",
+      "image_url": "https://shp.qpic.cn/collector/2216368705/d877a980-2278-4042-ad41-8aafee0b02be/0"
+    }
+  }
+}

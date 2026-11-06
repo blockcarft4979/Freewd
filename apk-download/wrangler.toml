@@ -1,0 +1,12 @@
+name = "apk-download"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+[[r2_buckets]]
+binding = "APK_BUCKET"
+bucket_name = "apk-bucket"
+
+# 自定义域名可以在 Cloudflare 控制台配，也可以写在这里（二选一）
+# routes = [
+#   { pattern = "dl.example.com/*", zone_name = "example.com" }
+# ]
