@@ -71,7 +71,7 @@
     <string name="no_notifications_hint">暂无通知</string>
     <string name="clear_all_notifications_hint">清空通知</string>
     <string name="like_feed_hint">赞了你的帖子</string>
-    <string name="reply_feed_hint">%s 回复了你的帖子：%s</string>
+    <string name="reply_feed_hint">回复了你的帖子：%s</string>
     <string name="unsupported_notification_hint">暂不支持该类型，请更新应用</string>
 
     <!-- ========== 用户中心 ========== -->

@@ -70,7 +70,7 @@
     <string name="no_notifications_hint">沒有通知</string>
     <string name="clear_all_notifications_hint">全部清除</string>
     <string name="like_feed_hint">對你的貼文按了讚</string>
-    <string name="reply_feed_hint">%s 回覆了你的貼文：%s</string>
+    <string name="reply_feed_hint">回覆了你的貼文：%s</string>
     <string name="unsupported_notification_hint">不支援的類型，請更新應用程式。</string>
 
     <!-- ========== 使用者中心 ========== -->
@@ -81,7 +81,7 @@
     <string name="check_in_hint">簽到</string>
     <string name="checking_hint">簽到中…</string>
     <string name="unchecked_hint">你今天尚未簽到</string>
-    <string name="checked_hint">已連到 %d 天</string>
+    <string name="checked_hint">已簽到 %d 天</string>
     <string name="logout_hint">登出</string>
     <string name="logout_account_hint">確定要登出目前帳號嗎？</string>
     <string name="logout_description_hint">登出目前帳號</string>

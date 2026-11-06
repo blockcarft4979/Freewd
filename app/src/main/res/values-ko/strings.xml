@@ -69,8 +69,8 @@
     <string name="notification_hint">알림</string>
     <string name="no_notifications_hint">알림이 없습니다</string>
     <string name="clear_all_notifications_hint">모두 지우기</string>
-    <string name="like_feed_hint">님이 회원님의 게시물을 좋아합니다</string>
-    <string name="reply_feed_hint">%s님이 회원님의 게시물에 답글을 남겼습니다: %s</string>
+    <string name="like_feed_hint">회원님의 게시물을 좋아합니다</string>
+    <string name="reply_feed_hint">회원님의 게시물에 답글을 남겼습니다: %s</string>
     <string name="unsupported_notification_hint">지원되지 않는 유형입니다. 앱을 업데이트해 주세요.</string>
 
     <!-- ========== 사용자 센터 ========== -->
