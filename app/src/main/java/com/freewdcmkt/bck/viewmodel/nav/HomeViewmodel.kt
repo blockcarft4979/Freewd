@@ -26,7 +26,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
 
-   private val _homeData = MutableStateFlow(HomeData(null))
+    private val _homeData = MutableStateFlow(HomeData(null))
     val homeData: StateFlow<HomeData> = _homeData.asStateFlow()
     private val _savedNotificationId = MutableStateFlow(0)
     private val _isShowNotification = MutableStateFlow(false)
@@ -68,9 +68,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
                 val response = CommunityClient.apiService.getHomeData()
                 val data = response.body()
                 if (data?.data != null) {
-                    if (data.data.notification?.id != _savedNotificationId.value) {
-                        _isShowNotification.value = true
-                    }
+                    if (data.data.notification?.id != _savedNotificationId.value && data.data.notification?.isShowNotification == true) _isShowNotification.value = true
                     _homeUiState.value = HomeUiState.Finish
                     _homeData.value = data.data
                     viewModelScope.launch { saveHomeDataToCache(data.data) }
@@ -79,7 +77,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 _isShowNoNetwork.value = true
-                _homeUiState.value = HomeUiState.Error(null)
+                _homeUiState.value = HomeUiState.Error()
                 e.printStackTrace()
             }
         }

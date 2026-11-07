@@ -14,6 +14,7 @@ data class HomeData(
 @Serializable
 data class Notification(
     val id: Int,
+    val isShowNotification: Boolean? = false,
     val title: String? = null,
     val msg: String? = null,
     val imageUrl: String? = null,
