@@ -118,8 +118,11 @@ fun FeedDetailCard(
 
                 }
                 SelectionContainer {
-                    if (feed.title?.isNotBlank() == true) TitleText(feed.title)
-                    if (feed.msg != null) ContentText(feed.msg)
+                    Column {
+                        if (feed.title?.isNotBlank() == true) TitleText(feed.title)
+                        if (feed.msg != null) ContentText(feed.msg)
+                    }
+
                 }
 
                 if (feed.img != null) {
