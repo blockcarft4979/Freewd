@@ -164,38 +164,36 @@ class FeedDetailViewmodel : ViewModel() {
 
         _isSendingReply.value = true
 
-        val tempId = tempIdSeq--
-        val tempReply = FeedReplyData(
-            uid = UserInfoData.uid.value,
-            commentId = tempId,
-            date = formatTime(getSystemDate("yyyy-MM-dd HH:mm:ss")),
-            msg = content,
-            qq = UserInfoData.account.value,
-            canDelete = true,
-            username = UserInfoData.username.value,
-        )
-
-        val oldData = _feedDetailData.value
-        val oldReplies = oldData.reply ?: emptyList()
-        _feedDetailData.value = oldData.copy(reply = oldReplies + tempReply)
-
         viewModelScope.launch {
             val body = ReplyFeedData(content, replyQq)
             when (safeApiCall { RetroV2Client.apiService.replyPost(id, body) }) {
                 is ApiResult.Success -> {
-                    // 后端返回类型不确定 → 直接静默刷一次，保证数据一致且不闪 Loading
-                    silentRefresh(id)
+                    // ✅ 成功后乐观插入：本地立刻可见，不闪 Loading
+                    val newReply = FeedReplyData(
+                        uid = UserInfoData.uid.value,
+                        commentId = tempIdSeq--,   // 临时负数 id，下次刷新会被真实 id 替换
+                        date = formatTime(getSystemDate("yyyy-MM-dd HH:mm:ss")),
+                        msg = content,
+                        qq = UserInfoData.account.value,
+                        canDelete = true,
+                        username = UserInfoData.username.value,
+                    )
+                    val current = _feedDetailData.value
+                    _feedDetailData.value = current.copy(
+                        reply = (current.reply ?: emptyList()) + newReply
+                    )
                     _isSendingReply.value = false
+
+                    // 后台异步拉真实数据替换（用户看不到这步，重排也不明显）
+                    silentRefresh(id)
                 }
 
                 is ApiResult.Error -> {
-                    rollbackTempReply(tempId)
                     _isSendingReply.value = false
                     emitError(R.string.reply_failed_hint, null)
                 }
 
                 is ApiResult.NetworkError -> {
-                    rollbackTempReply(tempId)
                     _isSendingReply.value = false
                     emitError(R.string.no_internet_hint)
                 }

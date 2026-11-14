@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link.feedLink
 import com.freewdcmkt.bck.components.freewd.FeedDetailCard
+import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.ReplyCard
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.LoadingCard
@@ -80,13 +81,16 @@ fun FeedDetailLayout(
     val focusRequester = remember { FocusRequester() }
     val replyQq = rememberSaveable { mutableStateOf("") }
     val replyUsername = rememberSaveable { mutableStateOf("") }
-
+    val isSendingReply by viewmodel.isSendingReply.collectAsState()
     val context = LocalContext.current
     val clipboardManager = remember {
         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 
     LaunchedEffect(id) { viewmodel.fetchData(id, false) }
+    if (isSendingReply) {
+        FreewdLoadingDialog(stringResource(R.string.submitting_hint))
+    }
     LaunchedEffect(feedDetailData.username) {
         replyUsername.value = feedDetailData.username
     }
@@ -255,16 +259,13 @@ fun FeedDetailLayout(
                             replyQq.value = qq
                             replyUsername.value = username
                         },
-                        onToPreviewImg = { url -> imgUrl = url },
                         onDeleteReply = { pendingDeleteRid.value = it },
                         onToUserProfile = onToUserProfile
                     )
                 }
             }
         }
-        PreviewImgUi(
-            url = imgUrl ?: "", onDismiss = { imgUrl = null }
-        )
+
     }
 }
 
@@ -275,7 +276,6 @@ private fun FeedUiLayout(
     deletingIds: List<Int>,
     onClickLike: (id: Int) -> Unit,
     onReplyUser: (String, String) -> Unit,
-    onToPreviewImg: (String) -> Unit,
     onDeleteReply: (Int) -> Unit,
     onToUserProfile: (uid: Int) -> Unit
 ) {
@@ -286,7 +286,6 @@ private fun FeedUiLayout(
         item {
             FeedDetailCard(
                 feedDetailData,
-                onToPreviewImg = onToPreviewImg,
                 onLike = onClickLike,
                 onClickUserIcon = { onToUserProfile(feedDetailData.uid) }
             )

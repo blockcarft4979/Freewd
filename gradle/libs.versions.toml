@@ -13,6 +13,8 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 ui = "1.12.1"
 foundation = "1.12.1"
+material = "1.14.0"
+uiUnit = "1.12.1"
 
 [libraries]
 # ===== AndroidX 基础 =====
@@ -39,6 +41,8 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-compose-ui-unit = { group = "androidx.compose.ui", name = "ui-unit", version.ref = "uiUnit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

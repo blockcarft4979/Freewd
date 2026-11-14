@@ -65,8 +65,7 @@ fun FeedCard(
                 if (feed.img != null) {
                     Spacer(modifier = Modifier.heightIn(4.dp))
                     ImageCard(
-                        feed.img,
-                        onClick = { onToPreviewImg(feed.img) }
+                        feed.img
                     )
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -86,7 +85,6 @@ fun FeedCard(
 @Composable
 fun FeedDetailCard(
     feed: FeedDetailData,
-    onToPreviewImg: (url: String) -> Unit,
     onLike: (id: Int) -> Unit,
     onClickUserIcon: () -> Unit = {}
 ) {
@@ -120,7 +118,10 @@ fun FeedDetailCard(
                 SelectionContainer {
                     Column {
                         if (feed.title?.isNotBlank() == true) TitleText(feed.title)
-                        if (feed.msg != null) ContentText(feed.msg)
+                        if (feed.msg != null) {
+                            if (feed.isMarkdown) ContentMarkdown(feed.msg)
+                            else ContentText(feed.msg)
+                        }
                     }
 
                 }
@@ -129,7 +130,7 @@ fun FeedDetailCard(
                     Spacer(modifier = Modifier.heightIn(4.dp))
                     ImageCard(
                         feed.img,
-                        onClick = { onToPreviewImg(feed.img) }
+                        //onClick = { onToPreviewImg(feed.img) }
                     )
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {

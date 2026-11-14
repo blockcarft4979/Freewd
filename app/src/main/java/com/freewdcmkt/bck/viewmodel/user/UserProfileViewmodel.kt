@@ -93,6 +93,9 @@ class UserProfileViewmodel : ViewModel() {
                 }
 
                 is ApiResult.Error -> {
+                    if (_profile.value == null && UserInfoData.uid.value == uid) {
+                        _profile.value = buildLocalFallbackProfile()
+                    }
                     _uiState.value = UserProfileUiState.Error(result.message)
                 }
 
@@ -102,6 +105,14 @@ class UserProfileViewmodel : ViewModel() {
             }
         }
     }
+
+    private fun buildLocalFallbackProfile() = UserProfileData(
+        uid = UserInfoData.uid.value,
+        username = UserInfoData.username.value,
+        qq = UserInfoData.account.value,
+        bio = UserInfoData.bio.value,
+        xp = UserInfoData.exp.value,
+    )
 
     fun loadMore() {
         if (!_hasMore.value || _isLoadingMore.value) return

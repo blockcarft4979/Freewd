@@ -189,7 +189,7 @@ fun PostFeedLayout(
                 }
             }
         }
-        PreviewImgUi(url = previewImgUrl ?: "", onDismiss = { previewImgUrl = null })
+        //PreviewImgUi(url = previewImgUrl ?: "", onDismiss = { previewImgUrl = null })
     }
 }
 
@@ -264,7 +264,7 @@ fun PostFeedUiLayout(
                 )
                 if (!imgUrl.isNullOrEmpty()) {
                     Card(shape = RoundedCornerShape(16.dp)) {
-                        ImageCard(imgUrl, onClick = onToPreviewImg)
+                        ImageCard(imgUrl)
                     }
                 }
                 Text("${message.length} / 3000", color = Color.Gray, fontSize = 12.sp)

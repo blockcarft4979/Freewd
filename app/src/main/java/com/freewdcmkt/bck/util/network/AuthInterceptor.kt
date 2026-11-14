@@ -29,8 +29,8 @@ class AuthInterceptor() : Interceptor {
             response.close()
 
             synchronized(this) {
-                TokenManager.clearToken()
                 runBlocking {
+                    TokenManager.clearToken()
                     UserInfoManager.clearAllData()
                 }
             }

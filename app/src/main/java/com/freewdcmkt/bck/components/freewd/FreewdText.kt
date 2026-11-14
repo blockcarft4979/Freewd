@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,8 +40,8 @@ import coil3.compose.SubcomposeAsyncImageContent
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link
 import com.freewdcmkt.bck.components.freewd.LoadingCard
-import com.freewdcmkt.bck.ui.theme.FreewdTheme
 import com.freewdcmkt.bck.util.time.formatTime
+import com.google.android.material.loadingindicator.LoadingIndicator
 import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.m3.Markdown
@@ -67,7 +70,7 @@ fun UsernameText(text: String) {
     Text(
         fontWeight = FontWeight.Bold,
         text = text,
-        color = FreewdTheme.usernameColor,
+        color = MaterialTheme.colorScheme.primary,
         style = TextStyle(
             fontSize = 14.sp,
         ),
@@ -199,6 +202,7 @@ fun ContentText(text: String) {
 }
 
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ContentMarkdown(text: String) {
     Markdown(
@@ -215,42 +219,14 @@ fun ContentMarkdown(text: String) {
 
         components = markdownComponents(
             image = { imageData ->
-
                 val imageUrl = imageData.node.resolveImageLink(
                     imageData.content,
                     referenceLinkHandler = null
                 )
-
-                SubcomposeAsyncImage(
-                    model = imageUrl,
-                    contentDescription = stringResource(R.string.loading_hint),
+                ImageCard(
+                    url = imageUrl ?: "",
+                    aspectRatio = null,
                     contentScale = ContentScale.FillWidth,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .background(Color.LightGray.copy(alpha = 0.1f), RoundedCornerShape(8.dp)),
-                    loading = {
-                        LoadingCard()
-                    },
-
-                    error = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.load_error_hint),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    },
-
-                    success = {
-                        SubcomposeAsyncImageContent()
-                    }
                 )
             },
             table = { tableData ->

@@ -185,6 +185,7 @@ fun UserProfileLayout(
                 onRefresh = { viewmodel.load(uid,true) },
             ) {
                 when (uiState) {
+
                     is UserProfileUiState.Loading -> LoadingCard(
                         stringResource(R.string.loading_hint)
                     )
@@ -284,7 +285,7 @@ fun UserProfileLayout(
             }
 
 
-            PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
+            //PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
         }
     }
 }

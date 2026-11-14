@@ -17,6 +17,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -42,15 +45,13 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
             }
         }
         viewModelScope.launch {
-            val cached = loadHomeDataFromCache()
-            if (cached != null) {
-                _homeData.value = cached
-                _homeUiState.value = HomeUiState.Finish
-                Log.d("HOme", "EMPTY")
-            } else {
-                Log.d("Home", "CACHED DATA")
-            }
+            TokenManager.getTokenFlow()
+                .drop(1)
+                .distinctUntilChanged()
+                .filterNotNull()
+                .collect { fetchData(true) }
         }
+
         fetchData(true)
         verifyToken()
     }

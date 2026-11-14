@@ -2,13 +2,16 @@ package com.freewdcmkt.bck.layout.nav
 
 import android.app.Application
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -21,6 +24,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.animateFloatingActionButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
@@ -28,11 +32,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -48,8 +54,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
-import com.freewdcmkt.bck.components.freewd.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
+import com.freewdcmkt.bck.components.freewd.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.common.UserInfoData
@@ -57,7 +63,6 @@ import com.freewdcmkt.bck.layout.ui.community.FeedListHost
 import com.freewdcmkt.bck.layout.ui.user.Me
 import com.freewdcmkt.bck.layout.ui.user.UserProfileLayout
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
-import com.freewdcmkt.bck.viewmodel.community.FeedUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
 import kotlinx.coroutines.launch
@@ -126,18 +131,11 @@ fun HomeNavHost(
         drawerState = drawerState,
         drawerContent = {
             DismissibleDrawerSheet {
-//                MyProfile(
-//                    onToSettings = onToSettings
-//                )
-                UserProfileLayout(
-                    isShowBackArrow = false,
-                    uid = uid,
-                    onToFeedDetail = onToFeedDetail,
-                    onBack = { scope.launch { drawerState.close() } },
-                    content = {
-                        Me(
-                            onToSettings = onToSettings
-                        )
+                Me(
+                    onToSettings = onToSettings,
+                    onToFeedDetail = { id ->
+                        scope.launch { drawerState.close() }
+                        onToFeedDetail(id)
                     },
                 )
             }
@@ -221,19 +219,21 @@ private fun HomeUI(
     refreshViewModel: RefreshStateViewModel,
 ) {
 
-    val isRefresh = refreshViewModel.feedRefresh
     val homeUiState by homeViewmodel.homeUiState.collectAsState()
+    val listState = rememberLazyListState()
+    val fabVisible by remember { derivedStateOf { !listState.isScrollInProgress } }
     val feedUiState by feedListViewmodel.feedUiState.collectAsState()
 
     var imgUrl by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(isRefresh) {
-        if (isRefresh) {
+// HomeNavHost / HomeUI
+    LaunchedEffect(refreshViewModel.feedRefresh) {
+        if (refreshViewModel.feedRefresh) {
+            listState.scrollToItem(0)
             feedListViewmodel.fetchData(true)
             refreshViewModel.feedRefresh = false
         }
     }
-
     PullToRefreshBox(
         modifier = modifier,
         isRefreshing = homeUiState is HomeUiState.Loading,
@@ -241,15 +241,37 @@ private fun HomeUI(
             homeViewmodel.fetchData(true)
             feedListViewmodel.fetchData(true)
         }) {
-        FeedListHost(
-            isRefresh = feedUiState is FeedUiState.Loading,
-            onToFeedDetail = onToFeedDetail,
-            onToPostFeed = onToPostFeed,
-            onToPreviewImg = { url -> imgUrl = url },
-            onLike = onLike,
-            onToUserProfile = onToUserProfile
-        )
-        PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
+        Scaffold(floatingActionButton = {
+
+            FloatingActionButton(
+                onClick = onToPostFeed,
+                modifier = Modifier.animateFloatingActionButton(
+                    visible = fabVisible,
+                    alignment = Alignment.BottomEnd
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.send),
+                    contentDescription = stringResource(R.string.add_post_hint)
+                )
+            }
+
+        }) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .consumeWindowInsets(innerPadding)
+            ) {
+                FeedListHost(
+                    onToFeedDetail = onToFeedDetail,
+                    onToPreviewImg = { url -> imgUrl = url },
+                    onLike = onLike,
+                    onToUserProfile = onToUserProfile,
+                    listState = listState
+                )
+            }
+        }
+
+        //PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
     }
 }
 

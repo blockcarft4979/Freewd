@@ -198,7 +198,7 @@ fun SearchLayout(
             }
         }
 
-        PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
+        //PreviewImgUi(url = imgUrl ?: "", onDismiss = { imgUrl = null })
     }
 }
 

@@ -1,5 +1,6 @@
 package com.freewdcmkt.bck.components.freewd
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,17 +23,24 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
 import com.freewdcmkt.bck.R
+import com.freewdcmkt.bck.components.ui.PreviewImgUi
 
 @Composable
 fun ItemCard(
@@ -88,32 +96,72 @@ fun ItemCard(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ImageCard(url: String, onClick: (String) -> Unit) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = { onClick(url) })
-            .aspectRatio(16f / 9f)
-    ) {
+fun ImageCard(
+    url: String,
+    modifier: Modifier = Modifier,
+    aspectRatio: Float? = 16f / 9f,                 // null = 不固定比例，按图片原比例
+    contentScale: ContentScale =
+        if (aspectRatio != null) ContentScale.Crop
+        else ContentScale.FillWidth,
+    shape: Shape = RoundedCornerShape(16.dp),
+    placeholderHeight: Dp = 120.dp,                 // loading/error 占位高度
+) {
+    var previewUrl by remember { mutableStateOf<String?>(null) }
 
+    val cardModifier = modifier
+        .fillMaxWidth()
+        .then(if (aspectRatio != null) Modifier.aspectRatio(aspectRatio) else Modifier)
+
+    // aspectRatio 非空：父级有确定尺寸，fillMaxSize 撑满
+    // aspectRatio 为空：只约束宽度，高度由图片撑开
+    val imageModifier = if (aspectRatio != null) {
+        Modifier.fillMaxSize()
+    } else {
+        Modifier.fillMaxWidth()
+    }
+
+    Card(
+        shape = shape,
+        modifier = cardModifier,
+        onClick = { if (url.isNotEmpty()) previewUrl = url }
+    ) {
         SubcomposeAsyncImage(
             model = url,
             contentDescription = stringResource(R.string.image_hint),
-
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentScale = ContentScale.Crop,
+            modifier = imageModifier,
+            contentScale = contentScale,
             loading = {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    LoadingIndicator(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .align(Alignment.Center)
+                val boxMod = if (aspectRatio != null) {
+                    Modifier.fillMaxSize()
+                } else {
+                    Modifier.fillMaxWidth().height(placeholderHeight)
+                }
+                Box(
+                    modifier = boxMod.background(
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
+                    ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoadingIndicator(Modifier.size(48.dp))
+                }
+            },
+            error = {
+                val boxMod = if (aspectRatio != null) {
+                    Modifier.fillMaxSize()
+                } else {
+                    Modifier.fillMaxWidth().height(placeholderHeight)
+                }
+                Box(modifier = boxMod, contentAlignment = Alignment.Center) {
+                    Text(
+                        stringResource(R.string.load_error_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
-            })
+            }
+        )
     }
+    PreviewImgUi(previewUrl ?: "", onDismiss = { previewUrl = null })
 }
 
 @Composable
