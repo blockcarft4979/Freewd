@@ -3,17 +3,25 @@ package com.freewdcmkt.bck.layout.ui.community
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -29,24 +37,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.Link.feedLink
 import com.freewdcmkt.bck.components.freewd.FeedDetailCard
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
-import com.freewdcmkt.bck.components.freewd.ReplyCard
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.LoadingCard
+import com.freewdcmkt.bck.components.freewd.ReplyCard
 import com.freewdcmkt.bck.components.freewd.ReplyInputBar
 import com.freewdcmkt.bck.components.ui.FreewdHint
-import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.screen.FeedDetailData
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailEvent
 import com.freewdcmkt.bck.viewmodel.community.FeedDetailUiState
@@ -73,7 +82,7 @@ fun FeedDetailLayout(
     val scope = rememberCoroutineScope()
 
     val deletingIds = remember { mutableStateListOf<Int>() }
-    var imgUrl by remember { mutableStateOf<String?>(null) }
+
     val pendingDeleteRid = rememberSaveable { mutableStateOf<Int?>(null) }
     val copiedHint = stringResource(R.string.copied_link_hint)
     val isExpanded = remember { mutableStateOf(false) }
@@ -170,7 +179,9 @@ fun FeedDetailLayout(
                     Text(stringResource(R.string.feed_detail_hint))
                 },
                 actions = {
-                    if (uiState is FeedDetailUiState.Success)  IconButton(onClick = { isExpanded.value = true }) {
+                    if (uiState is FeedDetailUiState.Success) IconButton(onClick = {
+                        isExpanded.value = true
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_more_vert_24),
                             contentDescription = stringResource(R.string.more_hint)
@@ -260,7 +271,8 @@ fun FeedDetailLayout(
                             replyUsername.value = username
                         },
                         onDeleteReply = { pendingDeleteRid.value = it },
-                        onToUserProfile = onToUserProfile
+                        onToUserProfile = onToUserProfile,
+                        onAddComment = { focusRequester.requestFocus() }
                     )
                 }
             }
@@ -277,7 +289,8 @@ private fun FeedUiLayout(
     onClickLike: (id: Int) -> Unit,
     onReplyUser: (String, String) -> Unit,
     onDeleteReply: (Int) -> Unit,
-    onToUserProfile: (uid: Int) -> Unit
+    onToUserProfile: (uid: Int) -> Unit,
+    onAddComment: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -289,13 +302,15 @@ private fun FeedUiLayout(
                 onLike = onClickLike,
                 onClickUserIcon = { onToUserProfile(feedDetailData.uid) }
             )
-
+            Text(stringResource(R.string.reply_hint), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 15.dp))
+            if (feedDetailData.reply?.isEmpty() == true) EmptyReplyComponent(onClick = onAddComment)
         }
 
         items(
             items = feedDetailData.reply ?: emptyList(),
             key = { "${it.commentId}_${it.date}" }
         ) { replyData ->
+
             ReplyCard(
                 isDeleting = deletingIds.contains(replyData.commentId),
                 replyData = replyData,
@@ -307,6 +322,47 @@ private fun FeedUiLayout(
                 },
                 onToUserProfile = onToUserProfile
             )
+        }
+    }
+}
+
+@Composable
+private fun EmptyReplyComponent(
+    onClick: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant // 给个柔和的背景色
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally, // 居中好看点
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.add_comment_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+
+            Button(
+                onClick = onClick,
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.height(36.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.reply_hint),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
     }
 }

@@ -144,6 +144,7 @@
     <string name="setting_enable_dynamic_hint">动态取色</string>
     <string name="setting_theme_hint">主题</string>
     <!-- ========== 帖子详情操作失败提示 ========== -->
+    <string name="add_comment_hint">似乎什么都没有，说点什么？</string>
     <string name="like_failed_hint">点赞状态更新失败</string>
     <string name="reply_failed_hint">评论发送失败</string>
     <string name="delete_feed_failed_hint">帖子删除失败</string>

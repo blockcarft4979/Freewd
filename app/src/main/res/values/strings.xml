@@ -143,7 +143,8 @@
     <string name="unknown_error">An unknown error, perhaps a network problem?</string>
     <string name="no_internet_hint">No internet connection. Please check your network settings.</string>
     <string name="data_error_hint">Failed to parse data. Please try again.</string>
-    <!-- ========== Feed detail 操作失败提示 ========== -->
+    <!-- ========== Feed detail 提示 ========== -->
+    <string name="add_comment_hint">There seems to be nothing here. Want to say something?</string>
     <string name="like_failed_hint">Failed to update like status</string>
     <string name="reply_failed_hint">Failed to send comment</string>
     <string name="delete_feed_failed_hint">Failed to delete post</string>
