@@ -88,7 +88,7 @@ fun SearchLayout(
     val userListState = rememberLazyListState()
 
     var input by rememberSaveable { mutableStateOf("") }
-    var imgUrl by remember { mutableStateOf<String?>(null) }
+
     val focusRequester = remember { FocusRequester() }
     val activeListState = if (mode == SearchMode.POST) postListState else userListState
 
@@ -184,7 +184,6 @@ fun SearchLayout(
                         listState = postListState,
                         isLoadingMore = isLoadingMore,
                         onToFeedDetail = onToFeedDetail,
-                        onToPreviewImg = { imgUrl = it },
                         onLike = { viewmodel.toggleLike(it) }
                     )
 
@@ -261,7 +260,6 @@ private fun SearchPostsContent(
     listState: LazyListState,
     isLoadingMore: Boolean,
     onToFeedDetail: (id: Int) -> Unit,
-    onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit
 ) {
     LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
@@ -269,7 +267,6 @@ private fun SearchPostsContent(
             FeedCard(
                 feed = feed,
                 onClick = onToFeedDetail,
-                onToPreviewImg = onToPreviewImg,
                 onLike = onLike
             )
         }

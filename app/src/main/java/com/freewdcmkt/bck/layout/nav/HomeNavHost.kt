@@ -77,7 +77,8 @@ fun HomeNavHost(
     onToNotification: () -> Unit,
     onToSearch: () -> Unit,
     onToSettings: () -> Unit,
-    onToUserProfile: (uid: Int) -> Unit
+    onToUserProfile: (uid: Int) -> Unit,
+    onToChangePassword:()-> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -137,6 +138,7 @@ fun HomeNavHost(
                         scope.launch { drawerState.close() }
                         onToFeedDetail(id)
                     },
+                    onToChangePassword = onToChangePassword
                 )
             }
         }
@@ -224,7 +226,6 @@ private fun HomeUI(
     val fabVisible by remember { derivedStateOf { !listState.isScrollInProgress } }
     val feedUiState by feedListViewmodel.feedUiState.collectAsState()
 
-    var imgUrl by remember { mutableStateOf<String?>(null) }
 
 // HomeNavHost / HomeUI
     LaunchedEffect(refreshViewModel.feedRefresh) {
@@ -263,7 +264,6 @@ private fun HomeUI(
             ) {
                 FeedListHost(
                     onToFeedDetail = onToFeedDetail,
-                    onToPreviewImg = { url -> imgUrl = url },
                     onLike = onLike,
                     onToUserProfile = onToUserProfile,
                     listState = listState

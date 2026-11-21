@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.RequestApi
+import com.freewdcmkt.bck.components.freewd.FreewdAgreementCheckBox
 import com.freewdcmkt.bck.components.freewd.FreewdCheckBox
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
@@ -165,12 +166,14 @@ private fun RegisterUiLayout(
                 )
             }
         }
-        FreewdCheckBox(
-            checked = isChecked, stringResource(R.string.agree_agreement_part),
-            onCheckBoxChanged = {
-                isChecked = it
-                if (it) onToUserAgreement(RequestApi.Document.USER_AGREEMENT)
-            })
+        FreewdAgreementCheckBox(
+
+            onUrlClick = {
+                onToUserAgreement(RequestApi.DocumentsWeb.AGREEMENT)
+            },
+            onCheckChanged = { isChecked = it },
+            checked = isChecked
+        )
 
         Button(
             enabled = password == confirmPassword && password.length >= 8 && authCode.length == 6 && isChecked,

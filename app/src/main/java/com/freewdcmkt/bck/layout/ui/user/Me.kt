@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,7 +61,6 @@ import com.freewdcmkt.bck.components.freewd.ItemCard
 import com.freewdcmkt.bck.components.freewd.LoadingCard
 import com.freewdcmkt.bck.components.freewd.UserCard
 import com.freewdcmkt.bck.components.freewd.UserProfileHeader
-import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.data.screen.UserProfileData
 import com.freewdcmkt.bck.util.TokenManager
@@ -78,8 +78,9 @@ fun Me(
     profileViewmodel: UserProfileViewmodel = viewModel(),
     onToSettings: () -> Unit,
     onToFeedDetail: (id: Int) -> Unit,
+    onToChangePassword: () -> Unit
 ) {
-    // ---- 本地数据：断网也能显示 ----
+
     val localUid by UserInfoData.uid.collectAsState()
     val localUsername by UserInfoData.username.collectAsState()
     val localBio by UserInfoData.bio.collectAsState()
@@ -111,7 +112,6 @@ fun Me(
     val uiState by profileVm.uiState.collectAsState()
 
     val listState = rememberLazyListState()
-    var imgUrl by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(localUid) {
         if (localUid > 0) profileVm.load(localUid)
@@ -189,7 +189,11 @@ fun Me(
             )
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
             PullToRefreshBox(
                 isRefreshing = uiState is UserProfileUiState.Loading,
                 onRefresh = {
@@ -210,6 +214,7 @@ fun Me(
                             onConfirmUsername = { viewmodel.submitUsername(it) },
                             onConfirmBio = { viewmodel.updateBio(it) },
                             onToSettings = onToSettings,
+                            onToChangePassword = onToChangePassword
                         )
                     }
                     item {
@@ -224,11 +229,19 @@ fun Me(
                         )
                     }
                     if (isLoadingPosts) {
-                        item { LoadingCard(Modifier.padding(16.dp).height(64.dp)) }
+                        item {
+                            LoadingCard(
+                                Modifier
+                                    .padding(16.dp)
+                                    .height(64.dp)
+                            )
+                        }
                     } else if (posts.isEmpty()) {
                         item {
                             Box(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 32.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -236,6 +249,7 @@ fun Me(
                                         stringResource(R.string.unknown_error)
                                     else stringResource(R.string.user_no_post_hint),
                                     fontSize = 13.sp,
+                                    textAlign = TextAlign.Center,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -245,12 +259,17 @@ fun Me(
                             FeedCard(
                                 feed = feed,
                                 onClick = onToFeedDetail,
-                                onToPreviewImg = { imgUrl = it },
                                 onLike = { profileVm.toggleLike(it) }
                             )
                         }
                         if (isLoadingMore) {
-                            item { LoadingCard(Modifier.padding(16.dp).height(64.dp)) }
+                            item {
+                                LoadingCard(
+                                    Modifier
+                                        .padding(16.dp)
+                                        .height(64.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -269,6 +288,7 @@ private fun MeActionCards(
     onConfirmUsername: (String) -> Unit,
     onConfirmBio: (String) -> Unit,
     onToSettings: () -> Unit,
+    onToChangePassword:()-> Unit
 ) {
     val isShowDialog = rememberSaveable { mutableStateOf(false) }
     val isShowEditDialog = rememberSaveable { mutableStateOf(false) }
@@ -338,6 +358,11 @@ private fun MeActionCards(
                 name = stringResource(R.string.user_edit_bio_hint),
                 onClick = { isShowEditBioDialog.value = true },
                 isShowArrow = false
+            )
+            ItemCard(
+                icon = R.drawable.baseline_password_24,
+                name = stringResource(R.string.change_password_hint),
+                onClick = onToChangePassword
             )
             ItemCard(
                 onClick = onToSettings,

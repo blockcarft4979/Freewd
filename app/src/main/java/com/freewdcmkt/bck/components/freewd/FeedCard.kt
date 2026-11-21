@@ -25,7 +25,6 @@ import com.freewdcmkt.bck.data.screen.PostsData
 fun FeedCard(
     feed: PostsData,
     onClick: (id: Int) -> Unit,
-    onToPreviewImg: (url: String) -> Unit,
     onLike: (id: Int) -> Unit,
     onClickUserIcon: () -> Unit = {}
 ) {

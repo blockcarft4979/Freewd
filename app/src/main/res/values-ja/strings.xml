@@ -22,9 +22,11 @@
     <string name="auth_code">認証コード</string>
     <string name="send_auth_code">コードを送信</string>
     <string name="wait_send_auth_code">%s 秒後にもう一度お試しください</string>
-    <string name="agree_agreement_part">利用規約とプライバシーポリシーを読み、同意します</string>
-    <string name="user_agreement">利用規約</string>
-    <string name="policy_privacy">プライバシーポリシー</string>
+    <string name="agree_prefix">私は以下の内容を読み、同意します。</string>
+    <string name="agree_user_agreement">利用規約</string>
+    <string name="agree_middle">および</string>
+    <string name="agree_privacy_policy">プライバシーポリシー</string>
+
     <string name="confirm_password_hint">パスワードの確認</string>
     <string name="forget_password_hint">パスワードをお忘れですか？</string>
 
@@ -32,7 +34,6 @@
     <string name="change_password_hint">パスワード変更</string>
     <string name="new_password_hint">新しいパスワード</string>
     <string name="submit_password_hint">パスワードを送信</string>
-    <string name="change_password_succeed_toast_hint">パスワードを変更しました。3 秒後にログイン画面へ移動します</string>
 
     <!-- ========== ホーム / タイムライン ========== -->
     <string name="home_hint">ホーム</string>
@@ -144,6 +145,7 @@
     <string name="user_no_bio_hint">このユーザーは怠け者で、何も書いていません</string>
     <string name="setting_enable_dynamic_hint">ダイナミックカラー</string>
     <!-- ========== Feed 詳細の操作失敗 ========== -->
+    <string name="add_comment_hint">まだ何もありません。何かコメントしてみませんか？</string>
     <string name="like_failed_hint">いいねの更新に失敗しました</string>
     <string name="reply_failed_hint">コメントの送信に失敗しました</string>
     <string name="delete_feed_failed_hint">投稿の削除に失敗しました</string>

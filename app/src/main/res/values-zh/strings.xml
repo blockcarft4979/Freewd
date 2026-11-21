@@ -22,9 +22,11 @@
     <string name="auth_code">验证码</string>
     <string name="send_auth_code">发送验证码</string>
     <string name="wait_send_auth_code">请等待 %s 秒后重试</string>
-    <string name="agree_agreement_part">我已阅读《用户协议》和《隐私政策》</string>
-    <string name="user_agreement">用户协议</string>
-    <string name="policy_privacy">隐私政策</string>
+    <string name="agree_prefix">我已阅读</string>
+    <string name="agree_user_agreement">用户协议</string>
+    <string name="agree_middle">和</string>
+    <string name="agree_privacy_policy">隐私政策</string>
+
     <string name="confirm_password_hint">确认密码</string>
     <string name="forget_password_hint">忘记密码了？</string>
 
@@ -32,7 +34,6 @@
     <string name="change_password_hint">修改密码</string>
     <string name="new_password_hint">新密码</string>
     <string name="submit_password_hint">提交密码</string>
-    <string name="change_password_succeed_toast_hint">密码修改成功，3 秒后将跳转到登录页</string>
 
     <!-- ========== 首页 / 帖子流 ========== -->
     <string name="home_hint">首页</string>
@@ -106,7 +107,7 @@
     <!-- ========== 关于 ========== -->
     <string name="about_hint">关于</string>
     <string name="about_app_hint">关于 Freewd</string>
-    <string name="browser_hint">浏览</string>
+    <string name="browser_hint">浏览器</string>
 
     <!-- ========== 搜索 ========== -->
     <string name="search_hint">搜索帖子</string>

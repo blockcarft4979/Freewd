@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
@@ -25,7 +26,7 @@ import com.freewdcmkt.bck.api.userAvatarUrl
 
 @Composable
 fun FreewdTopComponent(
-    qq: String,
+    qq: String = "",
 ) {
     Column(
         modifier = Modifier
@@ -54,8 +55,10 @@ fun FreewdTopComponent(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.login_welcome_title),
+            textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
+            fontSize = 20.sp,
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
     }

@@ -1,7 +1,5 @@
 package com.freewdcmkt.bck.util.network
 
-import android.content.Context
-import com.freewdcmkt.bck.api.RetroApi
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.util.UserInfoManager
 import kotlinx.coroutines.runBlocking
@@ -24,9 +22,9 @@ class AuthInterceptor() : Interceptor {
         }
 
         val response = chain.proceed(request)
+        val isLoginRequest = originalRequest.url.encodedPath.contains("/login")
 
-        if (response.code == 401) {
-            response.close()
+        if (response.code == 401 && !isLoginRequest) {
 
             synchronized(this) {
                 runBlocking {
@@ -35,12 +33,7 @@ class AuthInterceptor() : Interceptor {
                 }
             }
 
-            return Response.Builder()
-                .request(originalRequest)
-                .protocol(Protocol.HTTP_1_1)
-                .code(401)
-                .message("Unauthorized")
-                .build()
+            return response
         }
 
         return response

@@ -32,10 +32,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
+import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
+import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.util.TokenManager
 import com.freewdcmkt.bck.viewmodel.auth.ChangePasswordUiState
 import com.freewdcmkt.bck.viewmodel.auth.ChangePasswordViewModel
@@ -51,7 +54,6 @@ fun ChangePasswordHost(
     val countdown by viewModel.countdown.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val unknownError = stringResource(R.string.unknown_error)
-    val changePasswordSucceed = stringResource(R.string.change_password_succeed_toast_hint)
 
     LaunchedEffect(uiState) {
         when (uiState) {
@@ -65,8 +67,6 @@ fun ChangePasswordHost(
             }
 
             is ChangePasswordUiState.OnChangedPassword -> {
-                snackBarHostState.showSnackbar(changePasswordSucceed)
-                delay(800)
                 onChangedPassword()
             }
 
@@ -121,6 +121,9 @@ fun ChangePasswordUi(
             .fillMaxWidth()
     ) {
         Log.d("CHANGE PASSWORD", TokenManager.getToken() ?: "NULL!!")
+
+        FreewdTopComponent()
+        if (UserInfoData.account.collectAsState().value.isNotEmpty())qq = UserInfoData.account.collectAsState().value
 
         if (TokenManager.getToken().isNullOrEmpty()) OutlinedTextField(
             value = qq,
@@ -178,7 +181,8 @@ fun ChangePasswordUi(
             ) {
                 Text(
                     if (countdown == 0) stringResource(R.string.send_auth_code)
-                    else stringResource(R.string.wait_send_auth_code, countdown)
+                    else stringResource(R.string.wait_send_auth_code, countdown),
+                    textAlign = TextAlign.Center
                 )
             }
         }

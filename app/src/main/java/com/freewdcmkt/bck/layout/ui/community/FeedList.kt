@@ -40,7 +40,6 @@ fun FeedListHost(
     viewmodel: FeedListViewmodel = viewModel(),
     listState: LazyListState,
     onToFeedDetail: (id: Int) -> Unit,
-    onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit,
     onToUserProfile: (uid: Int) -> Unit
 ) {
@@ -86,7 +85,6 @@ fun FeedListHost(
                     listState = listState,
                     isLoadingMore = isLoadingMore,
                     hasMore = hasMore,
-                    onToPreviewImg = onToPreviewImg,
                     onLike = onLike,
                     onToUserProfile = onToUserProfile,
                 )
@@ -104,7 +102,6 @@ private fun FeedListUi(
     isLoadingMore: Boolean,
     hasMore: Boolean,
     onClick: (id: Int) -> Unit,
-    onToPreviewImg: (String) -> Unit,
     onToUserProfile: (uid: Int) -> Unit,
     onLike: (id: Int) -> Unit,
 ) {
@@ -115,7 +112,6 @@ private fun FeedListUi(
             isLoadingMore = isLoadingMore,
             hasMore = hasMore,
             onClick = onClick,
-            onToPreviewImg = onToPreviewImg,
             onLike = onLike,
             onToUserProfile = onToUserProfile,
             modifier = Modifier.fillMaxSize()
@@ -137,7 +133,6 @@ private fun FeedListContent(
     isLoadingMore: Boolean,
     hasMore: Boolean,
     onClick: (id: Int) -> Unit,
-    onToPreviewImg: (String) -> Unit,
     onLike: (id: Int) -> Unit,
     onToUserProfile: (uid: Int) -> Unit,
     modifier: Modifier = Modifier
@@ -151,7 +146,6 @@ private fun FeedListContent(
             FeedCard(
                 feed,
                 onClick = onClick,
-                onToPreviewImg = onToPreviewImg,
                 onLike = onLike,
                 onClickUserIcon = { onToUserProfile(feed.uid) }
             )

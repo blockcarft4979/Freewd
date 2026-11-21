@@ -4,17 +4,14 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -32,16 +29,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.RequestApi
-import com.freewdcmkt.bck.components.freewd.FreewdCheckBox
+import com.freewdcmkt.bck.components.freewd.FreewdAgreementCheckBox
 import com.freewdcmkt.bck.components.freewd.FreewdLoadingDialog
 import com.freewdcmkt.bck.components.freewd.FreewdTopComponent
 import com.freewdcmkt.bck.viewmodel.auth.LogInViewModel
@@ -64,7 +63,7 @@ fun LoginLayout(
     var password by rememberSaveable { mutableStateOf("") }
     val userIcon = rememberSaveable() { mutableStateOf("") }
     LaunchedEffect(uiState) {
-        Log.d("LOGIN UI STATE",uiState.toString())
+        Log.d("LOGIN UI STATE", uiState.toString())
         (uiState as? LoginUiState.Error)?.let { error ->
             if (error.isNoNetWork) snackBarHostState.showSnackbar(unknownError) else error.msg?.let {
                 snackBarHostState.showSnackbar(
@@ -119,7 +118,8 @@ fun LoginLayout(
 
             Button(
                 onClick = {
-                    onLogin(account, password) },
+                    onLogin(account, password)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp),
@@ -127,19 +127,24 @@ fun LoginLayout(
             ) {
                 Text(stringResource(R.string.login_login_btn))
             }
-            FreewdCheckBox(
-                checked = isChecked,
-                text = stringResource(R.string.agree_agreement_part),
-                onCheckBoxChanged = {
-                    isChecked = it
-                    if (it) onToUserAgreement(RequestApi.Document.USER_AGREEMENT)
-                })
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            FreewdAgreementCheckBox(
+
+                onUrlClick = {
+                    onToUserAgreement(RequestApi.DocumentsWeb.AGREEMENT)
+                },
+                onCheckChanged = { isChecked = it },
+                checked = isChecked
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1.5f),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.8f)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary.copy(
+                            0.8f
+                        )
+                    ),
                     onClick = onRegister,
                 ) {
                     Text(
@@ -153,7 +158,7 @@ fun LoginLayout(
                     onClick = onChangePassword,
                 ) {
                     Text(
-                        stringResource(R.string.forget_password_hint), fontSize = 12.sp,
+                        stringResource(R.string.forget_password_hint), fontSize = 12.sp, textAlign = TextAlign.Center
                     )
                 }
 

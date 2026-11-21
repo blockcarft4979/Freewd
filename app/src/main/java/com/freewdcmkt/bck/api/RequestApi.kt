@@ -2,10 +2,10 @@ package com.freewdcmkt.bck.api
 
 object RequestApi {
 
-    private const val OTHER_BASE = "https://community.freewd.top/app/api/v1/"
+    private const val WEB_BASE = "https://community.freewd.top/"
 
-    object Document {
-        const val USER_AGREEMENT = "${OTHER_BASE}document/user_agreement.txt"
+    object DocumentsWeb{
+        const val AGREEMENT = "${WEB_BASE}documents/pages/agreement"
     }
 }
 

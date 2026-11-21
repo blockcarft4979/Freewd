@@ -1,9 +1,7 @@
 package com.freewdcmkt.bck.layout.nav
 
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,14 +27,15 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.freewdcmkt.bck.data.screen.AboutAppScreenData
 import com.freewdcmkt.bck.data.screen.BrowserScreenData
+import com.freewdcmkt.bck.data.screen.ChangePasswordScreenData
 import com.freewdcmkt.bck.data.screen.FeedDetailScreenData
 import com.freewdcmkt.bck.data.screen.HomeScreenData
 import com.freewdcmkt.bck.data.screen.NotificationScreen
 import com.freewdcmkt.bck.data.screen.PostFeedScreen
 import com.freewdcmkt.bck.data.screen.SearchScreen
 import com.freewdcmkt.bck.data.screen.SettingsScreenData
-import com.freewdcmkt.bck.data.screen.UserCenterScreen
 import com.freewdcmkt.bck.data.screen.UserProfileScreen
+import com.freewdcmkt.bck.layout.ui.auth.ChangePasswordHost
 import com.freewdcmkt.bck.layout.ui.community.FeedDetailLayout
 import com.freewdcmkt.bck.layout.ui.community.PostFeedLayout
 import com.freewdcmkt.bck.layout.ui.community.SearchLayout
@@ -113,7 +112,8 @@ fun FreewdAppNavHost(
                     onToNotification = { backStack.add(NotificationScreen()) },
                     onToSearch = { backStack.add(SearchScreen) },
                     onToSettings = { backStack.add(SettingsScreenData) },
-                    onToUserProfile = {backStack.add(UserProfileScreen(it))}
+                    onToUserProfile = { backStack.add(UserProfileScreen(it)) },
+                    onToChangePassword = {backStack.add(ChangePasswordScreenData)}
                 )
             }
 
@@ -141,7 +141,7 @@ fun FreewdAppNavHost(
                         backStack.removeLastOrNull()
                     },
                     onBack = { backStack.removeLastOrNull() },
-                    onToUserProfile = {backStack.add(UserProfileScreen(it))}
+                    onToUserProfile = { backStack.add(UserProfileScreen(it)) }
                 )
             }
 
@@ -167,9 +167,9 @@ fun FreewdAppNavHost(
                     onBack = { backStack.removeLastOrNull() }
                 )
             }
-
+            entry<ChangePasswordScreenData> { ChangePasswordHost{} }
             entry<AboutAppScreenData> { About() }
-            entry<SettingsScreenData> { Settings(onToAboutApp = {backStack.add(AboutAppScreenData)}) }
+            entry<SettingsScreenData> { Settings(onToAboutApp = { backStack.add(AboutAppScreenData) }) }
 
         }
     )

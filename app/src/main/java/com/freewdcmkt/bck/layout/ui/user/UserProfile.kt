@@ -83,7 +83,6 @@ fun UserProfileLayout(
     val localBio by UserInfoData.bio.collectAsState()
 
     val listState = rememberLazyListState()
-    var imgUrl by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(uid) { viewmodel.load(uid) }
     Log.d("user uid", uid.toString())
@@ -265,7 +264,6 @@ fun UserProfileLayout(
                                 FeedCard(
                                     feed = feed,
                                     onClick = onToFeedDetail,
-                                    onToPreviewImg = { imgUrl = it },
                                     onLike = { viewmodel.toggleLike(it) }
                                 )
                             }

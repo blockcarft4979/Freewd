@@ -21,9 +21,11 @@
     <string name="auth_code">驗證碼</string>
     <string name="send_auth_code">發送驗證碼</string>
     <string name="wait_send_auth_code">請等待 %s 秒後重試</string>
-    <string name="agree_agreement_part">我已閱讀《使用者協議》與《隱私權政策》</string>
-    <string name="user_agreement">使用者協議</string>
-    <string name="policy_privacy">隱私權政策</string>
+    <string name="agree_prefix">我已閱讀並同意</string>
+    <string name="agree_user_agreement">使用者條款</string>
+    <string name="agree_middle">與</string>
+    <string name="agree_privacy_policy">隱私權政策</string>
+
     <string name="confirm_password_hint">確認密碼</string>
     <string name="forget_password_hint">忘記密碼？</string>
 
@@ -31,7 +33,6 @@
     <string name="change_password_hint">修改密碼</string>
     <string name="new_password_hint">新密碼</string>
     <string name="submit_password_hint">提交密碼</string>
-    <string name="change_password_succeed_toast_hint">密碼修改成功，將在 3 秒後跳轉至登入頁面。</string>
 
     <!-- ========== 首頁 / 貼文流 ========== -->
     <string name="home_hint">首頁</string>
@@ -105,7 +106,7 @@
     <!-- ========== 關於 ========== -->
     <string name="about_hint">關於</string>
     <string name="about_app_hint">關於 Freewd</string>
-    <string name="browser_hint">瀏覽</string>
+    <string name="browser_hint">瀏覽器</string>
 
     <!-- ========== 搜尋 ========== -->
     <string name="search_hint">搜尋貼文</string>
@@ -144,6 +145,7 @@
     <string name="no_internet_hint">無網路連線，請檢查你的網路設定。</string>
     <string name="data_error_hint">資料解析失敗，請重試。</string>
     <!-- ========== 貼文詳情操作失敗提示 ========== -->
+    <string name="add_comment_hint">這裡還沒有任何內容。想說點什麼嗎？</string>
     <string name="like_failed_hint">按讚狀態更新失敗</string>
     <string name="reply_failed_hint">留言傳送失敗</string>
     <string name="delete_feed_failed_hint">貼文刪除失敗</string>

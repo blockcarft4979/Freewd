@@ -21,9 +21,15 @@
     <string name="auth_code">Verification code</string>
     <string name="send_auth_code">Send code</string>
     <string name="wait_send_auth_code">Please wait %s s and try again</string>
-    <string name="agree_agreement_part">I have read the User Agreement and Privacy Policy</string>
-    <string name="user_agreement">User Agreement</string>
-    <string name="policy_privacy">Privacy Policy</string>
+    <!-- 前缀 -->
+    <string name="agree_prefix">I have read the </string>
+    <!-- 可点击的用户协议 -->
+    <string name="agree_user_agreement"> User Agreement </string>
+    <!-- 中间的连接词 -->
+    <string name="agree_middle"> and </string>
+    <!-- 可点击的隐私政策 -->
+    <string name="agree_privacy_policy"> Privacy Policy </string>
+
     <string name="confirm_password_hint">Confirm password</string>
     <string name="forget_password_hint">Forget password?</string>
 
@@ -31,7 +37,6 @@
     <string name="change_password_hint">Change Password</string>
     <string name="new_password_hint">New password</string>
     <string name="submit_password_hint">Submit password</string>
-    <string name="change_password_succeed_toast_hint">Password changed. You will be redirected to log in in 3 seconds.</string>
 
     <!-- ========== 首页 / 帖子流 ========== -->
     <string name="home_hint">Home</string>
@@ -105,7 +110,7 @@
     <!-- ========== 关于 ========== -->
     <string name="about_hint">About</string>
     <string name="about_app_hint">About Freewd</string>
-    <string name="browser_hint">Browse</string>
+    <string name="browser_hint">Browser</string>
 
     <!-- ========== 搜索 ========== -->
     <string name="search_hint">Search posts</string>

@@ -132,7 +132,6 @@ class FeedDetailViewmodel : ViewModel() {
             when (val result = safeApiCall { RetroV2Client.apiService.likePost(id) }) {
                 is ApiResult.Success -> {
                     result.data?.let { likeData ->
-                        // 用当前值 copy，避免覆盖期间其他变更（评论/删评）
                         _feedDetailData.value = _feedDetailData.value.copy(
                             isLiked = likeData.isLiked,
                             likeCount = likeData.likeCount
