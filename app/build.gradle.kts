@@ -21,8 +21,8 @@ android {
         applicationId = "com.freewdcmkt.bck"
         minSdk = 26
         targetSdk = 36
-        versionCode = 191
-        versionName = "3.13.2"
+        versionCode = 192
+        versionName = "3.13.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {

@@ -48,7 +48,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -76,7 +78,7 @@ fun PostFeedLayout(
     onBack: () -> Unit,
     viewmodel: PostFeedViewmodel = viewModel()
 ) {
-    var previewImgUrl by remember { mutableStateOf<String?>(null) }
+    val haptic = LocalHapticFeedback.current
     val uiState by viewmodel.postFeedUiState.collectAsState()
     val qq by UserInfoData.account.collectAsState()
     val unknownError = stringResource(R.string.unknown_error)
@@ -141,6 +143,7 @@ fun PostFeedLayout(
                             isMarkdown = isMarkdown,
                             imgUrl = imgUrl.value
                         )
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     },
                     enabled = message.isNotBlank()
                 ) {
@@ -166,7 +169,6 @@ fun PostFeedLayout(
                 onUploadImg = { imgFile -> viewmodel.uploadImg(imgFile) },
                 isUploadedImg = isUploadingImg.value,
                 imgUrl = imgUrl.value,
-                onToPreviewImg = { url -> previewImgUrl = url },
                 onIsMarkdownChange = { newValue ->
                     isMarkdown = newValue
                     scope.launch {
@@ -198,7 +200,6 @@ fun PostFeedUiLayout(
     message: String,
     onMessageChange: (String) -> Unit,
     isAnonymous: Boolean,
-    onToPreviewImg: (String) -> Unit,
     onUploadImg: (file: File) -> Unit,
     onIsMarkdownChange: (Boolean) -> Unit,
     isUploadedImg: Boolean,

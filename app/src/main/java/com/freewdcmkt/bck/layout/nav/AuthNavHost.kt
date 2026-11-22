@@ -108,8 +108,8 @@ fun AuthLayout(viewModel: LogInViewModel = viewModel()) {
                     onToUserAgreement = { backStack.add(BrowserScreenData(it)) },
                 )
             }
-            entry<BrowserScreenData> { data->
-                BrowserLayout(data.url)
+            entry<BrowserScreenData> { data ->
+                BrowserLayout("https://community.freewd.top/", onBack = { backStack.removeLastOrNull() })
             }
             entry<DocumentScreenData> { aboutScreenData ->
                 Document(

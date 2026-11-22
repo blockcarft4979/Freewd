@@ -120,11 +120,6 @@ private fun FeedListUi(
     }
 }
 
-/**
- * 列表本体。抽出来是因为状态栏毛玻璃需要「同一份列表内容、同一个滚动位置」
- * 再布局一份出来当底衬（`Modifier.blur` 只能模糊自身内容，采样不到背后的兄弟节点，
- * 所以背景模糊只能靠再画一份）。
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FeedListContent(

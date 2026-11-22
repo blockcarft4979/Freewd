@@ -34,15 +34,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -57,11 +57,9 @@ import com.freewdcmkt.bck.api.userAvatarUrl
 import com.freewdcmkt.bck.components.freewd.FreewdModalBottomSheet
 import com.freewdcmkt.bck.components.freewd.NotificationIcon
 import com.freewdcmkt.bck.components.freewd.UserCard
-import com.freewdcmkt.bck.components.ui.PreviewImgUi
 import com.freewdcmkt.bck.data.common.UserInfoData
 import com.freewdcmkt.bck.layout.ui.community.FeedListHost
 import com.freewdcmkt.bck.layout.ui.user.Me
-import com.freewdcmkt.bck.layout.ui.user.UserProfileLayout
 import com.freewdcmkt.bck.viewmodel.community.FeedListViewmodel
 import com.freewdcmkt.bck.viewmodel.nav.HomeUiState
 import com.freewdcmkt.bck.viewmodel.nav.HomeViewmodel
@@ -78,7 +76,7 @@ fun HomeNavHost(
     onToSearch: () -> Unit,
     onToSettings: () -> Unit,
     onToUserProfile: (uid: Int) -> Unit,
-    onToChangePassword:()-> Unit
+    onToChangePassword: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -102,6 +100,7 @@ fun HomeNavHost(
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarState)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val haptic = LocalHapticFeedback.current
 
     val unknownError = stringResource(R.string.unknown_error)
 
@@ -155,13 +154,19 @@ fun HomeNavHost(
                             onClick = { scope.launch { drawerState.open() } })
                     },
                     actions = {
-                        IconButton(onClick = onToSearch) {
+                        IconButton(onClick = {
+                            onToSearch()
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }) {
                             Icon(
                                 painter = painterResource(R.drawable.baseline_search_24),
                                 contentDescription = stringResource(R.string.search_hint)
                             )
                         }
-                        IconButton(onClick = onToNotification) {
+                        IconButton(onClick = {
+                            onToNotification()
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }) {
                             NotificationIcon(unreadCount)
                         }
                     },
@@ -225,7 +230,7 @@ private fun HomeUI(
     val listState = rememberLazyListState()
     val fabVisible by remember { derivedStateOf { !listState.isScrollInProgress } }
     val feedUiState by feedListViewmodel.feedUiState.collectAsState()
-
+    val haptic = LocalHapticFeedback.current
 
 // HomeNavHost / HomeUI
     LaunchedEffect(refreshViewModel.feedRefresh) {
@@ -245,7 +250,10 @@ private fun HomeUI(
         Scaffold(floatingActionButton = {
 
             FloatingActionButton(
-                onClick = onToPostFeed,
+                onClick = {
+                    onToPostFeed()
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                },
                 modifier = Modifier.animateFloatingActionButton(
                     visible = fabVisible,
                     alignment = Alignment.BottomEnd

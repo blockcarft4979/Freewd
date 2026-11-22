@@ -32,7 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -50,13 +52,17 @@ fun ItemCard(
     color: Color? = null,
     isShowArrow: Boolean = true
 ) {
+    val haptic = LocalHapticFeedback.current
     Card(
         shape = RoundedCornerShape(16.dp),
 
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .clickable(onClick = onClick)
+            .clickable(onClick = {
+                onClick()
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            })
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -134,7 +140,9 @@ fun ImageCard(
                 val boxMod = if (aspectRatio != null) {
                     Modifier.fillMaxSize()
                 } else {
-                    Modifier.fillMaxWidth().height(placeholderHeight)
+                    Modifier
+                        .fillMaxWidth()
+                        .height(placeholderHeight)
                 }
                 Box(
                     modifier = boxMod.background(
@@ -149,7 +157,9 @@ fun ImageCard(
                 val boxMod = if (aspectRatio != null) {
                     Modifier.fillMaxSize()
                 } else {
-                    Modifier.fillMaxWidth().height(placeholderHeight)
+                    Modifier
+                        .fillMaxWidth()
+                        .height(placeholderHeight)
                 }
                 Box(modifier = boxMod, contentAlignment = Alignment.Center) {
                     Text(

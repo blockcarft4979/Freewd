@@ -146,7 +146,7 @@ fun FreewdAppNavHost(
             }
 
             entry<BrowserScreenData> { args ->
-                BrowserLayout(args.url)
+                BrowserLayout(args.url, onBack = {backStack.removeLastOrNull()})
             }
 
             entry<PostFeedScreen> {

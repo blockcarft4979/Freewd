@@ -4,11 +4,16 @@ import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,35 +25,62 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.freewdcmkt.bck.R
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BrowserLayout(url: String) {
-    // 保存加载进度（0~100）
+fun BrowserLayout(url: String, onBack: () -> Unit) {
+
     var progress by remember { mutableFloatStateOf(0f) }
-    // 是否正在加载（用于控制进度条显示）
     var isLoading by remember { mutableStateOf(true) }
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress / 100f,
+        animationSpec = tween(durationMillis = 250),
+        label = "progress"
+    )
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.browser_hint)) })
+            TopAppBar(
+                title = { Text(stringResource(R.string.browser_hint)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_arrow_back_24),
+                            contentDescription = null
+                        )
+                    }
+                }
+            )
         }
     ) { innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize()) {
-            // 进度条：只在加载时显示
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
             if (isLoading) {
-                LinearProgressIndicator(
-                    progress = { progress / 100f }, // Material3 的进度范围是 0..1
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
+                if (progress <= 0f) {
+                    // 还不知道进度：不确定模式，自带流动动画
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                    )
+                } else {
+                    // 拿到进度：确定模式
+                    LinearProgressIndicator(
+                        progress = { animatedProgress },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                    )
+                }
             }
 
             AndroidView(
@@ -56,12 +88,19 @@ fun BrowserLayout(url: String) {
                     WebView(context).apply {
                         settings.javaScriptEnabled = true
                         webViewClient = WebViewClient()
+                        webViewClient = object : WebViewClient() {
+                            override fun onPageFinished(view: WebView?, url: String?) {
+                                super.onPageFinished(view, url)
+                                isLoading = false
+                            }
+                        }
                         webChromeClient = object : WebChromeClient() {
                             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                                 super.onProgressChanged(view, newProgress)
                                 progress = newProgress.toFloat()
                                 isLoading = newProgress < 100
                             }
+
                         }
                         loadUrl(url)
                     }

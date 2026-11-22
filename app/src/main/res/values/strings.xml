@@ -26,9 +26,9 @@
     <!-- 可点击的用户协议 -->
     <string name="agree_user_agreement"> User Agreement </string>
     <!-- 中间的连接词 -->
-    <string name="agree_middle"> and </string>
+    <string name="agree_middle">  and  </string>
     <!-- 可点击的隐私政策 -->
-    <string name="agree_privacy_policy"> Privacy Policy </string>
+    <string name="agree_privacy_policy">  Privacy Policy  </string>
 
     <string name="confirm_password_hint">Confirm password</string>
     <string name="forget_password_hint">Forget password?</string>

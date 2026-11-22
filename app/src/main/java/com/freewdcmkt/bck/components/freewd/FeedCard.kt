@@ -15,6 +15,8 @@ import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.freewdcmkt.bck.R
 import com.freewdcmkt.bck.api.userAvatarUrl
@@ -28,7 +30,7 @@ fun FeedCard(
     onLike: (id: Int) -> Unit,
     onClickUserIcon: () -> Unit = {}
 ) {
-
+    val haptic = LocalHapticFeedback.current
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -36,7 +38,10 @@ fun FeedCard(
     ) {
         Row(
             modifier = Modifier
-                .clickable(onClick = { onClick(feed.id) })
+                .clickable(onClick = {
+                    onClick(feed.id)
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                })
                 .padding(10.dp),
             verticalAlignment = Alignment.Top
         ) {
