@@ -109,7 +109,7 @@ fun AuthLayout(viewModel: LogInViewModel = viewModel()) {
                 )
             }
             entry<BrowserScreenData> { data ->
-                BrowserLayout("https://community.freewd.top/", onBack = { backStack.removeLastOrNull() })
+                BrowserLayout(data.url, onBack = { backStack.removeLastOrNull() })
             }
             entry<DocumentScreenData> { aboutScreenData ->
                 Document(
